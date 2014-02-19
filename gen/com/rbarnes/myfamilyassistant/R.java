@@ -8,6 +8,9 @@
 package com.rbarnes.myfamilyassistant;
 
 public final class R {
+    public static final class array {
+        public static final int items=0x7f060000;
+    }
     public static final class attr {
     }
     public static final class dimen {
@@ -21,21 +24,75 @@ public final class R {
         public static final int activity_vertical_margin=0x7f040001;
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
+        public static final int ic_drawer=0x7f020000;
+        public static final int ic_launcher=0x7f020001;
     }
     public static final class id {
-        public static final int action_settings=0x7f080000;
+        public static final int AppointmentAddLayout=0x7f09000c;
+        public static final int LinearLayout1=0x7f090014;
+        public static final int RegisterScreenButton=0x7f090004;
+        public static final int SignupButton=0x7f090018;
+        public static final int SkipRegisterScreenButton=0x7f090005;
+        public static final int action_settings=0x7f090019;
+        public static final int content_frame=0x7f090007;
+        public static final int descriptionInput=0x7f09000f;
+        public static final int detailText=0x7f090015;
+        public static final int digitalClock1=0x7f09000b;
+        public static final int drawer_layout=0x7f090006;
+        public static final int flarePainText=0x7f090017;
+        public static final int left_drawer=0x7f090008;
+        public static final int loginButton=0x7f090003;
+        public static final int loginPassword=0x7f090002;
+        public static final int loginPopup=0x7f090000;
+        public static final int loginUsername=0x7f090001;
+        public static final int nameInput=0x7f090016;
+        public static final int regEmail=0x7f090013;
+        public static final int regFirstName=0x7f090011;
+        public static final int regLastName=0x7f090012;
+        public static final int regRePassword=0x7f090010;
+        public static final int regUsername=0x7f09000e;
+        public static final int regform=0x7f09000d;
+        public static final int tab1=0x7f09000a;
+        public static final int tabhost=0x7f090009;
     }
     public static final class layout {
-        public static final int activity_main=0x7f030000;
+        public static final int activity_login=0x7f030000;
+        public static final int activity_main=0x7f030001;
+        public static final int blank=0x7f030002;
+        public static final int child_main_activity=0x7f030003;
+        public static final int drawer_listview_item=0x7f030004;
+        public static final int fragment_calendar=0x7f030005;
+        public static final int fragment_child_device_info=0x7f030006;
+        public static final int fragment_choirs=0x7f030007;
+        public static final int fragment_edituser=0x7f030008;
+        public static final int fragment_grocery=0x7f030009;
+        public static final int fragment_location=0x7f03000a;
+        public static final int fragment_messages=0x7f03000b;
+        public static final int fragment_supplies=0x7f03000c;
+        public static final int parent_main_activity=0x7f03000d;
     }
     public static final class menu {
-        public static final int main=0x7f070000;
+        public static final int main=0x7f080000;
     }
     public static final class string {
+        public static final int Email=0x7f050008;
+        public static final int FirstName=0x7f050006;
+        public static final int LastName=0x7f050007;
+        public static final int Password=0x7f050009;
+        public static final int RegistrationForm=0x7f050005;
+        public static final int SignUp=0x7f05000a;
+        public static final int Username=0x7f05000c;
+        public static final int VerifyPass=0x7f050011;
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
+        public static final int drawer_close=0x7f050004;
+        public static final int drawer_open=0x7f050003;
         public static final int hello_world=0x7f050002;
+        public static final int login=0x7f05000b;
+        public static final int noAcc=0x7f05000d;
+        public static final int pounds=0x7f050010;
+        public static final int skipReg=0x7f05000e;
+        public static final int weight=0x7f05000f;
     }
     public static final class style {
         /** 
@@ -59,10 +116,10 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f060000;
+        public static final int AppBaseTheme=0x7f070000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f060001;
+        public static final int AppTheme=0x7f070001;
     }
 }

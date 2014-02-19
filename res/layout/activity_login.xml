@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+ 
+    <LinearLayout
+        android:id="@+id/loginPopup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dip" >
+        
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:text="@string/login"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+        
+        <EditText
+            android:id="@+id/loginUsername"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/Username"/>
+        
+        <EditText
+            android:id="@+id/loginPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/Password"
+            android:inputType="textPassword" />
+
+        
+
+           
+       
+         
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login" />
+ 
+
+        <Button
+            android:id="@+id/RegisterScreenButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dip"
+            android:background="@null"
+            android:text="@string/noAcc"
+            android:textColor="#0000d4"
+            android:textStyle="bold" />
+        <Button
+            android:id="@+id/SkipRegisterScreenButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dip"
+            android:background="@null"
+            android:text="@string/skipReg"
+            android:textColor="#0000d4"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+ 
+</ScrollView>
+
