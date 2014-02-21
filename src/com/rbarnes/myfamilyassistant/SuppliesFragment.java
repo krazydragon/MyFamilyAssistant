@@ -1,3 +1,12 @@
+/*
+ * project	MyFamilyAssistant
+ * 
+ * package	com.rbarnes.myfamilyassistant
+ * 
+ * @author	Ronaldo Barnes
+ * 
+ * date		Feb 19, 2014
+ */
 package com.rbarnes.myfamilyassistant;
 
 import com.afollestad.cardsui.Card;
@@ -14,8 +23,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class CalendarFragment extends Fragment{
-	 
+public class SuppliesFragment extends Fragment{
+	
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
@@ -23,25 +32,25 @@ public class CalendarFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_calendar, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_grocery, container, false);
+	
+	
 	CardListView list = (CardListView)view.findViewById(android.R.id.list);
 
 	CardAdapter adapter = new CardAdapter(getActivity())
 	    // This sets the color displayed for card titles and header actions by default
-	    .setAccentColorRes(android.R.color.holo_green_light);
+	    .setAccentColorRes(android.R.color.holo_red_dark);
 	
 	
 
 	// Add a basic header and three cards below it
-	adapter.add(new CardHeader("Header 1").setAction("Hello", new CardHeader.ActionListener() {
-	    @Override
-	    public void onClick(CardHeader header) {
-	        Toast.makeText(getActivity(), header.getActionTitle(), Toast.LENGTH_SHORT).show();
-	    }
-	}));
-	adapter.add(new Card("March 21 2014", "Soccer game"));
-	adapter.add(new Card("June 11 2014", "Jason's birthday"));
-	adapter.add(new Card("September 17 2014", "Back to school"));
+	adapter.add(new CardHeader("Supplies"));
+	adapter.add(new Card("Tape", null));
+	adapter.add(new Card("Glue", null));
+	adapter.add(new Card("Bleach", null));
+	adapter.add(new Card("Markers", null));
+	adapter.add(new Card("Mop", null));
+	
 
 	
 
@@ -53,6 +62,7 @@ public class CalendarFragment extends Fragment{
 	        // Do what you want here
 	    }
 	});
+	
 	return view;
 	}
 

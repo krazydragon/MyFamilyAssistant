@@ -1,11 +1,5 @@
 package com.rbarnes.myfamilyassistant;
 
-import com.afollestad.cardsui.Card;
-import com.afollestad.cardsui.CardAdapter;
-import com.afollestad.cardsui.CardBase;
-import com.afollestad.cardsui.CardHeader;
-import com.afollestad.cardsui.CardListView;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,8 +8,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class CalendarFragment extends Fragment{
-	 
+import com.afollestad.cardsui.*;
+
+public class MessageFragment extends Fragment{
+	
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
@@ -23,26 +19,23 @@ public class CalendarFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_calendar, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_messages, container, false);
 	CardListView list = (CardListView)view.findViewById(android.R.id.list);
 
 	CardAdapter adapter = new CardAdapter(getActivity())
 	    // This sets the color displayed for card titles and header actions by default
-	    .setAccentColorRes(android.R.color.holo_green_light);
+	    .setAccentColorRes(android.R.color.holo_orange_light);
 	
 	
 
 	// Add a basic header and three cards below it
-	adapter.add(new CardHeader("Header 1").setAction("Hello", new CardHeader.ActionListener() {
-	    @Override
-	    public void onClick(CardHeader header) {
-	        Toast.makeText(getActivity(), header.getActionTitle(), Toast.LENGTH_SHORT).show();
-	    }
-	}));
-	adapter.add(new Card("March 21 2014", "Soccer game"));
-	adapter.add(new Card("June 11 2014", "Jason's birthday"));
-	adapter.add(new Card("September 17 2014", "Back to school"));
-
+	adapter.add(new CardHeader("Messages"));
+	adapter.add(new Card("Mom", "I'm going to be working late today."));
+	adapter.add(new Card("Me", "Ok I will make dinner tonight."));
+	adapter.add(new Card("Dad", "Or I can pick something up?"));
+	adapter.add(new Card("Me", "Sounds even better"));
+	
+	
 	
 
 	list.setAdapter(adapter);
@@ -55,5 +48,6 @@ public class CalendarFragment extends Fragment{
 	});
 	return view;
 	}
+
 
 }

@@ -7,42 +7,42 @@ import com.afollestad.cardsui.CardHeader;
 import com.afollestad.cardsui.CardListView;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
-public class CalendarFragment extends Fragment{
-	 
+public class UpcomingFragment extends Fragment{
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_calendar, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_choirs, container, false);
 	CardListView list = (CardListView)view.findViewById(android.R.id.list);
 
 	CardAdapter adapter = new CardAdapter(getActivity())
 	    // This sets the color displayed for card titles and header actions by default
-	    .setAccentColorRes(android.R.color.holo_green_light);
+	    .setAccentColorRes(android.R.color.holo_green_dark);
 	
 	
 
 	// Add a basic header and three cards below it
-	adapter.add(new CardHeader("Header 1").setAction("Hello", new CardHeader.ActionListener() {
-	    @Override
-	    public void onClick(CardHeader header) {
-	        Toast.makeText(getActivity(), header.getActionTitle(), Toast.LENGTH_SHORT).show();
-	    }
-	}));
-	adapter.add(new Card("March 21 2014", "Soccer game"));
-	adapter.add(new Card("June 11 2014", "Jason's birthday"));
-	adapter.add(new Card("September 17 2014", "Back to school"));
-
+	adapter.add(new CardHeader("Choirs"));
+	adapter.add(new Card("Do Homework", null));
+	adapter.add(new Card("Take dog out", null));
+	adapter.add(new Card("Brush teeth", null));
+	adapter.add(new Card("Clean bathroom", null));
 	
 
 	list.setAdapter(adapter);
@@ -54,6 +54,11 @@ public class CalendarFragment extends Fragment{
 	    }
 	});
 	return view;
+	
+	
+	
+	
 	}
+
 
 }

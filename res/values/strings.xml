@@ -6,12 +6,14 @@
     <string name="hello_world">Hello world!</string>
 	
 	<string-array name="items">
-        <item>Item 1</item>
-        <item>Item 2</item>
-        <item>Item 3</item>
-        <item>Item 4</item>
-        <item>Item 5</item>
-        <item>Item 6</item>
+        <item>Calendar</item>
+        <item>Choirs</item>
+        <item>Messages</item>
+        <item>Groceries</item>
+        <item>Supplies</item>
+        <item>Location</item>
+        <item>Lock</item>
+        <item>Calls/App</item>
     </string-array>
  
     <string name="drawer_open">Open navigation drawer</string>

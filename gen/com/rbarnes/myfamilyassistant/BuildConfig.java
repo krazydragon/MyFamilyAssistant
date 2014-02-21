@@ -1,12 +1,4 @@
-/*
- * project	MyFamilyAssistant
- * 
- * package	com.rbarnes.myfamilyassistant
- * 
- * @author	Ronaldo Barnes
- * 
- * date		Feb 19, 2014
- */
+/** Automatically generated file. DO NOT MODIFY */
 package com.rbarnes.myfamilyassistant;
 
 public final class BuildConfig {

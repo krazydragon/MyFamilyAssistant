@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.parse.Parse;
 
 
+
 public class MainActivity extends Activity {
 
 	
@@ -44,7 +45,7 @@ public class MainActivity extends Activity {
 		
 		Parse.initialize(this, "wAoWswK6kE9xpSqkrHrKjrIbWDMfeF0xYGWkDWFc", "2wZeexj6posiXETwFUbQ0LJFkT62wg63wnaS711L");
 		
-		 // get list items from strings.xml
+		// get list items from strings.xml
         drawerListViewItems = getResources().getStringArray(R.array.items);
         // get ListView defined in activity_main.xml
         drawerListView = (ListView) findViewById(R.id.left_drawer);
@@ -57,7 +58,7 @@ public class MainActivity extends Activity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
  
         actionBarDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
+        		this,                  /* host Activity */
                 drawerLayout,         /* DrawerLayout object */
                 R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description */
@@ -73,10 +74,11 @@ public class MainActivity extends Activity {
     //drawerLayout.setDrawerShadow(R.drawable.ic_launcher, GravityCompat.START);
  
     drawerListView.setOnItemClickListener(new DrawerItemClickListener());
-	
     
-
-    
+    FragmentManager manager = getFragmentManager();
+    FragmentTransaction transaction = manager.beginTransaction();
+    transaction.replace(R.id.content_frame, new TempFragment());
+    transaction.commit();
 	}
 
 	 @Override
@@ -128,23 +130,33 @@ public class MainActivity extends Activity {
                 break;
 
             case 2:
-                frag = new GroceryFragment();
+                frag = new MessageFragment();
                 break;
 
             case 3:
-                frag = new ParentMainFragment();
+                frag = new GroceryFragment();
                 break;
             case 4:
-                frag = new CalendarFragment();
+                frag = new SuppliesFragment();
                 break;
 
             case 5:
-                frag = new ChoirFragment();
+                frag = new LocationFragment();
+                break;
+            case 6:
+                frag = new LockFragment();
+                break;
+
+            case 7:
+                frag = new ChildDeviceInfoFragment();
+                break;
+            case 8:
+                frag = new SettingsFragment();
                 break;
 
             
             default:
-                frag = new ChildMainFragment();
+                frag = new ParentMainFragment();
                 break;
             }
             FragmentManager manager = getFragmentManager();
