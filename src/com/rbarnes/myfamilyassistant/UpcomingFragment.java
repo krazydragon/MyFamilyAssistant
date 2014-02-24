@@ -38,11 +38,10 @@ public class UpcomingFragment extends Fragment{
 	
 
 	// Add a basic header and three cards below it
-	adapter.add(new CardHeader("Choirs"));
-	adapter.add(new Card("Do Homework", null));
-	adapter.add(new Card("Take dog out", null));
-	adapter.add(new Card("Brush teeth", null));
-	adapter.add(new Card("Clean bathroom", null));
+	adapter.add(new CardHeader("Upcoming"));
+	adapter.add(new Card("Dad's work party", "2/22/2014  2:30pm"));
+	adapter.add(new Card("Doug's game", "3/12/2014  5:30pm"));
+	
 	
 
 	list.setAdapter(adapter);

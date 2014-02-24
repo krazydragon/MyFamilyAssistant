@@ -69,13 +69,18 @@ public class ParentMainFragment extends Fragment implements TabListener{
 	
 	bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 	
-	 
+	String[] tabTitle = {
+	        "Alerts",
+	        "Upcoming",
+	        "Kids",
+	    };
 	
-	    for (int i=1; i <= 3; i++) {
+	    for (int i=0; i < tabTitle.length; i++) {
 	
+	    	
 	        Tab tab = bar.newTab();
 	
-	        tab.setText("Tab " + i);
+	        tab.setText(tabTitle[i]);
 	
 	        tab.setTabListener(this);
 	

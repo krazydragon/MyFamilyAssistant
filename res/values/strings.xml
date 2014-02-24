@@ -13,8 +13,9 @@
         <item>Supplies</item>
         <item>Location</item>
         <item>Lock</item>
-        <item>Calls/App</item>
+        <item>Parent Main</item>
     </string-array>
+    
  
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>

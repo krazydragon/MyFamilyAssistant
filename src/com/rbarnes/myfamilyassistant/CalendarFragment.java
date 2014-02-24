@@ -33,12 +33,7 @@ public class CalendarFragment extends Fragment{
 	
 
 	// Add a basic header and three cards below it
-	adapter.add(new CardHeader("Header 1").setAction("Hello", new CardHeader.ActionListener() {
-	    @Override
-	    public void onClick(CardHeader header) {
-	        Toast.makeText(getActivity(), header.getActionTitle(), Toast.LENGTH_SHORT).show();
-	    }
-	}));
+	adapter.add(new CardHeader("Calendar"));
 	adapter.add(new Card("March 21 2014", "Soccer game"));
 	adapter.add(new Card("June 11 2014", "Jason's birthday"));
 	adapter.add(new Card("September 17 2014", "Back to school"));

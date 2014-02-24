@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.Parse;
+import com.parse.ParseUser;
 
 
 
@@ -43,8 +45,26 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		FragmentManager manager = getFragmentManager();
+	    FragmentTransaction transaction = manager.beginTransaction();
+	    
 		Parse.initialize(this, "wAoWswK6kE9xpSqkrHrKjrIbWDMfeF0xYGWkDWFc", "2wZeexj6posiXETwFUbQ0LJFkT62wg63wnaS711L");
 		
+		
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		if (currentUser != null) {
+			//Crouton.makeText(this, "Welcome Back "+ currentUser.getUsername() + "!", Style.INFO).show();
+			transaction.replace(R.id.content_frame, new TempFragment());
+		    transaction.commit();
+			//new RemoteDataTask().execute();
+			
+		} else {
+			
+			Intent loginIntent = new Intent(this, LoginActivity.class);
+			startActivityForResult(loginIntent,1);
+			
+			
+		}
 		// get list items from strings.xml
         drawerListViewItems = getResources().getStringArray(R.array.items);
         // get ListView defined in activity_main.xml
@@ -75,10 +95,8 @@ public class MainActivity extends Activity {
  
     drawerListView.setOnItemClickListener(new DrawerItemClickListener());
     
-    FragmentManager manager = getFragmentManager();
-    FragmentTransaction transaction = manager.beginTransaction();
-    transaction.replace(R.id.content_frame, new TempFragment());
-    transaction.commit();
+    
+    
 	}
 
 	 @Override
@@ -148,7 +166,7 @@ public class MainActivity extends Activity {
                 break;
 
             case 7:
-                frag = new ChildDeviceInfoFragment();
+                frag = new ParentMainFragment();
                 break;
             case 8:
                 frag = new SettingsFragment();
