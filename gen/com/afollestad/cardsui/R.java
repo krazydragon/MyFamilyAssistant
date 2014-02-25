@@ -50,35 +50,35 @@ public final class R {
 		public static final int toast_offset = 0x7f070002;
 	}
 	public static final class drawable {
-		public static final int card_header_selector = 0x7f020000;
-		public static final int card_menu_button = 0x7f020001;
-		public static final int card_selector = 0x7f020002;
-		public static final int card_shadow = 0x7f020003;
-		public static final int ic_menu_moreoverflow_card_dark_normal = 0x7f020007;
-		public static final int ic_menu_moreoverflow_card_dark_pressed = 0x7f020008;
-		public static final int list_focused = 0x7f020009;
-		public static final int pressed_background = 0x7f02000c;
-		public static final int pressed_background_header = 0x7f02000d;
-		public static final int unpressed_background = 0x7f02000f;
+		public static final int card_header_selector = 0x7f020002;
+		public static final int card_menu_button = 0x7f020003;
+		public static final int card_selector = 0x7f020004;
+		public static final int card_shadow = 0x7f020005;
+		public static final int ic_menu_moreoverflow_card_dark_normal = 0x7f020082;
+		public static final int ic_menu_moreoverflow_card_dark_pressed = 0x7f020083;
+		public static final int list_focused = 0x7f020084;
+		public static final int pressed_background = 0x7f020087;
+		public static final int pressed_background_header = 0x7f020088;
+		public static final int unpressed_background = 0x7f02008a;
 	}
 	public static final class id {
 		public static final int day = 0x7f0b0025;
-		public static final int inner_frame = 0x7f0b001a;
+		public static final int inner_frame = 0x7f0b000c;
 		public static final int month = 0x7f0b0024;
-		public static final int titleFrame = 0x7f0b001b;
+		public static final int titleFrame = 0x7f0b000d;
 		public static final int year = 0x7f0b0026;
 	}
 	public static final class layout {
 		public static final int clickable_toast = 0x7f030004;
-		public static final int fragment_list = 0x7f03000d;
-		public static final int list_item_card = 0x7f030014;
-		public static final int list_item_card_compressed = 0x7f030015;
-		public static final int list_item_card_nocontent = 0x7f030016;
-		public static final int list_item_header = 0x7f030017;
-		public static final int list_item_header_centered = 0x7f030018;
-		public static final int silk_date_picker = 0x7f03001b;
-		public static final int spinner_item = 0x7f03001c;
-		public static final int spinner_item_dropdown = 0x7f03001d;
+		public static final int fragment_list = 0x7f03000f;
+		public static final int list_item_card = 0x7f030016;
+		public static final int list_item_card_compressed = 0x7f030017;
+		public static final int list_item_card_nocontent = 0x7f030018;
+		public static final int list_item_header = 0x7f030019;
+		public static final int list_item_header_centered = 0x7f03001a;
+		public static final int silk_date_picker = 0x7f03001d;
+		public static final int spinner_item = 0x7f03001e;
+		public static final int spinner_item_dropdown = 0x7f03001f;
 	}
 	public static final class string {
 		public static final int see_more = 0x7f050013;

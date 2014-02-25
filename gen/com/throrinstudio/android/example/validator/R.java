@@ -12,8 +12,8 @@ public final class R {
 		public static final int okLabel = 0x7f010000;
 	}
 	public static final class drawable {
-		public static final int ic_explain_about = 0x7f020005;
-		public static final int ic_launcher = 0x7f020006;
+		public static final int ic_explain_about = 0x7f020080;
+		public static final int ic_launcher = 0x7f020081;
 	}
 	public static final class id {
 		public static final int contentTextFields = 0x7f0b001c;
@@ -28,8 +28,8 @@ public final class R {
 		public static final int widget_okcancelbar_ok = 0x7f0b0028;
 	}
 	public static final class layout {
-		public static final int main = 0x7f030019;
-		public static final int widget_ok_cancel_bar = 0x7f03001e;
+		public static final int main = 0x7f03001b;
+		public static final int widget_ok_cancel_bar = 0x7f030020;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f050000;

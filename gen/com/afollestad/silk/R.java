@@ -26,10 +26,10 @@ public final class R {
 	}
 	public static final class layout {
 		public static final int clickable_toast = 0x7f030004;
-		public static final int fragment_list = 0x7f03000d;
-		public static final int silk_date_picker = 0x7f03001b;
-		public static final int spinner_item = 0x7f03001c;
-		public static final int spinner_item_dropdown = 0x7f03001d;
+		public static final int fragment_list = 0x7f03000f;
+		public static final int silk_date_picker = 0x7f03001d;
+		public static final int spinner_item = 0x7f03001e;
+		public static final int spinner_item_dropdown = 0x7f03001f;
 	}
 	public static final class style {
 		public static final int ClickableToastAnimation = 0x7f060001;

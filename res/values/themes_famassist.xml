@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="FamAssist" parent="android:Theme.Holo">
+
+    <item name="android:editTextBackground">@drawable/famassist_edit_text_holo_dark</item>
+
+    <item name="android:textColorHighlight">#997ba976</item>
+    <item name="android:textSelectHandleLeft">@drawable/famassist_text_select_handle_left</item>
+    <item name="android:textSelectHandleRight">@drawable/famassist_text_select_handle_right</item>
+    <item name="android:textSelectHandle">@drawable/famassist_text_select_handle_middle</item>
+
+    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewFamAssist</item>
+
+    <item name="android:listChoiceIndicatorMultiple">@drawable/famassist_btn_check_holo_dark</item>
+
+    <item name="android:listChoiceIndicatorSingle">@drawable/famassist_btn_radio_holo_dark</item>
+
+    <item name="android:buttonStyle">@style/ButtonFamAssist</item>
+
+    <item name="android:imageButtonStyle">@style/ImageButtonFamAssist</item>
+
+    <item name="android:dropDownSpinnerStyle">@style/SpinnerFamAssist</item>
+
+    <item name="android:progressBarStyleHorizontal">@style/ProgressBarFamAssist</item>
+
+    <item name="android:seekBarStyle">@style/SeekBarFamAssist</item>
+
+    <item name="android:ratingBarStyle">@style/RatingBarFamAssist</item>
+
+    <item name="android:ratingBarStyleIndicator">@style/RatingBarBigFamAssist</item>
+
+    <item name="android:ratingBarStyleSmall">@style/RatingBarSmallFamAssist</item>
+
+    <item name="android:buttonStyleToggle">@style/ToggleFamAssist</item>
+
+    <item name="android:listChoiceBackgroundIndicator">@drawable/famassist_list_selector_holo_dark</item>
+
+    <item name="android:activatedBackgroundIndicator">@drawable/famassist_activated_background_holo_dark</item>
+
+    <item name="android:fastScrollThumbDrawable">@drawable/famassist_fastscroll_thumb_holo</item>
+
+  </style>
+
+</resources>

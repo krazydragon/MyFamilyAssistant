@@ -9,6 +9,8 @@
  */
 package com.rbarnes.myfamilyassistant;
 
+import java.util.List;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Fragment;
@@ -18,6 +20,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,9 +30,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.cardsui.Card;
+import com.parse.FindCallback;
 import com.parse.Parse;
+import com.parse.ParseACL;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRole;
 import com.parse.ParseUser;
-
+import com.parse.ParseException;
 
 
 public class MainActivity extends Activity {
@@ -65,6 +74,9 @@ public class MainActivity extends Activity {
 			
 			
 		}
+		
+		
+		
 		// get list items from strings.xml
         drawerListViewItems = getResources().getStringArray(R.array.items);
         // get ListView defined in activity_main.xml
@@ -80,7 +92,7 @@ public class MainActivity extends Activity {
         actionBarDrawerToggle = new ActionBarDrawerToggle(
         		this,                  /* host Activity */
                 drawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                R.drawable.famassist_ic_navigation_drawer,  /* nav drawer icon to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description */
                 R.string.drawer_close  /* "close drawer" description */
                 );
