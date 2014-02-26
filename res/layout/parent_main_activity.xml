@@ -1,39 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?> 
-<LinearLayout 
-xmlns:android="http://schemas.android.com/apk/res/android" 
-    android:orientation="vertical" 
-android:layout_width="fill_parent" 
-android:layout_height="fill_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-<TabHost 
-android:id="@+id/tabhost" 
-android:layout_width="fill_parent" 
-android:layout_height="fill_parent">
+    <com.astuetz.PagerSlidingTabStrip
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="48dip"
+        android:background="@drawable/background_tabs" />
 
-<TabWidget 
-android:id="@android:id/tabs" 
-android:layout_width="fill_parent" 
-android:layout_height="wrap_content"/>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tabs"
+        tools:context=".MainActivity" />
 
-<FrameLayout 
-android:id="@android:id/tabcontent" 
-android:layout_width="fill_parent" 
-android:layout_height="fill_parent" 
-android:paddingTop="62px">
+   
 
-<AnalogClock 
-android:id="@+id/tab1" 
-android:layout_width="fill_parent" 
-android:layout_height="fill_parent" 
-android:layout_centerHorizontal="true"/>
-
-        <DigitalClock 
-android:id="@+id/digitalClock1" 
-android:layout_width="wrap_content" 
-android:layout_height="wrap_content" 
-android:text="DigitalClock" 
-android:layout_gravity="center"/>
-
-    </FrameLayout> 
-</TabHost> 
-</LinearLayout>
+</RelativeLayout>

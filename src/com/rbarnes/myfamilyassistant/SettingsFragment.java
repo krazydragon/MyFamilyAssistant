@@ -23,27 +23,8 @@ public class SettingsFragment extends Fragment{
 	RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.blank, container, false);
 	
 	
-	Button myButton = (Button)view.findViewById(R.id.button1);
-	myButton.setOnClickListener(new OnClickListener() {
-	  public void onClick(View view) {
-		  FragmentManager manager = getFragmentManager();
-		    FragmentTransaction transaction = manager.beginTransaction();
-		    transaction.replace(R.id.content_frame, new ParentMainFragment());
-		    transaction.commit();
-
-	  }
-	});
 	
-	Button myButton2 = (Button)view.findViewById(R.id.button2);
-	myButton2.setOnClickListener(new OnClickListener() {
-	  public void onClick(View view) {
-		  FragmentManager manager = getFragmentManager();
-		    FragmentTransaction transaction = manager.beginTransaction();
-		    transaction.replace(R.id.content_frame, new ChildMainFragment());
-		    transaction.commit();
-
-	  }
-	});
+	
 	return view;
 	
 	

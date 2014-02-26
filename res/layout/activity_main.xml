@@ -8,8 +8,30 @@
     <FrameLayout
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
- 
+        android:layout_height="match_parent"
+         >
+
+        <LinearLayout
+            android:id="@+id/mainFrag"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <fragment
+        android:id="@+id/main_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.rbarnes.myfamilyassistant.TempFragment" 
+         >
+    </fragment>
+        </LinearLayout>
+
+    </FrameLayout>
+
+   
+
+ 	
     <!-- The navigation drawer -->
     <ListView android:id="@+id/left_drawer"
         android:layout_width="240dp"
@@ -22,5 +44,7 @@
         android:paddingLeft="15sp"
         android:paddingRight="15sp"
         />
+
+    
  
 </android.support.v4.widget.DrawerLayout>

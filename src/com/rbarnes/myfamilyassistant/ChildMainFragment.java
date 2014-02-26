@@ -27,17 +27,7 @@ public class ChildMainFragment extends Fragment{
 	
 	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.child_main_activity, container, false);
 
-	TabHost tabs=(TabHost)view.findViewById(R.id.tabhost); 
-	tabs.setup(); 
-	TabHost.TabSpec spec=tabs.newTabSpec("tag1"); 
-	spec.setContent(R.id.tab1); 
-	spec.setIndicator("Analog Clock"); 
-	tabs.addTab(spec); 
-	spec=tabs.newTabSpec("tag2"); 
-	spec.setContent(R.id.digitalClock1); 
-	spec.setIndicator("Digital Clock"); 
-	tabs.addTab(spec); 
-	tabs.setCurrentTab(0); 
+	
 	return view;
 	}
 }

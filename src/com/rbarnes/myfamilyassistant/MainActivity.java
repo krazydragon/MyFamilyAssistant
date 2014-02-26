@@ -9,16 +9,27 @@
  */
 package com.rbarnes.myfamilyassistant;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.os.Bundle;
+import android.provider.CallLog;
+import android.provider.ContactsContract;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
@@ -26,6 +37,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,19 +53,21 @@ import com.parse.ParseUser;
 import com.parse.ParseException;
 
 
-public class MainActivity extends Activity {
+
+public class MainActivity extends FragmentActivity {
 
 	
 	private String[] drawerListViewItems;
 	private DrawerLayout drawerLayout;
     private ListView drawerListView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
+    LinearLayout mainView;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+		mainView = (LinearLayout)this.findViewById(R.id.mainFrag);
 		FragmentManager manager = getFragmentManager();
 	    FragmentTransaction transaction = manager.beginTransaction();
 	    
@@ -63,8 +77,11 @@ public class MainActivity extends Activity {
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		if (currentUser != null) {
 			//Crouton.makeText(this, "Welcome Back "+ currentUser.getUsername() + "!", Style.INFO).show();
-			transaction.replace(R.id.content_frame, new TempFragment());
-		    transaction.commit();
+			android.support.v4.app.FragmentManager anager = getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction ransaction = anager.beginTransaction();
+            ransaction.replace(R.id.main_frame, new ParentMainFragment());
+            ransaction.commit();
+			
 			//new RemoteDataTask().execute();
 			
 		} else {
@@ -99,7 +116,7 @@ public class MainActivity extends Activity {
  
         // Set actionBarDrawerToggle as the DrawerListener
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
- 
+        
         getActionBar().setDisplayHomeAsUpEnabled(true); 
  
         // just styling option add shadow the right edge of the drawer
@@ -107,8 +124,7 @@ public class MainActivity extends Activity {
  
     drawerListView.setOnItemClickListener(new DrawerItemClickListener());
     
-    
-    
+    String look =null;
 	}
 
 	 @Override
@@ -137,7 +153,9 @@ public class MainActivity extends Activity {
          // call ActionBarDrawerToggle.onOptionsItemSelected(), if it returns true
         // then it has handled the app icon touch event
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+        	
             return true;
+             
         }
         return super.onOptionsItemSelected(item);
     }
@@ -178,7 +196,7 @@ public class MainActivity extends Activity {
                 break;
 
             case 7:
-                frag = new ParentMainFragment();
+                frag = new KidsFragment();
                 break;
             case 8:
                 frag = new SettingsFragment();
@@ -186,9 +204,10 @@ public class MainActivity extends Activity {
 
             
             default:
-                frag = new ParentMainFragment();
+                frag = new MessageFragment();
                 break;
             }
+            mainView.setVisibility(View.INVISIBLE);
             FragmentManager manager = getFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.replace(R.id.content_frame, frag);

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 public class TempFragment extends Fragment{
@@ -18,18 +19,12 @@ public class TempFragment extends Fragment{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);
-	super.onCreate(savedInstanceState); 
-	
-	RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.blank, container, false);
-	
-	
-	
-	return view;
-	
-	
-	
-	
+		
+		RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.blank, container, false);
+		
+		
+		
+		
+		return view;
 	}
-
-
 }
