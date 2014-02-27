@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">My Family Assistant</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Logout</string>
     <string name="hello_world">Hello world!</string>
 	
 	<string-array name="items">

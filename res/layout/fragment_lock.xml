@@ -15,7 +15,7 @@
         android:src="@drawable/lock" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/ytguytu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/imageView1"
@@ -24,11 +24,13 @@
         android:text="Lock" />
 
     <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/lockView"
+        style="@style/myheader"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:gravity="center"
         android:text="Lock"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 

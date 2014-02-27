@@ -21,58 +21,59 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
-                android:text="@string/RegistrationForm"
+                android:text="Join Family"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <EditText
-                android:id="@+id/regUsername"
+                android:id="@+id/famName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/Username" >
+                android:hint="Family Name" 
 
-                <requestFocus />
-            </EditText>
+                
+            />
 
-            <EditText
-                android:id="@+id/descriptionInput"
+            <LinearLayout
+                android:id="@+id/makePass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/Password"
-                android:inputType="textPassword" />
+                android:orientation="vertical"
+                android:visibility="invisible" >
 
-            <EditText
-                android:id="@+id/regRePassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/VerifyPass"
-                android:inputType="textPassword" />
+                <EditText
+                    android:id="@+id/parPass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Parent Password"
+                    android:inputType="textPassword"/>
 
-            <EditText
-                android:id="@+id/regFirstName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/FirstName"
-                android:inputType="textPersonName" />
+                <EditText
+                    android:id="@+id/reParPass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Retype Parent Password"
+                    android:inputType="textPassword" />
 
-            <EditText
-                android:id="@+id/regLastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/LastName"
-                android:inputType="textPersonName" />
+                <EditText
+                    android:id="@+id/kidPass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Kid Password"
+                    android:inputType="textPassword" />
 
-            <EditText
-                android:id="@+id/regEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/Email"
-                android:inputType="textEmailAddress" />
+                <EditText
+                    android:id="@+id/reKidPass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Retype Kid Password"
+                    android:inputType="textPassword" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/LinearLayout1"
@@ -86,12 +87,13 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/SignupButton"
+                android:id="@+id/CheckButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:onClick="startsignup"
-                android:text="@string/SignUp" />
+                android:onClick="checkPass"
+                android:text="Check" 
+                />
         </LinearLayout>
     </ScrollView>
 

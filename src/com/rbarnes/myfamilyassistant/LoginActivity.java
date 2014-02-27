@@ -9,20 +9,37 @@
  */
 package com.rbarnes.myfamilyassistant;
 
+import java.util.List;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
+import com.afollestad.cardsui.Card;
+import com.afollestad.cardsui.CardAdapter;
+import com.afollestad.cardsui.CardBase;
+import com.afollestad.cardsui.CardHeader;
+import com.afollestad.cardsui.CardListView;
 import com.kdragon.other.EmailRetriever;
-import com.kdragon.other.WebInterface;
+import com.parse.FindCallback;
 import com.parse.LogInCallback;
-import com.parse.ParseAnonymousUtils;
+import com.parse.ParseACL;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.throrinstudio.android.common.libs.validator.Form;
@@ -34,7 +51,8 @@ public class LoginActivity extends Activity implements OnClickListener{
 	
 	private Button _loginButton;
 	private Button _regButton;
-	private Button _skipButton;
+	private Button _checkButton;
+	private Button _signupButton;
 	private EditText _regEmailInput;
 	private EditText _usernameInput;
 	private EditText _passwordInput;
@@ -42,12 +60,25 @@ public class LoginActivity extends Activity implements OnClickListener{
 	private EditText _regPassInput;
 	private EditText _regFNameInput;
 	private EditText _regLNameInput;
+	private EditText _ParPasswordInput;
+	private EditText _famNameInput;
+	private EditText _regParPassInput;
+	private EditText _kidPassInput;
+	private EditText _reKidPassInput;
 	private Form _loginForm;
 	private Form _regForm;
+	private String _famName;
+	private String _famPass;
+	private String _kidPass;
+	private Boolean _isFamThere=true;
+	List<ParseObject> ob;
+	LinearLayout _view;
+	Context _context;
 	
 	
 	private String _msg;
 	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.activity_login);
@@ -55,12 +86,12 @@ public class LoginActivity extends Activity implements OnClickListener{
 			_loginForm = new Form();
 			_loginButton = (Button)findViewById(R.id.loginButton);
 			_regButton = (Button)findViewById(R.id.RegisterScreenButton);
-			
+			_checkButton = (Button)findViewById(R.id.CheckButton);
 			_loginButton.setOnClickListener(this);
 			_regButton.setOnClickListener(this);
 			_usernameInput = (EditText)findViewById(R.id.loginUsername);
 			_passwordInput = (EditText)findViewById(R.id.loginPassword);
-			
+			_context = this;
 			//check user input
 			Validate username = new Validate(_usernameInput);
 			Validate password = new Validate(_passwordInput);
@@ -75,16 +106,22 @@ public class LoginActivity extends Activity implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		//Login old user, Register new user, or skip and test application. 
+		final ProgressDialog dlg = new ProgressDialog(LoginActivity.this);
+        dlg.setTitle("Please wait.");
+        dlg.setMessage("Logging in.  Please wait.");
+        dlg.show();
 				if(v == _loginButton){
 					
 					if(_loginForm.validate()){
 						//Toast.makeText(getApplicationContext(), "Valid Form", Toast.LENGTH_LONG).show();
 						ParseUser.logInInBackground(_usernameInput.getText().toString(), _passwordInput.getText().toString(), new LogInCallback() {
-							  public void done(ParseUser user, ParseException e) {
+							  @Override
+							public void done(ParseUser user, ParseException e) {
+								  dlg.dismiss();
 							    if (user != null) {
 							    	Log.i("login","worked");
 							    	_msg = "Welcome back " + _usernameInput.getText().toString() + "!";
-								      loginUser();
+							    	famCheck();
 							    } else {
 							    	//show error msg
 							    	Log.i("login",e.toString());
@@ -98,10 +135,10 @@ public class LoginActivity extends Activity implements OnClickListener{
 					//loginUser();
 					
 				}else if(v == _regButton){
-			
+					dlg.dismiss();
 			setContentView(R.layout.fragment_edituser);
-			Button signupButton = (Button)findViewById(R.id.SignupButton);
-			signupButton.setOnClickListener(this);
+			_signupButton = (Button)findViewById(R.id.SignupButton);
+			_signupButton.setOnClickListener(this);
 _regForm = new Form();
 			
 			_regUserInput = (EditText)findViewById(R.id.regUsername);
@@ -134,7 +171,7 @@ _regForm = new Form();
 			
 			_regForm.addValidates(confirmPass);
 
-	}else{
+	}else if(v == _signupButton){
 			ParseUser user = new ParseUser();
 			
 
@@ -146,10 +183,11 @@ _regForm = new Form();
 				user.put("lastName", _regLNameInput.getText().toString());
 				
 				user.signUpInBackground(new SignUpCallback() {
-					  public void done(ParseException e) {
+					  @Override
+					public void done(ParseException e) {
+						  dlg.dismiss();
 					    if (e == null) {
-					      _msg = "Thank you for registering " + _regUserInput.getText().toString() + "!";
-					      loginUser();
+					    	famCheck();
 					    } else {
 					      // Sign up didn't succeed. Look at the ParseException
 					      // to figure out what went wrong
@@ -164,6 +202,63 @@ _regForm = new Form();
 			
 		}
 	}
+	public void checkPass(View v){
+		if(_isFamThere){
+			_famName = _famNameInput.getText().toString();
+			ParseQuery<ParseObject> query = ParseQuery.getQuery("FamList");
+			
+			query.whereEqualTo("Name", _famName);
+			query.findInBackground(new FindCallback<ParseObject>() {
+			    public void done(List<ParseObject> famPass, ParseException e) {
+			    	if(famPass.isEmpty()){
+			    		_isFamThere = false;
+			    		
+			    		_view.setVisibility(View.VISIBLE);
+			    	}else{
+			    		checkAccess();
+			    	}
+			    	
+			    	
+			    }
+			});
+			
+		}else{
+			loginUser();	
+		}
+	}
+		private void verFamCheck(){
+			setContentView(R.layout.fragment_fam_vaild); 
+			ParseACL roleACL = new ParseACL();
+			ParseRole role = new ParseRole(_famName, roleACL);
+			
+			roleACL.setRoleReadAccess(_famName, true);
+			roleACL.setRoleWriteAccess(_famName, true);
+			
+			ParseQuery<ParseObject> query = ParseQuery.getQuery("FamList");
+			
+			query.whereEqualTo("Name", _famName);
+			query.findInBackground(new FindCallback<ParseObject>() {
+			    public void done(List<ParseObject> famPass, ParseException e) {
+			    	if(famPass.isEmpty()){
+			    		Log.d("No", "Did not work!!!");
+			    		checkAccess();
+			    	}else{
+			    		Log.d("YES", "It worked!!!");
+			    	}
+			    	
+			    	
+			    }
+			});
+		}
+		private void famCheck(){
+			setContentView(R.layout.fragment_fam_vaild); 
+	    	_famNameInput = (EditText)findViewById(R.id.famName);
+	    	_ParPasswordInput = (EditText)findViewById(R.id.parPass);
+	    	_regParPassInput = (EditText)findViewById(R.id.reParPass);
+	    	_kidPassInput = (EditText)findViewById(R.id.kidPass);
+	    	_reKidPassInput = (EditText)findViewById(R.id.reKidPass);
+	    	_view = (LinearLayout)findViewById(R.id.makePass);
+		}
 	//go back to main page
 	private void loginUser(){
 		Intent returnIntent = new Intent();
@@ -171,6 +266,33 @@ _regForm = new Form();
 		 setResult(RESULT_OK, returnIntent);    
 		 finish();
 	}
+	private void checkAccess(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(_context);
+	    builder.setTitle("Title");
+
+	    // Set up the input
+	    final EditText input = new EditText(_context);
+	    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+	    input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+	    builder.setView(input);
+
+	    // Set up the buttons
+	    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+	            _famPass = input.getText().toString();
+	            //checkPass();
+	        }
+	    });
+	    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+	        	_kidPass = input.getText().toString();
+	        	//checkPass();
+	        }
+	    });
+
+	    builder.show();
+	}
 	
-	 
 }

@@ -1,22 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" style="@style/card_outer">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    <RelativeLayout android:id="@+id/inner_frame" style="@style/card_inner">
+    <TextView
+        android:id="@+id/inner_title2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/inner_title"
+        android:layout_marginRight="26dp"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <ImageView android:id="@android:id/icon" style="@style/card_thumbnail"/>
+    <TextView
+        android:id="@+id/inner_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/inner_title2"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <RelativeLayout android:id="@+id/titleFrame" style="@style/card_title_frame">
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@+id/inner_title2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/activated_background_card" />
 
-            <TextView android:id="@android:id/title" style="@style/card_title"/>
-
-            
-
-        </RelativeLayout>
-
-        <com.afollestad.silk.views.text.SilkTextView android:id="@android:id/content" style="@style/card_content"/>
-
-    </RelativeLayout>
-
-    <ImageView style="@style/card_shadow"/>
-
-</LinearLayout>
+</RelativeLayout>

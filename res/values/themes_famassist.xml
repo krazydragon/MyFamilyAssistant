@@ -42,6 +42,8 @@
 
     <item name="android:fastScrollThumbDrawable">@drawable/famassist_fastscroll_thumb_holo</item>
 
+
+    
   </style>
 
 </resources>

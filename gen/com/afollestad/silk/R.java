@@ -15,23 +15,23 @@ public final class R {
 		public static final int months = 0x7f0b0000;
 	}
 	public static final class dimen {
-		public static final int empty_text_size = 0x7f0a0000;
-		public static final int spinner_item_text = 0x7f0a0001;
-		public static final int toast_offset = 0x7f0a0002;
+		public static final int empty_text_size = 0x7f06002e;
+		public static final int spinner_item_text = 0x7f06002f;
+		public static final int toast_offset = 0x7f060030;
 	}
 	public static final class id {
-		public static final int day = 0x7f060032;
-		public static final int month = 0x7f060031;
-		public static final int year = 0x7f060033;
+		public static final int day = 0x7f0c0056;
+		public static final int month = 0x7f0c0055;
+		public static final int year = 0x7f0c0057;
 	}
 	public static final class layout {
-		public static final int clickable_toast = 0x7f030004;
-		public static final int fragment_list = 0x7f03000f;
-		public static final int silk_date_picker = 0x7f03001f;
-		public static final int spinner_item = 0x7f030021;
-		public static final int spinner_item_dropdown = 0x7f030022;
+		public static final int clickable_toast = 0x7f03000d;
+		public static final int fragment_list = 0x7f030019;
+		public static final int silk_date_picker = 0x7f030031;
+		public static final int spinner_item = 0x7f030032;
+		public static final int spinner_item_dropdown = 0x7f030033;
 	}
 	public static final class style {
-		public static final int ClickableToastAnimation = 0x7f090001;
+		public static final int ClickableToastAnimation = 0x7f0a001a;
 	}
 }

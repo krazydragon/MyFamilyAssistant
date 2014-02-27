@@ -13,13 +13,12 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.view.MotionEvent;
 
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 	 
     private final int PAGES = 3;
-    private String[] titles={"Tab 1", "Tab 2", "Tab 3"};
+    private String[] titles={"Upcoming", "Alerts", "Kids"};
     @SuppressWarnings("unused")
 	private Context context = null;
     

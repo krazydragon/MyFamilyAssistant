@@ -9,48 +9,31 @@
  */
 package com.rbarnes.myfamilyassistant;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.os.Bundle;
-import android.provider.CallLog;
-import android.provider.ContactsContract;
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.cardsui.Card;
-import com.parse.FindCallback;
 import com.parse.Parse;
-import com.parse.ParseACL;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseRole;
 import com.parse.ParseUser;
-import com.parse.ParseException;
 
 
 
@@ -62,6 +45,7 @@ public class MainActivity extends FragmentActivity {
     private ListView drawerListView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     LinearLayout mainView;
+    private String m_Text = "";
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +108,7 @@ public class MainActivity extends FragmentActivity {
  
     drawerListView.setOnItemClickListener(new DrawerItemClickListener());
     
-    String look =null;
+    
 	}
 
 	 @Override
@@ -156,6 +140,9 @@ public class MainActivity extends FragmentActivity {
         	
             return true;
              
+        }else{
+        	ParseUser.logOut();
+        	finish();
         }
         return super.onOptionsItemSelected(item);
     }

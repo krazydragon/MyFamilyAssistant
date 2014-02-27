@@ -1,15 +1,13 @@
 package com.rbarnes.myfamilyassistant;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class LockFragment extends Fragment{
 	
@@ -22,7 +20,9 @@ public class LockFragment extends Fragment{
 	
 	RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_lock, container, false);
 	
-	
+	TextView tv = (TextView) view.findViewById(R.id.lockView);
+	Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "primer.ttf");
+	tv.setTypeface(custom_font);
 	
 	return view;
 	
