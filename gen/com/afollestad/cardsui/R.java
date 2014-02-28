@@ -50,22 +50,22 @@ public final class R {
 		public static final int toast_offset = 0x7f060030;
 	}
 	public static final class drawable {
-		public static final int card_header_selector = 0x7f020006;
-		public static final int card_menu_button = 0x7f020007;
-		public static final int card_selector = 0x7f02000c;
-		public static final int card_shadow = 0x7f02000d;
-		public static final int ic_menu_moreoverflow_card_dark_normal = 0x7f0200a5;
-		public static final int ic_menu_moreoverflow_card_dark_pressed = 0x7f0200a6;
-		public static final int list_focused = 0x7f0200b0;
-		public static final int pressed_background = 0x7f0200b3;
-		public static final int pressed_background_header = 0x7f0200b5;
-		public static final int unpressed_background = 0x7f0200bc;
+		public static final int card_header_selector = 0x7f020009;
+		public static final int card_menu_button = 0x7f02000a;
+		public static final int card_selector = 0x7f02000f;
+		public static final int card_shadow = 0x7f020010;
+		public static final int ic_menu_moreoverflow_card_dark_normal = 0x7f0200a8;
+		public static final int ic_menu_moreoverflow_card_dark_pressed = 0x7f0200a9;
+		public static final int list_focused = 0x7f0200b3;
+		public static final int pressed_background = 0x7f0200b7;
+		public static final int pressed_background_header = 0x7f0200b9;
+		public static final int unpressed_background = 0x7f0200c2;
 	}
 	public static final class id {
 		public static final int day = 0x7f0c0056;
-		public static final int inner_frame = 0x7f0c0048;
+		public static final int inner_frame = 0x7f0c0049;
 		public static final int month = 0x7f0c0055;
-		public static final int titleFrame = 0x7f0c0049;
+		public static final int titleFrame = 0x7f0c004a;
 		public static final int year = 0x7f0c0057;
 	}
 	public static final class layout {

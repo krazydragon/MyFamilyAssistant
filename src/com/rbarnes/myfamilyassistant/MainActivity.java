@@ -9,18 +9,26 @@
  */
 package com.rbarnes.myfamilyassistant;
 
+import java.util.List;
+
+
 import android.os.Bundle;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +40,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.Parse;
+import com.parse.ParseACL;
+import com.parse.ParseAnonymousUtils;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRole;
 import com.parse.ParseUser;
 
 
@@ -45,21 +60,28 @@ public class MainActivity extends FragmentActivity {
     private ListView drawerListView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     LinearLayout mainView;
-    private String m_Text = "";
-    
+    private String _pass;
+    private String _passName;
+    private String _famName;
+    private Context _context;
+    private Boolean _fam_auth;
+    String _tempString;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		mainView = (LinearLayout)this.findViewById(R.id.mainFrag);
-		FragmentManager manager = getFragmentManager();
-	    FragmentTransaction transaction = manager.beginTransaction();
-	    
-		Parse.initialize(this, "wAoWswK6kE9xpSqkrHrKjrIbWDMfeF0xYGWkDWFc", "2wZeexj6posiXETwFUbQ0LJFkT62wg63wnaS711L");
 		
+	    
+	    _context = this;
+		Parse.initialize(this, "wAoWswK6kE9xpSqkrHrKjrIbWDMfeF0xYGWkDWFc", "2wZeexj6posiXETwFUbQ0LJFkT62wg63wnaS711L");
+		_fam_auth = false;
 		
 		ParseUser currentUser = ParseUser.getCurrentUser();
-		if (currentUser != null) {
+		_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
+		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
+		
+		if ((_famName != null) && currentUser!= null) {
 			//Crouton.makeText(this, "Welcome Back "+ currentUser.getUsername() + "!", Style.INFO).show();
 			android.support.v4.app.FragmentManager anager = getSupportFragmentManager();
             android.support.v4.app.FragmentTransaction ransaction = anager.beginTransaction();
@@ -69,7 +91,7 @@ public class MainActivity extends FragmentActivity {
 			//new RemoteDataTask().execute();
 			
 		} else {
-			
+			//ParseUser.logOut();
 			Intent loginIntent = new Intent(this, LoginActivity.class);
 			startActivityForResult(loginIntent,1);
 			
@@ -107,7 +129,7 @@ public class MainActivity extends FragmentActivity {
     //drawerLayout.setDrawerShadow(R.drawable.ic_launcher, GravityCompat.START);
  
     drawerListView.setOnItemClickListener(new DrawerItemClickListener());
-    
+    _tempString = "1234567890";
     
 	}
 
@@ -161,7 +183,7 @@ public class MainActivity extends FragmentActivity {
                 break;
 
             case 1:
-                frag = new ChoirFragment();
+                frag = new ChoreFragment();
                 break;
 
             case 2:
@@ -202,5 +224,113 @@ public class MainActivity extends FragmentActivity {
  
         }
     }
+	private void checkAccess(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(_context);
+	    builder.setTitle("Enter Family Password");
+
+	    // Set up the input
+	    final EditText input = new EditText(_context);
+	    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+	    input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+	    builder.setView(input);
+
+	    // Set up the buttons
+	    builder.setPositiveButton("Parent", new DialogInterface.OnClickListener() { 
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+	            _pass = input.getText().toString();
+	            _passName = "password";
+	            verFamCheck();
+	        }
+	    });
+	    builder.setNegativeButton("Kid", new DialogInterface.OnClickListener() {
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+	        	
+	        	_passName = "kidPass";
+	        	_pass = input.getText().toString();
+	        	verFamCheck();
+	        }
+	    });
+
+	    builder.show();
+	}
+	
+	private void verFamCheck(){
+		
+		ParseACL roleACL = new ParseACL();
+		
+		
+		roleACL.setRoleReadAccess(_famName, true);
+		roleACL.setRoleWriteAccess(_famName, true);
+		ParseACL.setDefaultACL(roleACL, true);
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Family");
+		
+		query.whereEqualTo(_passName, _pass);
+		query.findInBackground(new FindCallback<ParseObject>() {
+		    public void done(List<ParseObject> famPass, ParseException e) {
+		    	
+			    		Log.d("YES", "It worked!!!");
+			    		android.support.v4.app.FragmentManager anager = getSupportFragmentManager();
+			            android.support.v4.app.FragmentTransaction ransaction = anager.beginTransaction();
+			            ransaction.replace(R.id.main_frame, new ParentMainFragment());
+			            ransaction.commit();
+			    
+		    			    	
+		    	
+		    	
+		    	
+		    }
+		});
+	}
+	@Override
+	public void onResume() {
+	    super.onResume();  // Always call the superclass method first
+	    
+	    	
+	   
+	}
+	private void pleaseWait(){
+		if(_fam_auth){
+	    	
+	    	Editor editor = PreferenceManager.getDefaultSharedPreferences(_context).edit();
+	        
+	        editor.putBoolean("fam_auth", false);
+	        
+	        editor.commit();
+	        
+	        
+	            	_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
+	        	    
+	        	    
+	        	    checkAccess();
+	            
+	    }
+		
+	}
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
+	    if(_fam_auth){
+	    	if (requestCode == 1) {
+
+			     if(resultCode == RESULT_OK){      
+			           
+			         String msg = data.getStringExtra("msg"); 
+			         //Crouton.makeText(this, msg, Style.INFO).show();
+			        
+			         _famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
+			         
+			        pleaseWait();
+			         
+			 		
+			     }else if (resultCode == RESULT_CANCELED) {    
+			         
+			    	Intent loginIntent = new Intent(this, LoginActivity.class);
+					startActivityForResult(loginIntent,1);		
+			     }
+			  }
+	    }
+		  
+		}
 	
 }

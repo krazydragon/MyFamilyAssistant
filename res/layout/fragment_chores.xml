@@ -12,8 +12,20 @@
 
     <it.gmariotti.cardslib.library.view.CardListView
         xmlns:card="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/list"
+        android:id="@+id/choir_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        card:card_layout_resourceID="@layout/card_thumbnail_layout"/>
+    <it.gmariotti.cardslib.library.view.CardView
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+               android:id="@+id/card_thumbnail_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                card:card_layout_resourceID="@layout/card_thumbnail_layout"
+                android:layout_marginTop="12dp"/>
+    
+    
 
 </LinearLayout>

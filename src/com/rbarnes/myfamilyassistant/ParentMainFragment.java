@@ -14,7 +14,9 @@ package com.rbarnes.myfamilyassistant;
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 
 import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -30,6 +32,12 @@ public class ParentMainFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
+	
+	Boolean fam_auth = false;
+	fam_auth = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("fam_auth", fam_auth);
+    if(fam_auth){
+    	
+    }
 	
 	view = (LinearLayout ) inflater.inflate(R.layout.child_main_activity, container, false);
 

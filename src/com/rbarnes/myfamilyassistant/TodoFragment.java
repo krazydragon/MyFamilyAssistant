@@ -23,7 +23,7 @@ public class TodoFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_choirs, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_chores, container, false);
 	CardListView list = (CardListView)view.findViewById(android.R.id.list);
 
 	CardAdapter adapter = new CardAdapter(getActivity())

@@ -17,8 +17,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -101,6 +103,8 @@ public class LoginActivity extends Activity implements OnClickListener{
 			
 			_loginForm.addValidates(username);
 			_loginForm.addValidates(password);
+			
+			
 	}
 
 	@Override
@@ -207,6 +211,7 @@ _regForm = new Form();
 			_famName = _famNameInput.getText().toString();
 			ParseQuery<ParseObject> query = ParseQuery.getQuery("FamList");
 			
+			
 			query.whereEqualTo("Name", _famName);
 			query.findInBackground(new FindCallback<ParseObject>() {
 			    public void done(List<ParseObject> famPass, ParseException e) {
@@ -215,7 +220,7 @@ _regForm = new Form();
 			    		
 			    		_view.setVisibility(View.VISIBLE);
 			    	}else{
-			    		checkAccess();
+			    		loginUser();
 			    	}
 			    	
 			    	
@@ -226,30 +231,7 @@ _regForm = new Form();
 			loginUser();	
 		}
 	}
-		private void verFamCheck(){
-			setContentView(R.layout.fragment_fam_vaild); 
-			ParseACL roleACL = new ParseACL();
-			ParseRole role = new ParseRole(_famName, roleACL);
-			
-			roleACL.setRoleReadAccess(_famName, true);
-			roleACL.setRoleWriteAccess(_famName, true);
-			
-			ParseQuery<ParseObject> query = ParseQuery.getQuery("FamList");
-			
-			query.whereEqualTo("Name", _famName);
-			query.findInBackground(new FindCallback<ParseObject>() {
-			    public void done(List<ParseObject> famPass, ParseException e) {
-			    	if(famPass.isEmpty()){
-			    		Log.d("No", "Did not work!!!");
-			    		checkAccess();
-			    	}else{
-			    		Log.d("YES", "It worked!!!");
-			    	}
-			    	
-			    	
-			    }
-			});
-		}
+		
 		private void famCheck(){
 			setContentView(R.layout.fragment_fam_vaild); 
 	    	_famNameInput = (EditText)findViewById(R.id.famName);
@@ -261,38 +243,17 @@ _regForm = new Form();
 		}
 	//go back to main page
 	private void loginUser(){
+		Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+       
+        editor.putBoolean("fam_auth", true);
+        editor.putString("fam_name", _famName);
+        editor.commit();
 		Intent returnIntent = new Intent();
 		 returnIntent.putExtra("msg",_msg);
+		 
 		 setResult(RESULT_OK, returnIntent);    
 		 finish();
 	}
-	private void checkAccess(){
-		AlertDialog.Builder builder = new AlertDialog.Builder(_context);
-	    builder.setTitle("Title");
-
-	    // Set up the input
-	    final EditText input = new EditText(_context);
-	    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-	    input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-	    builder.setView(input);
-
-	    // Set up the buttons
-	    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
-	        @Override
-	        public void onClick(DialogInterface dialog, int which) {
-	            _famPass = input.getText().toString();
-	            //checkPass();
-	        }
-	    });
-	    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-	        @Override
-	        public void onClick(DialogInterface dialog, int which) {
-	        	_kidPass = input.getText().toString();
-	        	//checkPass();
-	        }
-	    });
-
-	    builder.show();
-	}
+	
 	
 }

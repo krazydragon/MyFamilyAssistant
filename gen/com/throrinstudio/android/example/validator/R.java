@@ -12,18 +12,18 @@ public final class R {
 		public static final int okLabel = 0x7f010021;
 	}
 	public static final class drawable {
-		public static final int ic_explain_about = 0x7f0200a1;
-		public static final int ic_launcher = 0x7f0200a2;
+		public static final int ic_explain_about = 0x7f0200a4;
+		public static final int ic_launcher = 0x7f0200a5;
 	}
 	public static final class id {
-		public static final int contentTextFields = 0x7f0c004a;
-		public static final int email = 0x7f0c004d;
-		public static final int okCancelBar = 0x7f0c0051;
-		public static final int orrequired1 = 0x7f0c004c;
-		public static final int password1 = 0x7f0c004e;
-		public static final int password2 = 0x7f0c004f;
-		public static final int required = 0x7f0c004b;
-		public static final int url = 0x7f0c0050;
+		public static final int contentTextFields = 0x7f0c004b;
+		public static final int email = 0x7f0c004e;
+		public static final int okCancelBar = 0x7f0c0052;
+		public static final int orrequired1 = 0x7f0c004d;
+		public static final int password1 = 0x7f0c004f;
+		public static final int password2 = 0x7f0c0050;
+		public static final int required = 0x7f0c004c;
+		public static final int url = 0x7f0c0051;
 		public static final int widget_okcancelbar_cancel = 0x7f0c0058;
 		public static final int widget_okcancelbar_ok = 0x7f0c0059;
 	}

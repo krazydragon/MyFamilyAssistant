@@ -1,22 +1,15 @@
 package com.rbarnes.myfamilyassistant;
 
-
-
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
-import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.view.CardListView;
+import it.gmariotti.cardslib.library.view.CardView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.rbarnes.myfamilyassistant.ChoreFragment.MainCard;
-import com.rbarnes.myfamilyassistant.ChoreFragment.RemoteDataTask;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
@@ -30,11 +23,15 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CalendarFragment extends Fragment{
-	 
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+public class ChoreFragment extends Fragment{
 	
 	private ProgressDialog mProgressDialog;
 	private Context _context;
@@ -84,7 +81,7 @@ public class CalendarFragment extends Fragment{
         protected Void doInBackground(Void... params) {
             // Locate the class table named "Country" in Parse.com
             ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
-                    "Groceries");
+                    "Chores");
             query.orderByDescending("_created_at");
             try {
                 ob = query.find();
@@ -175,12 +172,12 @@ public class CalendarFragment extends Fragment{
                     @Override
                     public void onClick(Card card, View view) {
                         if(mCheckbox.isChecked()){
-                        	Toast.makeText(getContext(), "You need to buy more" + title, Toast.LENGTH_SHORT).show();
+                        	Toast.makeText(getContext(), "You need to do" + title, Toast.LENGTH_SHORT).show();
                             
                             mCheckbox.setChecked(false);
                             card.changeBackgroundResourceId(R.drawable.card_background);
                         }else{
-                        	Toast.makeText(getContext(), title + "was purchased", Toast.LENGTH_SHORT).show();
+                        	Toast.makeText(getContext(), title + "was completed", Toast.LENGTH_SHORT).show();
                             
                             mCheckbox.setChecked(true);
                             card.changeBackgroundResourceId(R.drawable.card_background2);
@@ -204,14 +201,14 @@ public class CalendarFragment extends Fragment{
             mCheckbox = (CheckBox)parent.findViewById(R.id.checkBox1);
             
             
-            if (mTitle != null)
+            
                 mTitle.setText(title);
 
-            if (mSecondaryTitle != null)
-                mSecondaryTitle.setText("Groceries");
+            
+                mSecondaryTitle.setText(secondaryTitle);
 
             
-            mImageView.setImageResource(R.drawable.calendar);
+            mImageView.setImageResource(R.drawable.broom);
           
 
         }
@@ -249,4 +246,5 @@ public class CalendarFragment extends Fragment{
             this.resourceIdThumbnail = resourceIdThumbnail;
         }
     }
+
 }
