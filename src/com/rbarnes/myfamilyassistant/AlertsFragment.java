@@ -5,7 +5,7 @@
  * 
  * @author	Ronaldo Barnes
  * 
- * date		Feb 19, 2014
+ * date		Mar 1, 2014
  */
 package com.rbarnes.myfamilyassistant;
 
@@ -36,7 +36,7 @@ public class AlertsFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_chores, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
 	CardListView list = (CardListView)view.findViewById(android.R.id.list);
 
 	CardAdapter adapter = new CardAdapter(getActivity())

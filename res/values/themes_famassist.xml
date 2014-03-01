@@ -3,7 +3,7 @@
 <!-- Generated with http://android-holo-colors.com -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <style name="FamAssist" parent="android:Theme.Holo">
+  <style name="FamAssist" parent="@android:style/Theme.Holo.Light.DarkActionBar">
 
     <item name="android:editTextBackground">@drawable/famassist_edit_text_holo_dark</item>
 
@@ -42,6 +42,7 @@
 
     <item name="android:fastScrollThumbDrawable">@drawable/famassist_fastscroll_thumb_holo</item>
 
+   
 
     
   </style>

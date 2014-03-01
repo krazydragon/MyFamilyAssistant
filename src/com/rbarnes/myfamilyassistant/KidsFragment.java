@@ -1,59 +1,222 @@
+/*
+ * project	MyFamilyAssistant
+ * 
+ * package	com.rbarnes.myfamilyassistant
+ * 
+ * @author	Ronaldo Barnes
+ * 
+ * date		Mar 1, 2014
+ */
 package com.rbarnes.myfamilyassistant;
 
-import com.afollestad.cardsui.Card;
-import com.afollestad.cardsui.CardAdapter;
-import com.afollestad.cardsui.CardBase;
-import com.afollestad.cardsui.CardHeader;
-import com.afollestad.cardsui.CardListView;
 
+
+import it.gmariotti.cardslib.library.internal.Card;
+import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
+import it.gmariotti.cardslib.library.internal.CardHeader;
+import it.gmariotti.cardslib.library.internal.CardThumbnail;
+import it.gmariotti.cardslib.library.view.CardListView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.parse.ParseObject;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class KidsFragment extends Fragment{
 	
+	List<ParseObject> ob;
+	ArrayList<Card> cards;
+	CardListView listView;
 	
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ })
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_chores, container, false);
-	CardListView list = (CardListView)view.findViewById(android.R.id.list);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
+	
+	cards = new ArrayList<Card>();
+	listView = (CardListView) view.findViewById(R.id.choir_list);
+	
+	MainCard card1 = new MainCard(getActivity());
+    //Create a CardHeader
+    CardHeader header = new CardHeader(getActivity());
+    header.setTitle("Kids Information");
+    card1.setTitle("Tom has 3 new contacts");
+    //Add Header to card
+    card1.addCardHeader(header);
+  //Create thumbnail
+    CardThumbnail thumb = new CardThumbnail(getActivity());
+      
+    card1.setBackgroundResourceId(R.drawable.card_background);
+       
 
-	CardAdapter adapter = new CardAdapter(getActivity())
-	    // This sets the color displayed for card titles and header actions by default
-	    .setAccentColorRes(android.R.color.holo_green_dark);
-	
-	
-
-	// Add a basic header and three cards below it
-	adapter.add(new CardHeader("Kids Information"));
-	adapter.add(new Card("Tom left school", null));
-	adapter.add(new Card("Tom has 3 new contacts", null));
-	adapter.add(new Card("Tom is at home", null));
-	adapter.add(new Card("Tom's phone was unlocked", null));
-	
-
-	list.setAdapter(adapter);
-	
-	list.setOnCardClickListener(new CardListView.CardClickListener() {
-	    @Override
-	    public void onCardClick(int index, CardBase card, View view) {
-	        // Do what you want here
-	    }
-	});
+    //Set resource
+    thumb.setDrawableResource(R.drawable.ic_launcher);
+    
+    //Add thumbnail to a card
+    
+    cards.add(card1);
+    
+    MainCard card2 = new MainCard(getActivity());
+    //Create a CardHeader
+    CardHeader header2 = new CardHeader(getActivity());
+    header2.setTitle("Kids Information");
+    card2.setTitle("Tom's phone was unlocked");
+    
+    //Add Header to card
+    card2.addCardHeader(header2);
+    card2.setBackgroundResourceId(R.drawable.card_background);
+    
+    //Add thumbnail to a card
+    
+    cards.add(card2);
+    
+    MainCard card3 = new MainCard(getActivity());
+    //Create a CardHeader
+    CardHeader header3 = new CardHeader(getActivity());
+    header3.setTitle("Kids Information");
+    card3.setTitle("Tom is at home");
+    //Add Header to card
+    card3.addCardHeader(header3);
+    card3.setBackgroundResourceId(R.drawable.card_background);
+    
+    cards.add(card3);
+    CardArrayAdapter adapter = new CardArrayAdapter(getActivity(),cards);
+	if (listView!=null){
+		listView.setAdapter(adapter);
+    }
 	return view;
 	
 	
 	
 	
 	}
+	public class MainCard extends Card {
 
+    	protected TextView mTitle;
+        protected TextView mSecondaryTitle;
+        protected ImageView mImageView;
+        protected CheckBox mCheckbox;
+        protected ParseObject mObj;
+        protected int resourceIdThumbnail;
+        protected int count;
+        protected ParseObject obj;
+        protected String title;
+        protected String secondaryTitle;
+        protected float image;
+
+
+        public MainCard(Context context) {
+            this(context, R.layout.custom_card);
+        }
+
+        public MainCard(Context context, int innerLayout) {
+            super(context, innerLayout);
+            init();
+        }
+
+        private void init() {
+
+        	setOnSwipeListener(new Card.OnSwipeListener() {
+                @Override
+                public void onSwipe(Card card) {
+                    obj.deleteInBackground();
+                }
+            });
+
+                //Add ClickListener
+                setOnClickListener(new OnCardClickListener() {
+                    @Override
+                    public void onClick(Card card, View view) {
+                        if(mCheckbox.isChecked()){
+                        	Toast.makeText(getContext(), "You need to do" + title, Toast.LENGTH_SHORT).show();
+                            
+                            mCheckbox.setChecked(false);
+                            card.changeBackgroundResourceId(R.drawable.card_background);
+                        }else{
+                        	Toast.makeText(getContext(), title + "was completed", Toast.LENGTH_SHORT).show();
+                            
+                            mCheckbox.setChecked(true);
+                            card.changeBackgroundResourceId(R.drawable.card_background2);
+                        }
+                    	
+                    }
+                });
+
+
+
+            
+            
+        }
+
+        @Override
+        public void setupInnerViewElements(ViewGroup parent, View view) {
+            //Retrieve elements
+            mTitle = (TextView) view.findViewById(R.id.inner_title);
+            mSecondaryTitle = (TextView) parent.findViewById(R.id.inner_title2);
+            mImageView = (ImageView) parent.findViewById(R.id.imageView1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  );
+            mCheckbox = (CheckBox)parent.findViewById(R.id.checkBox1);
+            
+            
+            
+                mTitle.setText(title);
+
+            
+                mSecondaryTitle.setText(secondaryTitle);
+
+            
+            mImageView.setImageResource(R.drawable.person);
+          
+
+        }
+
+
+        @Override
+		public String getTitle() {
+            return title;
+        }
+
+        @Override
+		public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getSecondaryTitle() {
+            return secondaryTitle;
+        }
+
+        public void setSecondaryTitle(String secondaryTitle) {
+            this.secondaryTitle = secondaryTitle;
+        }
+
+        public ParseObject getObj() {
+            return obj;
+        }
+
+        public void setObj(ParseObject obj) {
+            this.obj = obj;
+        }
+
+        public int getResourceIdThumbnail() {
+            return resourceIdThumbnail;
+        }
+
+        public void setResourceIdThumbnail(int resourceIdThumbnail) {
+            this.resourceIdThumbnail = resourceIdThumbnail;
+        }
+    }
 
 }

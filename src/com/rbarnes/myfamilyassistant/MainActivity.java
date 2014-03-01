@@ -32,9 +32,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -66,22 +70,27 @@ public class MainActivity extends FragmentActivity {
     private Context _context;
     private Boolean _fam_auth;
     String _tempString;
+    ParseUser _currentUser;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		
+		
 		setContentView(R.layout.activity_main);
 		mainView = (LinearLayout)this.findViewById(R.id.mainFrag);
-		
+		  
 	    
 	    _context = this;
 		Parse.initialize(this, "wAoWswK6kE9xpSqkrHrKjrIbWDMfeF0xYGWkDWFc", "2wZeexj6posiXETwFUbQ0LJFkT62wg63wnaS711L");
 		_fam_auth = false;
 		
-		ParseUser currentUser = ParseUser.getCurrentUser();
+		 _currentUser = ParseUser.getCurrentUser();
 		_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
 		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
 		
-		if ((_famName != null) && currentUser!= null) {
+		if ((_famName != null) && _currentUser!= null) {
 			//Crouton.makeText(this, "Welcome Back "+ currentUser.getUsername() + "!", Style.INFO).show();
 			android.support.v4.app.FragmentManager anager = getSupportFragmentManager();
             android.support.v4.app.FragmentTransaction ransaction = anager.beginTransaction();
@@ -159,7 +168,8 @@ public class MainActivity extends FragmentActivity {
          // call ActionBarDrawerToggle.onOptionsItemSelected(), if it returns true
         // then it has handled the app icon touch event
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-        	
+        	LinearLayout mainfrag = (LinearLayout)findViewById(R.id.mainFrag);
+        	mainfrag.setVisibility(View.INVISIBLE);
             return true;
              
         }else{
@@ -172,7 +182,7 @@ public class MainActivity extends FragmentActivity {
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
-            Toast.makeText(MainActivity.this, ((TextView)view).getText(), Toast.LENGTH_LONG).show();
+            
             drawerLayout.closeDrawer(drawerListView);
             
 			
@@ -205,7 +215,7 @@ public class MainActivity extends FragmentActivity {
                 break;
 
             case 7:
-                frag = new KidsFragment();
+                frag = new ChildDeviceInfoFragment();
                 break;
             case 8:
                 frag = new SettingsFragment();
@@ -258,7 +268,7 @@ public class MainActivity extends FragmentActivity {
 	
 	private void verFamCheck(){
 		
-		ParseACL roleACL = new ParseACL();
+		final ParseACL roleACL = new ParseACL();
 		
 		
 		roleACL.setRoleReadAccess(_famName, true);
@@ -269,6 +279,10 @@ public class MainActivity extends FragmentActivity {
 		query.whereEqualTo(_passName, _pass);
 		query.findInBackground(new FindCallback<ParseObject>() {
 		    public void done(List<ParseObject> famPass, ParseException e) {
+		    	ParseRole role = new ParseRole(_famName, roleACL);
+		    	
+		    	role.getUsers().add(ParseUser.getCurrentUser());
+		    	role.saveEventually();
 		    	
 			    		Log.d("YES", "It worked!!!");
 			    		android.support.v4.app.FragmentManager anager = getSupportFragmentManager();
@@ -307,6 +321,11 @@ public class MainActivity extends FragmentActivity {
 	            
 	    }
 		
+	}
+	
+	public void myButtonMethod(View v) {
+		
+		Toast.makeText(_context,"ImageButton is working!", Toast.LENGTH_SHORT).show();
 	}
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);

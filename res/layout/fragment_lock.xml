@@ -6,22 +6,13 @@
     android:orientation="vertical" >
 
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/lockImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="76dp"
-        android:src="@drawable/lock" />
-
-    <Button
-        android:id="@+id/ytguytu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
-        android:text="Lock" />
+        android:src="@drawable/unlock" />
 
     <TextView
         android:id="@+id/lockView"
@@ -33,5 +24,15 @@
         android:gravity="center"
         android:text="Lock"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/lockButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/lockImage"
+        android:layout_marginTop="70dp"
+        android:text="Lock" />
 
 </RelativeLayout>

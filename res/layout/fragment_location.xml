@@ -6,11 +6,14 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/locationTitle"
+        style="@style/myheader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:gravity="center"
         android:text="Location"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -24,11 +27,12 @@
         android:layout_marginTop="66dp" />
 
     <Button
-        android:id="@+id/ytguytu"
+        android:id="@+id/locationButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/textView1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_marginBottom="29dp"
         android:text="Update" />
 

@@ -1,3 +1,12 @@
+/*
+ * project	MyFamilyAssistant
+ * 
+ * package	com.rbarnes.myfamilyassistant
+ * 
+ * @author	Ronaldo Barnes
+ * 
+ * date		Mar 1, 2014
+ */
 package com.rbarnes.myfamilyassistant;
 
 import it.gmariotti.cardslib.library.internal.Card;
@@ -12,21 +21,30 @@ import java.util.List;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.rbarnes.myfamilyassistant.SuppliesFragment.MainCard;
 
 public class MessageFragment extends Fragment{
 	
@@ -37,7 +55,8 @@ public class MessageFragment extends Fragment{
 	List<ParseObject> ob;
 	ArrayList<Card> cards;
 	CardListView listView;
-	 
+	CardArrayAdapter adapter; 
+	EditText messageInput;
 	
 	@SuppressWarnings({ })
 	@Override
@@ -45,20 +64,88 @@ public class MessageFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_chores, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_messages, container, false);
 	
-	
+	_context = getActivity();
 	cards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
-    
-	     
-	new RemoteDataTask().execute();
-
+	TextView titleText = (TextView)view.findViewById(R.id.title);
+	Button button = (Button)view.findViewById(R.id.addButton); 
+	messageInput = (EditText)view.findViewById(R.id.messageInput); 
 	
+	new RemoteDataTask().execute();
+	changeTextViewFont(titleText);
+	changeEditTextFont(messageInput);
+	changeButtonFont(button);
+	button.setOnClickListener(new Button.OnClickListener(){
+
+    	@Override
+    	public void onClick(View v) {
+    		// TODO Auto-generated method stub
+    		ParseUser currentUser = ParseUser.getCurrentUser();
+    		String s = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", "error");
+    		
+			ParseObject obj = new ParseObject("Supplies");
+			ParseACL postACL = new ParseACL();
+			postACL.setRoleWriteAccess(s, true);
+			postACL.setRoleReadAccess(s, true);
+			//obj.setACL(postACL);
+			
+			obj.put("item", messageInput.getText().toString());
+			obj.put("completed", false);
+			
+			obj.saveEventually();
+    			
+    			
+			//Create a Card
+            
+       		MainCard card = new MainCard(getActivity());
+               //Create a CardHeader
+               CardHeader header = new CardHeader(getActivity());
+               card.setTitle(messageInput.getText().toString());
+               card.setSecondaryTitle("From " +(String) currentUser.get("firstName"));
+               //Add Header to card
+               card.addCardHeader(header);
+             //Create thumbnail
+		        
+	              
+		        
+		        card.setObj(obj);   
+		        card.setSwipeable(true);
+		        card.setClickable(false);
+		       
+		        card.setBackgroundResourceId(R.drawable.card_background);
+		           
+		        
+		        
+		        //Add thumbnail to a card
+		        
+               cards.add(card);
+			adapter.notifyDataSetChanged();
+
+    	}
+    	}
+    );
 	
 	return view;
 	}
 	
+	
+	void changeButtonFont(TextView v){
+		Typeface t=Typeface.createFromAsset(getActivity().getAssets(),
+			"primer.ttf");
+		v.setTypeface(t);
+	}
+	void changeEditTextFont(TextView v){
+		Typeface t=Typeface.createFromAsset(getActivity().getAssets(),
+            "primer.ttf");
+		v.setTypeface(t);
+	}
+	void changeTextViewFont(TextView v){
+		Typeface t=Typeface.createFromAsset(getActivity().getAssets(),
+            "primer.ttf");
+		v.setTypeface(t);
+	}
 	// RemoteDataTask AsyncTask
    public class RemoteDataTask extends AsyncTask<Void, Void, Void> {
        @Override
@@ -115,10 +202,10 @@ public class MessageFragment extends Fragment{
 		        CardThumbnail thumb = new CardThumbnail(getActivity());
 	              
 		        card.setBackgroundResourceId(R.drawable.card_background);
-			       
+		        card.setObj(item);  
 
 		        //Set resource
-		        thumb.setDrawableResource(R.drawable.ic_launcher);
+		        
 		        card.setSwipeable(true);
 		        card.setClickable(false);
 		        //Add thumbnail to a card
@@ -131,7 +218,7 @@ public class MessageFragment extends Fragment{
 
        	
        	
-       	CardArrayAdapter adapter = new CardArrayAdapter(getActivity(),cards);
+       	adapter = new CardArrayAdapter(getActivity(),cards);
        	if (listView!=null){
        		listView.setAdapter(adapter);
            }
@@ -146,9 +233,10 @@ public class MessageFragment extends Fragment{
        protected TextView mSecondaryTitle;
        protected ImageView mImageView;
        protected CheckBox mCheckbox;
+       protected ParseObject mObj;
        protected int resourceIdThumbnail;
        protected int count;
-
+       protected ParseObject obj;
        protected String title;
        protected String secondaryTitle;
        protected float image;
@@ -166,7 +254,12 @@ public class MessageFragment extends Fragment{
 
        private void init() {
 
-         
+    	   setOnSwipeListener(new Card.OnSwipeListener() {
+               @Override
+               public void onSwipe(Card card) {
+                   obj.deleteInBackground();
+               }
+           });
 
                //Add ClickListener
                setOnClickListener(new OnCardClickListener() {
@@ -191,7 +284,8 @@ public class MessageFragment extends Fragment{
            mImageView = (ImageView) parent.findViewById(R.id.imageView1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  );
            mCheckbox = (CheckBox)parent.findViewById(R.id.checkBox1);
            
-           
+           changeEditTextFont(mTitle);
+           changeEditTextFont(mSecondaryTitle);
            
                mTitle.setText(title);
 
@@ -223,11 +317,13 @@ public class MessageFragment extends Fragment{
            this.secondaryTitle = secondaryTitle;
        }
 
-       public float getImage() {
-           return image;
+       public ParseObject getObj() {
+           return obj;
        }
 
-       
+       public void setObj(ParseObject obj) {
+           this.obj = obj;
+       }
 
        public int getResourceIdThumbnail() {
            return resourceIdThumbnail;

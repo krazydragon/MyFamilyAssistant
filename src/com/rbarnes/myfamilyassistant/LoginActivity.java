@@ -5,7 +5,7 @@
  * 
  * @author	Ronaldo Barnes
  * 
- * date		Feb 19, 2014
+ * date		Mar 1, 2014
  */
 package com.rbarnes.myfamilyassistant;
 
@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -28,6 +29,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.afollestad.cardsui.Card;
 import com.afollestad.cardsui.CardAdapter;
@@ -94,6 +96,9 @@ public class LoginActivity extends Activity implements OnClickListener{
 			_usernameInput = (EditText)findViewById(R.id.loginUsername);
 			_passwordInput = (EditText)findViewById(R.id.loginPassword);
 			_context = this;
+			TextView titleText = (TextView)findViewById(R.id.title);
+			
+			
 			//check user input
 			Validate username = new Validate(_usernameInput);
 			Validate password = new Validate(_passwordInput);
@@ -103,6 +108,12 @@ public class LoginActivity extends Activity implements OnClickListener{
 			
 			_loginForm.addValidates(username);
 			_loginForm.addValidates(password);
+			
+			changeEditTextFont(_usernameInput);
+			changeButtonFont(_loginButton);
+			changeButtonFont(_passwordInput);
+			changeTextViewFont(titleText);
+			
 			
 			
 	}
@@ -254,6 +265,19 @@ _regForm = new Form();
 		 setResult(RESULT_OK, returnIntent);    
 		 finish();
 	}
-	
-	
+	void changeButtonFont(TextView v){
+		Typeface t=Typeface.createFromAsset(getAssets(),
+	            "primer.ttf");
+		v.setTypeface(t);
+	}
+	void changeEditTextFont(TextView v){
+		Typeface t=Typeface.createFromAsset(getAssets(),
+	            "primer.ttf");
+		v.setTypeface(t);
+	}
+	void changeTextViewFont(TextView v){
+		Typeface t=Typeface.createFromAsset(getAssets(),
+	            "primer.ttf");
+		v.setTypeface(t);
+	}
 }

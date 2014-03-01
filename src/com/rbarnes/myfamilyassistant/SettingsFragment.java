@@ -1,3 +1,12 @@
+/*
+ * project	MyFamilyAssistant
+ * 
+ * package	com.rbarnes.myfamilyassistant
+ * 
+ * @author	Ronaldo Barnes
+ * 
+ * date		Mar 1, 2014
+ */
 package com.rbarnes.myfamilyassistant;
 
 import android.app.Fragment;

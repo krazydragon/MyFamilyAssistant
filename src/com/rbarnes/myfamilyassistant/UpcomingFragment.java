@@ -1,3 +1,12 @@
+/*
+ * project	MyFamilyAssistant
+ * 
+ * package	com.rbarnes.myfamilyassistant
+ * 
+ * @author	Ronaldo Barnes
+ * 
+ * date		Mar 1, 2014
+ */
 package com.rbarnes.myfamilyassistant;
 
 import com.afollestad.cardsui.Card;
@@ -23,7 +32,7 @@ public class UpcomingFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_chores, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
 	CardListView list = (CardListView)view.findViewById(android.R.id.list);
 
 	CardAdapter adapter = new CardAdapter(getActivity())

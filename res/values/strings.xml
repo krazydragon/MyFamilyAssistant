@@ -7,13 +7,13 @@
 	
 	<string-array name="items">
         <item>Calendar</item>
-        <item>Choirs</item>
+        <item>Chores</item>
         <item>Messages</item>
         <item>Groceries</item>
         <item>Supplies</item>
         <item>Location</item>
         <item>Lock</item>
-        <item>Parent Main</item>
+        <item>Child Device Info</item>
     </string-array>
     
  

@@ -5,7 +5,7 @@
  * 
  * @author	Ronaldo Barnes
  * 
- * date		Feb 19, 2014
+ * date		Mar 1, 2014
  */
 package com.rbarnes.myfamilyassistant;
 
@@ -21,24 +21,35 @@ import it.gmariotti.cardslib.library.view.CardListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.rbarnes.myfamilyassistant.CalendarFragment.MainCard;
 import com.rbarnes.myfamilyassistant.CalendarFragment.RemoteDataTask;
 
+import android.R.string;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Point;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +62,8 @@ public class SuppliesFragment extends Fragment{
 	List<ParseObject> ob;
 	ArrayList<Card> cards;
 	CardListView listView;
-	 
+	PopupWindow pw; 
+	CardArrayAdapter adapter;
 	
 	@SuppressWarnings({ })
 	@Override
@@ -59,18 +71,161 @@ public class SuppliesFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_chores, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
 	
-	
+	_context = getActivity();
 	cards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
-    
-	     
+	TextView titleText = (TextView)view.findViewById(R.id.title);
+	ImageButton button = (ImageButton)view.findViewById(R.id.addButton);     
 	new RemoteDataTask().execute();
 
+	titleText.setText("Supplies");
+	changeTextViewFont(titleText);
 	
+	button.setOnClickListener(new Button.OnClickListener(){
+
+    	@Override
+    	public void onClick(View v) {
+    		// TODO Auto-generated method stub
+
+    		addPopUp();
+
+    	}
+    	}
+    );
 	
 	return view;
+	}
+	
+	
+	
+	public void addPopUp(){
+		
+		
+		
+		
+		//We need to get the instance of the LayoutInflater, use the context of this activity
+        LayoutInflater inflater = (LayoutInflater) SuppliesFragment.this
+                .getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //Inflate the view from a predefined XML layout
+        View layout = inflater.inflate(R.layout.fragment_main_add,
+                (ViewGroup) getActivity().findViewById(R.id.PopUpAddLayout));
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x/2;
+        int height = size.y/4;
+        pw = new PopupWindow(layout, width, height, true);
+        // display the popup in the center
+       
+        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);//Intent loginIntent = new Intent(this, LoginActivity.class);
+        TextView addTitleText = (TextView)layout.findViewById(R.id.addTitle);
+        Button submit = (Button)layout.findViewById(R.id.addButton);
+        Button cancel =(Button)layout.findViewById(R.id.cancelButton);
+        final EditText popupInput = (EditText) layout.findViewById(R.id.addInput);
+
+        
+        
+        changeEditTextFont(popupInput);
+		changeButtonFont(submit);
+		changeButtonFont(cancel);
+		changeTextViewFont(addTitleText);
+        
+		addTitleText.setText("Add Supples");
+		popupInput.setHint("Enter supply needed");
+		
+        submit.setOnClickListener(new Button.OnClickListener(){
+
+        	@Override
+        	public void onClick(View v) {
+        		
+        		if(popupInput.getText().toString().trim().length() > 0){
+
+        			// TODO Auto-generated method stub
+            		String s = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", "error");
+            		
+        			ParseObject obj = new ParseObject("Supplies");
+        			ParseACL postACL = new ParseACL();
+        			postACL.setRoleWriteAccess(s, true);
+        			postACL.setRoleReadAccess(s, true);
+        			//obj.setACL(postACL);
+        			
+        			obj.put("item", popupInput.getText().toString());
+        			obj.put("completed", false);
+        			
+        			obj.saveEventually();
+            			
+            			
+        			//Create a Card
+                    
+               		MainCard card = new MainCard(getActivity());
+                       //Create a CardHeader
+                       CardHeader header = new CardHeader(getActivity());
+                       card.setTitle(popupInput.getText().toString());
+                       //Add Header to card
+                       card.addCardHeader(header);
+                     //Create thumbnail
+        		        
+        	              
+        		        card.setChecked(false);
+        		        card.setObj(obj);   
+        		       
+        		       
+        		        card.setBackgroundResourceId(R.drawable.card_background);
+        		           
+        		        
+        		        card.setSwipeable(true);
+        		        card.setClickable(true);
+        		        //Add thumbnail to a card
+        		        
+                       cards.add(card);
+        			adapter.notifyDataSetChanged();
+            		pw.dismiss();
+
+   				}
+
+   				else {
+
+   					Toast.makeText(getActivity(),"Input can not be blank!", Toast.LENGTH_SHORT).show();
+   					
+   				}
+        		
+        		
+        		
+        	}
+        	}
+       );
+
+        cancel.setOnClickListener(new Button.OnClickListener(){
+
+        	@Override
+        	public void onClick(View v) {
+        		// TODO Auto-generated method stub
+
+        		pw.dismiss();
+ 
+        	}
+        	}
+        );
+        
+        
+	}
+
+	void changeButtonFont(TextView v){
+		Typeface t=Typeface.createFromAsset(getActivity().getAssets(),
+			"primer.ttf");
+		v.setTypeface(t);
+	}
+	void changeEditTextFont(TextView v){
+		Typeface t=Typeface.createFromAsset(getActivity().getAssets(),
+            "primer.ttf");
+		v.setTypeface(t);
+	}
+	void changeTextViewFont(TextView v){
+		Typeface t=Typeface.createFromAsset(getActivity().getAssets(),
+            "primer.ttf");
+		v.setTypeface(t);
 	}
 	
 	// RemoteDataTask AsyncTask
@@ -110,7 +265,7 @@ public class SuppliesFragment extends Fragment{
        protected void onPostExecute(Void result) {
        	
        	
-       	
+      
            
        	
        	
@@ -125,13 +280,19 @@ public class SuppliesFragment extends Fragment{
                //Add Header to card
                card.addCardHeader(header);
              //Create thumbnail
-		        CardThumbnail thumb = new CardThumbnail(getActivity());
+		        
 	              
-		        card.setBackgroundResourceId(R.drawable.card_background);
-			       
-
-		        //Set resource
-		        thumb.setDrawableResource(R.drawable.ic_launcher);
+		        
+		        card.setObj(item);   
+		        card.setChecked((Boolean) item.get("completed"));
+		        if((Boolean) item.get("completed")){
+		        	   
+		               card.setBackgroundResourceId(R.drawable.card_background2);
+		           }else {
+		        	  
+		               card.setBackgroundResourceId(R.drawable.card_background);
+		           }
+		        
 		        card.setSwipeable(true);
 		        card.setClickable(true);
 		        //Add thumbnail to a card
@@ -144,7 +305,7 @@ public class SuppliesFragment extends Fragment{
 
        	
        	
-       	CardArrayAdapter adapter = new CardArrayAdapter(getActivity(),cards);
+       	adapter = new CardArrayAdapter(getActivity(),cards);
        	if (listView!=null){
        		listView.setAdapter(adapter);
            }
@@ -155,17 +316,19 @@ public class SuppliesFragment extends Fragment{
    
    public class MainCard extends Card {
 
-       protected TextView mTitle;
+	   protected TextView mTitle;
        protected TextView mSecondaryTitle;
        protected ImageView mImageView;
        protected CheckBox mCheckbox;
+       protected ParseObject mObj;
+       
        protected int resourceIdThumbnail;
        protected int count;
-
+       protected ParseObject obj;
        protected String title;
        protected String secondaryTitle;
        protected float image;
-
+       protected Boolean checked = false;
 
        public MainCard(Context context) {
            this(context, R.layout.custom_card);
@@ -178,24 +341,30 @@ public class SuppliesFragment extends Fragment{
 
        private void init() {
 
-         
-
+    	   setOnSwipeListener(new Card.OnSwipeListener() {
+               @Override
+               public void onSwipe(Card card) {
+                   obj.deleteInBackground();
+               }
+           });
                //Add ClickListener
                setOnClickListener(new OnCardClickListener() {
                    @Override
                    public void onClick(Card card, View view) {
                        if(mCheckbox.isChecked()){
-                       	Toast.makeText(getContext(), "You need to buy more" + title, Toast.LENGTH_SHORT).show();
-                           
+                       	Toast.makeText(getContext(), "You need to buy more " + title, Toast.LENGTH_SHORT).show();
+                       	obj.put("completed", false);
                            mCheckbox.setChecked(false);
                            card.changeBackgroundResourceId(R.drawable.card_background);
                        }else{
-                       	Toast.makeText(getContext(), title + "was purchased", Toast.LENGTH_SHORT).show();
-                           
+                       	Toast.makeText(getContext(), title + " was purchased", Toast.LENGTH_SHORT).show();
+                       	obj.put("completed", true);
                            mCheckbox.setChecked(true);
                            card.changeBackgroundResourceId(R.drawable.card_background2);
                        }
-                   	
+                       
+           			
+           			obj.saveEventually();
                    }
                });
 
@@ -212,13 +381,27 @@ public class SuppliesFragment extends Fragment{
            mSecondaryTitle = (TextView) parent.findViewById(R.id.inner_title2);
            mImageView = (ImageView) parent.findViewById(R.id.imageView1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  );
            mCheckbox = (CheckBox)parent.findViewById(R.id.checkBox1);
+           changeTextViewFont(mTitle);
+           changeTextViewFont(mSecondaryTitle);
            
+           changeEditTextFont(mTitle);
+           changeEditTextFont(mSecondaryTitle);
            
            if (mTitle != null)
                mTitle.setText(title);
 
            if (mSecondaryTitle != null)
                mSecondaryTitle.setText("Supplies");
+           
+           mCheckbox.setChecked(checked);
+           if(checked){
+        	   mCheckbox.setChecked(true);
+               
+           }else {
+        	   mCheckbox.setChecked(false);
+               
+           }
+        	   
 
            
            mImageView.setImageResource(R.drawable.supplies);
@@ -245,12 +428,21 @@ public class SuppliesFragment extends Fragment{
            this.secondaryTitle = secondaryTitle;
        }
 
-       public float getImage() {
-           return image;
+       public ParseObject getObj() {
+           return obj;
        }
 
-       
+       public void setObj(ParseObject obj) {
+           this.obj = obj;
+       }
+       public Boolean getChecked() {
+           return checked;
+       }
 
+       public void setChecked(Boolean checked) {
+           this.checked = checked;
+       }
+       
        public int getResourceIdThumbnail() {
            return resourceIdThumbnail;
        }
@@ -259,4 +451,5 @@ public class SuppliesFragment extends Fragment{
            this.resourceIdThumbnail = resourceIdThumbnail;
        }
    }
+   
 }
