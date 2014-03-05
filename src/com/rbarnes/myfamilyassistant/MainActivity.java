@@ -5,11 +5,14 @@
  * 
  * @author	Ronaldo Barnes
  * 
- * date		Feb 17, 2014
+ * date		Mar 1, 2014
  */
 package com.rbarnes.myfamilyassistant;
 
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 import android.os.Bundle;
@@ -47,12 +50,17 @@ import android.widget.Toast;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
+import com.parse.ParseAnalytics;
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseRole;
 import com.parse.ParseUser;
+import com.parse.PushService;
+import com.rbarnes.other.SendParseService;
 
 
 
@@ -84,9 +92,41 @@ public class MainActivity extends FragmentActivity {
 	    
 	    _context = this;
 		Parse.initialize(this, "wAoWswK6kE9xpSqkrHrKjrIbWDMfeF0xYGWkDWFc", "2wZeexj6posiXETwFUbQ0LJFkT62wg63wnaS711L");
+		
+		
+		ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+        installation.put("mode", "parent");
+		installation.put("parent", true);
+		installation.put("family", "krazy");
+		installation.saveInBackground();
+		
+		JSONObject data = new JSONObject();
+		
+		try {
+			data.put("action", "com.rbarnes.UPDATE_STATUS");
+			data.put("name", "kid1");
+			data.put("goal", "lock");
+			data.put("alert", "I work!");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+		query.whereEqualTo("parent", true);
+		query.whereEqualTo("family", "krazy");
+		
+		
+		ParsePush push = new ParsePush();
+		push.setQuery(query);
+		push.setData(data);
+		//push.sendInBackground();
 		_fam_auth = false;
 		
 		 _currentUser = ParseUser.getCurrentUser();
+		 
+		 
 		_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
 		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
 		
@@ -139,7 +179,10 @@ public class MainActivity extends FragmentActivity {
  
     drawerListView.setOnItemClickListener(new DrawerItemClickListener());
     _tempString = "1234567890";
+    Intent intent = new Intent(this, SendParseService.class);
+    // add infos for the service which file to download and where to store
     
+    startService(intent);
 	}
 
 	 @Override
@@ -181,7 +224,7 @@ public class MainActivity extends FragmentActivity {
 
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             
             drawerLayout.closeDrawer(drawerListView);
             
@@ -289,6 +332,9 @@ public class MainActivity extends FragmentActivity {
 			            android.support.v4.app.FragmentTransaction ransaction = anager.beginTransaction();
 			            ransaction.replace(R.id.main_frame, new ParentMainFragment());
 			            ransaction.commit();
+			            
+			            
+			    		ParseAnalytics.trackAppOpened(getIntent());
 			    
 		    			    	
 		    	

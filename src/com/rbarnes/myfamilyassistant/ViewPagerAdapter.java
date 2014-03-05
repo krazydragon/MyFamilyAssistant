@@ -31,11 +31,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new TabFragment1();
+                return new UpcomingFragment();
             case 1:
-                return new TabFragment2();
+                return new AlertsFragment();
             case 2:
-                return new TabFragment3();
+                return new KidsFragment();
             default:
                 throw new IllegalArgumentException("The item position should be less or equal to:" + PAGES);
         }

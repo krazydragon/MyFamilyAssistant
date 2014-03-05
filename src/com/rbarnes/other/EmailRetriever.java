@@ -7,7 +7,7 @@
  * 
  * date		Mar 1, 2014
  */
-package com.kdragon.other;
+package com.rbarnes.other;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;

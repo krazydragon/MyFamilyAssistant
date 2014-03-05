@@ -11,7 +11,7 @@
 //January 2013         
 //Full Sail University 
 
-package com.kdragon.other;
+package com.rbarnes.other;
 
 
 import java.io.BufferedInputStream;
