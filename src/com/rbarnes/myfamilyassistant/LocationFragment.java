@@ -12,15 +12,17 @@ package com.rbarnes.myfamilyassistant;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 
-import android.app.Fragment;
+
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.provider.SyncStateContract.Constants;
+import android.support.v4.app.Fragment;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +55,7 @@ public class LocationFragment extends Fragment{
     	TextView tv = (TextView) view.findViewById(R.id.locationTitle);
     	Button button = (Button)view.findViewById(R.id.locationButton);
         // Getting Map for the SupportMapFragment
-        MapFragment mf = (MapFragment) this.getFragmentManager()
+        SupportMapFragment mf = (SupportMapFragment) this.getFragmentManager()
                 .findFragmentById(R.id.map);
         map = mf.getMap();
         map.setMyLocationEnabled(true);
@@ -62,7 +64,7 @@ public class LocationFragment extends Fragment{
         
         
         
-        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         map.addMarker(new MarkerOptions()
                 .position(new LatLng(28.561, -81.359))
                 .title("John"))
@@ -99,7 +101,7 @@ public class LocationFragment extends Fragment{
 
 	@Override
 	public void onDestroyView() {
-	    MapFragment f = (MapFragment) getFragmentManager()
+		SupportMapFragment f = (SupportMapFragment) getFragmentManager()
 	            .findFragmentById(R.id.map);
 	    if (f != null) {
 	        try {

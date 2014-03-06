@@ -29,7 +29,6 @@ import com.rbarnes.myfamilyassistant.CalendarFragment.MainCard;
 import com.rbarnes.myfamilyassistant.CalendarFragment.RemoteDataTask;
 
 import android.R.string;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Point;
@@ -37,6 +36,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;

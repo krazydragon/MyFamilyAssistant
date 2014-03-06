@@ -27,7 +27,7 @@ import com.parse.ParseQuery;
 import com.rbarnes.myfamilyassistant.ChoreFragment.MainCard;
 import com.rbarnes.myfamilyassistant.ChoreFragment.RemoteDataTask;
 
-import android.app.Fragment;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Point;
@@ -35,6 +35,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;

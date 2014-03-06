@@ -32,4 +32,7 @@
     <string name="weight">Weight</string>
     <string name="pounds">lbs</string>
     <string name="VerifyPass">Retype Password</string>
+    <string name="future">Future</string>
+    <string name="past">Past</string>
+    <string name="today">Today</string>
 </resources>

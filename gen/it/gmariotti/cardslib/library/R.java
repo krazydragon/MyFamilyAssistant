@@ -96,16 +96,16 @@ public final class R {
 	}
 	public static final class id {
 		public static final int card_content_expand_layout = 0x7f0a001d;
-		public static final int card_expand_inner_simple_title = 0x7f0a0048;
+		public static final int card_expand_inner_simple_title = 0x7f0a0049;
 		public static final int card_header_button_expand = 0x7f0a0014;
 		public static final int card_header_button_frame = 0x7f0a0012;
 		public static final int card_header_button_other = 0x7f0a0015;
 		public static final int card_header_button_overflow = 0x7f0a0013;
 		public static final int card_header_inner_frame = 0x7f0a0011;
-		public static final int card_header_inner_simple_title = 0x7f0a0049;
+		public static final int card_header_inner_simple_title = 0x7f0a004a;
 		public static final int card_header_layout = 0x7f0a001c;
 		public static final int card_main_content_layout = 0x7f0a0019;
-		public static final int card_main_inner_simple_title = 0x7f0a004a;
+		public static final int card_main_inner_simple_title = 0x7f0a004b;
 		public static final int card_main_layout = 0x7f0a001b;
 		public static final int card_overlap = 0x7f0a001e;
 		public static final int card_shadow_layout = 0x7f0a001a;
@@ -113,10 +113,10 @@ public final class R {
 		public static final int card_thumb_and_content_layout = 0x7f0a001f;
 		public static final int card_thumbnail_image = 0x7f0a0017;
 		public static final int card_thumbnail_layout = 0x7f0a0020;
-		public static final int list_cardId = 0x7f0a004d;
-		public static final int list_card_undobar = 0x7f0a004e;
-		public static final int list_card_undobar_button = 0x7f0a0050;
-		public static final int list_card_undobar_message = 0x7f0a004f;
+		public static final int list_cardId = 0x7f0a004e;
+		public static final int list_card_undobar = 0x7f0a004f;
+		public static final int list_card_undobar_button = 0x7f0a0051;
+		public static final int list_card_undobar_message = 0x7f0a0050;
 		public static final int undobar = 0x7f0a0021;
 		public static final int undobar_button = 0x7f0a0023;
 		public static final int undobar_message = 0x7f0a0022;
@@ -134,12 +134,12 @@ public final class R {
 		public static final int card_thumbnail_layout = 0x7f030009;
 		public static final int card_thumbnail_overlay_layout = 0x7f03000a;
 		public static final int card_undo_layout = 0x7f03000b;
-		public static final int inner_base_expand = 0x7f03001d;
-		public static final int inner_base_header = 0x7f03001e;
-		public static final int inner_base_main = 0x7f03001f;
-		public static final int list_card_layout = 0x7f030021;
-		public static final int list_card_thumbnail_layout = 0x7f030022;
-		public static final int list_card_undo_message = 0x7f030023;
+		public static final int inner_base_expand = 0x7f03001e;
+		public static final int inner_base_header = 0x7f03001f;
+		public static final int inner_base_main = 0x7f030020;
+		public static final int list_card_layout = 0x7f030022;
+		public static final int list_card_thumbnail_layout = 0x7f030023;
+		public static final int list_card_undo_message = 0x7f030024;
 	}
 	public static final class plurals {
 		public static final int card_selected_items = 0x7f090001;

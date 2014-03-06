@@ -16,42 +16,35 @@ import org.json.JSONObject;
 
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseAnalytics;
-import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -59,7 +52,6 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseRole;
 import com.parse.ParseUser;
-import com.parse.PushService;
 import com.rbarnes.other.SendParseService;
 
 
@@ -97,7 +89,7 @@ public class MainActivity extends FragmentActivity {
 		ParseInstallation installation = ParseInstallation.getCurrentInstallation();
         installation.put("mode", "parent");
 		installation.put("parent", true);
-		installation.put("family", "krazy");
+		installation.put("family", "lazy");
 		installation.saveInBackground();
 		
 		JSONObject data = new JSONObject();
@@ -141,8 +133,8 @@ public class MainActivity extends FragmentActivity {
 			
 		} else {
 			//ParseUser.logOut();
-			Intent loginIntent = new Intent(this, LoginActivity.class);
-			startActivityForResult(loginIntent,1);
+			//Intent loginIntent = new Intent(this, LoginActivity.class);
+			//startActivityForResult(loginIntent,1);
 			
 			
 		}
@@ -232,11 +224,11 @@ public class MainActivity extends FragmentActivity {
             Fragment frag = null;
             switch (position) {
             case 0:
-                frag = new CalendarFragment();
+                frag = new CalendarMainFragment();
                 break;
 
             case 1:
-                frag = new ChoreFragment();
+                frag = new ChoresMainFragment();
                 break;
 
             case 2:
@@ -270,7 +262,7 @@ public class MainActivity extends FragmentActivity {
                 break;
             }
             mainView.setVisibility(View.INVISIBLE);
-            FragmentManager manager = getFragmentManager();
+            FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.replace(R.id.content_frame, frag);
             transaction.commit();
@@ -380,7 +372,7 @@ public class MainActivity extends FragmentActivity {
 
 			     if(resultCode == RESULT_OK){      
 			           
-			         String msg = data.getStringExtra("msg"); 
+			         //String msg = data.getStringExtra("msg"); 
 			         //Crouton.makeText(this, msg, Style.INFO).show();
 			        
 			         _famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);

@@ -7,7 +7,11 @@
  * 
  * date		Mar 1, 2014
  */
-package com.rbarnes.myfamilyassistant;
+package com.rbarnes.other;
+
+import com.rbarnes.myfamilyassistant.AlertsFragment;
+import com.rbarnes.myfamilyassistant.KidsFragment;
+import com.rbarnes.myfamilyassistant.UpcomingFragment;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -15,14 +19,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 
-public class ViewPagerAdapter extends FragmentStatePagerAdapter {
+public class MainParentPagerAdapter extends FragmentStatePagerAdapter {
 	 
     private final int PAGES = 3;
     private String[] titles={"Upcoming", "Alerts", "Kids"};
     @SuppressWarnings("unused")
 	private Context context = null;
     
-    public ViewPagerAdapter(Context ctxt, FragmentManager fm) {
+    public MainParentPagerAdapter(Context ctxt, FragmentManager fm) {
         super(fm);
         this.context = ctxt;
     }

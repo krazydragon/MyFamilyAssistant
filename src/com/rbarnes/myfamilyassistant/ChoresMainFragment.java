@@ -12,10 +12,10 @@ package com.rbarnes.myfamilyassistant;
 
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
-import com.rbarnes.other.MainParentPagerAdapter;
+import com.rbarnes.other.CalendarPagerAdapter;
+import com.rbarnes.other.ChoresPagerAdapter;
 
 import android.support.v4.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
@@ -26,7 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-public class ParentMainFragment extends Fragment{
+public class ChoresMainFragment extends Fragment{
 	/** Called when the activity is first created. */ 
 	LinearLayout view;
 	@Override
@@ -60,7 +60,7 @@ public class ParentMainFragment extends Fragment{
 	}
 	
 	private PagerAdapter buildAdapter() {
-	    return(new MainParentPagerAdapter(getActivity(), getChildFragmentManager()));
+	    return(new ChoresPagerAdapter(getActivity(), getChildFragmentManager()));
 	  }
 	
 	

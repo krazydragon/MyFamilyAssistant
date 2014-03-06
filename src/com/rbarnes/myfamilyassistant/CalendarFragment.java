@@ -15,7 +15,6 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
-import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.view.CardListView;
 
 import java.text.SimpleDateFormat;
@@ -28,10 +27,6 @@ import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.rbarnes.myfamilyassistant.ChoreFragment.MainCard;
-import com.rbarnes.myfamilyassistant.ChoreFragment.RemoteDataTask;
-
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Point;
@@ -39,6 +34,8 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -61,12 +58,34 @@ public class CalendarFragment extends Fragment{
 	private ProgressDialog mProgressDialog;
 	private Context _context;
 	List<ParseObject> ob;
-	ArrayList<Card> cards;
+	ArrayList<Card> todayCards;
+	ArrayList<Card> pastCards;
+	ArrayList<Card> futureCards;
 	CardListView listView;
 	PopupWindow pw; 
-	CardArrayAdapter adapter; 
+	CardArrayAdapter todayAdapter; 
+	CardArrayAdapter pastAdapter;
+	CardArrayAdapter futureAdapter;
 	Date today;
 	Calendar c;
+	private int page;
+	
+	
+	 // newInstance constructor for creating fragment with arguments
+    public static CalendarFragment newInstance(int page) {
+    	CalendarFragment calendarFrag = new CalendarFragment();
+        Bundle args = new Bundle();
+        args.putInt("pageNum", page);
+        calendarFrag.setArguments(args);
+        return calendarFrag;
+    }
+
+    // Store instance variables based on arguments passed
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        page = getArguments().getInt("pageNum", 0);
+    }
 	
 	@SuppressWarnings({ })
 	@Override
@@ -74,12 +93,20 @@ public class CalendarFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_calendar, container, false);
+	
 	
 	
 	_context = getActivity();
-	cards = new ArrayList<Card>();
-	listView = (CardListView) view.findViewById(R.id.choir_list);
+	todayCards = new ArrayList<Card>();
+	pastCards = new ArrayList<Card>();
+	futureCards = new ArrayList<Card>();
+	
+	listView = (CardListView) view.findViewById(R.id.listView);
+	
+	
+	
+	
 	TextView titleText = (TextView)view.findViewById(R.id.title);
 	ImageButton button = (ImageButton)view.findViewById(R.id.addButton);     
 	new RemoteDataTask().execute();
@@ -106,6 +133,15 @@ public class CalendarFragment extends Fragment{
    c.set(Calendar.MILLISECOND, 0);
 
    today = c.getTime();
+   
+   
+   today = c.getTime();
+   
+   ViewPager vp=(ViewPager) getActivity().findViewById(R.id.pager);
+   
+   Log.i("pager","%d" + vp.getCurrentItem() );
+   
+	
 	return view;
 	}
 	public void addPopUp(){
@@ -187,8 +223,8 @@ public class CalendarFragment extends Fragment{
         		        card.setClickable(true);
         		        //Add thumbnail to a card
         		        
-                       cards.add(card);
-        			adapter.notifyDataSetChanged();
+        		        todayCards.add(card);
+        			todayAdapter.notifyDataSetChanged();
             		pw.dismiss();
 
    				}
@@ -295,7 +331,7 @@ public class CalendarFragment extends Fragment{
         		
     		       
 
-    		    SimpleDateFormat simpleDate =  new SimpleDateFormat("mm/dd/yyyy hh:mm a");
+    		    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 
     		    String dateString = simpleDate.format(date);
     		    card.setSecondaryTitle(dateString);
@@ -305,17 +341,46 @@ public class CalendarFragment extends Fragment{
 		        card.setClickable(true);
 		        //Add thumbnail to a card
 		        
-                cards.add(card);
+		        c.setTime(date);
+        		c.set(Calendar.HOUR_OF_DAY, 0);
+    		    c.set(Calendar.MINUTE, 0);
+    		    c.set(Calendar.SECOND, 0);
+    		    c.set(Calendar.MILLISECOND, 0);
+    		    // and get that as a Date
+    		    Date dateSpecified = c.getTime();
+		        
+    		    if (dateSpecified.before(today)) {
+    		    	 pastCards.add(card);
+    		       
+    		    } else if (dateSpecified.equals(today)) {
+    		    	 todayCards.add(card);
+    		        
+    		    } 
+    		             else if (dateSpecified.after(today)) {
+    		            	 futureCards.add(card);
+    		            	 
+    		        
+    		    }
+                
             }
         	
 
         	
 
         	
+        	pastAdapter = new CardArrayAdapter(getActivity(),pastCards);
+        	todayAdapter = new CardArrayAdapter(getActivity(),todayCards);
+        	futureAdapter = new CardArrayAdapter(getActivity(),futureCards);
+        	if (page == 2){
+        		listView.setAdapter(pastAdapter);
+            }
         	
-        	CardArrayAdapter adapter = new CardArrayAdapter(getActivity(),cards);
-        	if (listView!=null){
-        		listView.setAdapter(adapter);
+        	if (page == 0){
+        		listView.setAdapter(todayAdapter);
+            }
+        	
+        	if (page == 1){
+        		listView.setAdapter(futureAdapter);
             }
         	mProgressDialog.dismiss();
         	

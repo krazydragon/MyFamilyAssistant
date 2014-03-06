@@ -14,13 +14,13 @@ import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardListView;
-import it.gmariotti.cardslib.library.view.CardView;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
-import android.app.Fragment;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Point;
@@ -28,6 +28,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -41,7 +42,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,8 +49,6 @@ import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.rbarnes.myfamilyassistant.SuppliesFragment.MainCard;
-import com.rbarnes.myfamilyassistant.SuppliesFragment.RemoteDataTask;
 
 public class ChoreFragment extends Fragment{
 	
@@ -58,11 +56,33 @@ public class ChoreFragment extends Fragment{
 	private Context _context;
 	List<ParseObject> ob;
 	ArrayList<Card> cards;
+	ArrayList<Card> completedCards;
 	CardListView listView;
 	PopupWindow pw; 
 	CardArrayAdapter adapter;
-	 
+	CardArrayAdapter completedAdapter;
+	private int page; 
 	
+	
+	
+	 // newInstance constructor for creating fragment with arguments
+    public static ChoreFragment newInstance(int page) {
+    	ChoreFragment choreFrag = new ChoreFragment();
+        Bundle args = new Bundle();
+        args.putInt("page", page);
+        choreFrag.setArguments(args);
+        return choreFrag;
+    }
+
+    // Store instance variables based on arguments passed
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        page = getArguments().getInt("page", 0);
+    }
+    
+    
+    
 	@SuppressWarnings({ })
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -74,6 +94,7 @@ public class ChoreFragment extends Fragment{
 	
 	_context = getActivity();
 	cards = new ArrayList<Card>();
+	completedCards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
 	TextView titleText = (TextView)view.findViewById(R.id.title);
 	ImageButton button = (ImageButton)view.findViewById(R.id.addButton);     
@@ -281,21 +302,32 @@ public class ChoreFragment extends Fragment{
 		        card.setBackgroundResourceId(R.drawable.card_background);
 		        card.setObj(item);   
 		        card.setChecked((Boolean) item.get("completed"));
-		        if((Boolean) item.get("completed")){
-		        	   
-		               card.setBackgroundResourceId(R.drawable.card_background2);
-		           }else {
-		        	  
-		               card.setBackgroundResourceId(R.drawable.card_background);
-		           }
+		        Date date = new Date();
+		        
+		        
+        		
+ 		       
+
+    		    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+
+    		    String dateString = simpleDate.format(date);
+    		    card.setSecondaryTitle(dateString);
 
 		        //Set resource
 		        thumb.setDrawableResource(R.drawable.ic_launcher);
 		        card.setSwipeable(true);
 		        card.setClickable(true);
 		        //Add thumbnail to a card
-		        
-                cards.add(card);
+		        if((Boolean) item.get("completed")){
+		        	date = item.getUpdatedAt();
+		               card.setBackgroundResourceId(R.drawable.card_background2);
+		               completedCards.add(card);
+		           }else {
+		        	   date = item.getCreatedAt();
+		               card.setBackgroundResourceId(R.drawable.card_background);
+		               cards.add(card);
+		           }
+                
             }
         	
 
@@ -304,8 +336,13 @@ public class ChoreFragment extends Fragment{
         	
         	
         	adapter = new CardArrayAdapter(getActivity(),cards);
-        	if (listView!=null){
+        	completedAdapter = new CardArrayAdapter(getActivity(),completedCards);
+        	if (page == 0){
         		listView.setAdapter(adapter);
+            }
+        	
+        	if (page == 1){
+        		listView.setAdapter(completedAdapter);
             }
         	mProgressDialog.dismiss();
         	
@@ -337,6 +374,11 @@ public class ChoreFragment extends Fragment{
         }
 
         private void init() {
+        	
+        	//Add thumbnail
+            CardThumbnail cardThumbnail = new CardThumbnail(mContext);
+            cardThumbnail.setDrawableResource(R.drawable.broom);
+            addCardThumbnail(cardThumbnail);
 
         	setOnSwipeListener(new Card.OnSwipeListener() {
                 @Override
@@ -356,11 +398,14 @@ public class ChoreFragment extends Fragment{
                             card.changeBackgroundResourceId(R.drawable.card_background);
                         }else{
                         	Toast.makeText(getContext(), title + "was completed", Toast.LENGTH_SHORT).show();
+                        	obj.put("completed", true);
                         	mCheckbox.setChecked(true);
                             mCheckbox.setChecked(true);
                             card.changeBackgroundResourceId(R.drawable.card_background2);
                         }
-                    	
+                        obj.saveEventually();
+                        cards.remove(card);
+                        adapter.notifyDataSetChanged();
                     }
                 });
 
