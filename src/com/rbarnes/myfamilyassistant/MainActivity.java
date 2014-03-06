@@ -133,8 +133,8 @@ public class MainActivity extends FragmentActivity {
 			
 		} else {
 			//ParseUser.logOut();
-			//Intent loginIntent = new Intent(this, LoginActivity.class);
-			//startActivityForResult(loginIntent,1);
+			Intent loginIntent = new Intent(this, LoginActivity.class);
+			startActivityForResult(loginIntent,1);
 			
 			
 		}
@@ -171,10 +171,10 @@ public class MainActivity extends FragmentActivity {
  
     drawerListView.setOnItemClickListener(new DrawerItemClickListener());
     _tempString = "1234567890";
-    Intent intent = new Intent(this, SendParseService.class);
+    //Intent intent = new Intent(this, SendParseService.class);
     // add infos for the service which file to download and where to store
     
-    startService(intent);
+    //startService(intent);
 	}
 
 	 @Override
@@ -250,7 +250,7 @@ public class MainActivity extends FragmentActivity {
                 break;
 
             case 7:
-                frag = new ChildDeviceInfoFragment();
+                frag = new ChildInfoMainFragment();
                 break;
             case 8:
                 frag = new SettingsFragment();

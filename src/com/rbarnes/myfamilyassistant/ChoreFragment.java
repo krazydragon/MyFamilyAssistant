@@ -21,8 +21,10 @@ import java.util.List;
 
 
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -311,20 +313,26 @@ public class ChoreFragment extends Fragment{
     		    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 
     		    String dateString = simpleDate.format(date);
-    		    card.setSecondaryTitle(dateString);
+    		    
 
 		        //Set resource
 		        thumb.setDrawableResource(R.drawable.ic_launcher);
-		        card.setSwipeable(true);
-		        card.setClickable(true);
+		        //card.setSwipeable(true);
+		        
 		        //Add thumbnail to a card
 		        if((Boolean) item.get("completed")){
 		        	date = item.getUpdatedAt();
+		        	dateString = simpleDate.format(date);
+		        	card.setSecondaryTitle(dateString);
 		               card.setBackgroundResourceId(R.drawable.card_background2);
+		               card.setClickable(false);
 		               completedCards.add(card);
 		           }else {
 		        	   date = item.getCreatedAt();
+		        	   dateString = simpleDate.format(date);
+		        	   card.setSecondaryTitle(dateString);
 		               card.setBackgroundResourceId(R.drawable.card_background);
+		               card.setClickable(true);
 		               cards.add(card);
 		           }
                 
@@ -391,21 +399,64 @@ public class ChoreFragment extends Fragment{
                 setOnClickListener(new OnCardClickListener() {
                     @Override
                     public void onClick(Card card, View view) {
+                    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                				_context);
+                 
+                			// set title
+                			alertDialogBuilder.setTitle("Chore Completed");
+                 
+                			// set dialog message
+                			alertDialogBuilder
+                				.setMessage("Click to add this chore again!")
+                				.setCancelable(false)
+                				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+                					public void onClick(DialogInterface dialog,int id) {
+                						// if this button is clicked, close
+                						// current activity
+                						// TODO Auto-generated method stub
+                	            		String s = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", "error");
+                	            		
+                	        			ParseObject obj = new ParseObject("Chores");
+                	        			ParseACL postACL = new ParseACL();
+                	        			postACL.setRoleWriteAccess(s, true);
+                	        			postACL.setRoleReadAccess(s, true);
+                	        			//obj.setACL(postACL);
+                	        			
+                	        			obj.put("item", getTitle());
+                	        			obj.put("completed", false);
+                	        			
+                	        			obj.saveEventually();
+                					}
+                				  })
+                				.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                					public void onClick(DialogInterface dialog,int id) {
+                						// if this button is clicked, just close
+                						// the dialog box and do nothing
+                						dialog.cancel();
+                					}
+                				});
+                 
+                				// create alert dialog
+                				AlertDialog alertDialog = alertDialogBuilder.create();
+                 
+                				// show it
+                				alertDialog.show();
                         if(mCheckbox.isChecked()){
-                        	Toast.makeText(getContext(), "You need to do" + title, Toast.LENGTH_SHORT).show();
+                        	
                         	obj.put("completed", false);
                             mCheckbox.setChecked(false);
                             card.changeBackgroundResourceId(R.drawable.card_background);
                         }else{
-                        	Toast.makeText(getContext(), title + "was completed", Toast.LENGTH_SHORT).show();
+                        	
                         	obj.put("completed", true);
                         	mCheckbox.setChecked(true);
-                            mCheckbox.setChecked(true);
                             card.changeBackgroundResourceId(R.drawable.card_background2);
                         }
                         obj.saveEventually();
                         cards.remove(card);
+                        completedCards.add(card);
                         adapter.notifyDataSetChanged();
+                        completedAdapter.notifyDataSetChanged();
                     }
                 });
 

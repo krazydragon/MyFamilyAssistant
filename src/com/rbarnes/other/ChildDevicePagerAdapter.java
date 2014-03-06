@@ -10,6 +10,7 @@
 package com.rbarnes.other;
 
 import com.rbarnes.myfamilyassistant.CalendarFragment;
+import com.rbarnes.myfamilyassistant.ChildDeviceInfoFragment;
 import com.rbarnes.myfamilyassistant.ChoreFragment;
 
 import android.content.Context;
@@ -18,14 +19,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 
-public class ChoresPagerAdapter extends FragmentStatePagerAdapter {
+public class ChildDevicePagerAdapter extends FragmentStatePagerAdapter {
 	 
-    private final int PAGES = 2;
-    private String[] titles={"To Do", "Completed"};
+    private final int PAGES = 3;
+    private String[] titles={"Installed Applications", "Contacts", "Resent Calls"};
     @SuppressWarnings("unused")
 	private Context context = null;
     
-    public ChoresPagerAdapter(Context ctxt, FragmentManager fm) {
+    public ChildDevicePagerAdapter(Context ctxt, FragmentManager fm) {
         super(fm);
         this.context = ctxt;
     }
@@ -34,9 +35,11 @@ public class ChoresPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new ChoreFragment().newInstance(position);
+                return new ChildDeviceInfoFragment().newInstance(position);
             case 1:
-                return new ChoreFragment().newInstance(position);
+                return new ChildDeviceInfoFragment().newInstance(position);
+            case 2:
+                return new ChildDeviceInfoFragment().newInstance(position);
             default:
                 throw new IllegalArgumentException("The item position should be less or equal to:" + PAGES);
         }
