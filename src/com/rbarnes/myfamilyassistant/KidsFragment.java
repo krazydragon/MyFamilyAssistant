@@ -47,7 +47,7 @@ public class KidsFragment extends Fragment {
 		LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_kids, container, false);
 		
 		cards = new ArrayList<Card>();
-		listView = (CardListView) view.findViewById(R.id.choir_list);
+		listView = (CardListView) view.findViewById(R.id.list);
 		
 		MainCard card1 = new MainCard(getActivity());
 	    //Create a CardHeader

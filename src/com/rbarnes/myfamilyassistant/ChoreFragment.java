@@ -194,7 +194,7 @@ public class ChoreFragment extends Fragment{
         		        card.setBackgroundResourceId(R.drawable.card_background);
         		           
         		        
-        		        card.setSwipeable(true);
+        		        card.setSwipeable(false);
         		        card.setClickable(true);
         		        //Add thumbnail to a card
         		        
@@ -416,16 +416,52 @@ public class ChoreFragment extends Fragment{
                 						// TODO Auto-generated method stub
                 	            		String s = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", "error");
                 	            		
-                	        			ParseObject obj = new ParseObject("Chores");
+                	        			ParseObject newObj = new ParseObject("Chores");
                 	        			ParseACL postACL = new ParseACL();
                 	        			postACL.setRoleWriteAccess(s, true);
                 	        			postACL.setRoleReadAccess(s, true);
                 	        			//obj.setACL(postACL);
                 	        			
-                	        			obj.put("item", getTitle());
-                	        			obj.put("completed", false);
+                	        			newObj.put("item", getTitle());
+                	        			newObj.put("completed", false);
                 	        			
-                	        			obj.saveEventually();
+                	        			newObj.saveEventually();
+                	        			
+                	        			MainCard newCard = new MainCard(getActivity());
+                	                       //Create a CardHeader
+                	                       CardHeader header = new CardHeader(getActivity());
+                	                       newCard.setTitle(getTitle());
+                	                       
+                	                       Date date = new Date();
+                	       		        
+                	       		        
+                	               		
+                	         		       
+
+                	           		    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+
+                	           		    String dateString = simpleDate.format(date);
+                	           		    
+                	           		    newCard.setSecondaryTitle(dateString);
+                	                       //Add Header to card
+                	                       newCard.addCardHeader(header);
+                	                     //Create thumbnail
+                	        		        
+                	        	              
+                	                       newCard.setChecked(false);
+                	                       newCard.setObj(newObj);   
+                	        		       
+                	        		       
+                	                       newCard.setBackgroundResourceId(R.drawable.card_background);
+                	        		           
+                	        		        
+                	                       newCard.setSwipeable(false);
+                	                       newCard.setClickable(true);
+                	        		        //Add thumbnail to a card
+                	        		        
+                	                       cards.add(newCard);
+                	        			adapter.notifyDataSetChanged();
+                	        			
                 					}
                 				  })
                 				.setNegativeButton("No",new DialogInterface.OnClickListener() {
@@ -435,7 +471,7 @@ public class ChoreFragment extends Fragment{
                 						dialog.cancel();
                 					}
                 				});
-                 
+                				
                 				// create alert dialog
                 				AlertDialog alertDialog = alertDialogBuilder.create();
                  
@@ -480,16 +516,16 @@ public class ChoreFragment extends Fragment{
             mCheckbox.setChecked(checked);
             if(checked){
          	   mCheckbox.setChecked(true);
-                
+         	  mSecondaryTitle.setText("Completed on" + secondaryTitle); 
             }else {
          	   mCheckbox.setChecked(false);
-                
+         	  mSecondaryTitle.setText( "Created on "+ secondaryTitle);
             }
             
                 mTitle.setText(title);
 
             
-                mSecondaryTitle.setText(secondaryTitle);
+                
 
             
             mImageView.setImageResource(R.drawable.broom);

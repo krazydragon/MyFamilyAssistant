@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 public class SettingsFragment extends Fragment{
@@ -26,7 +27,7 @@ public class SettingsFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.blank, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_settings, container, false);
 	
 	
 	

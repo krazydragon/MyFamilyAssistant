@@ -95,7 +95,7 @@ public class ChildDeviceInfoFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_calendar, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_child_device_info, container, false);
 	
 	
 	
@@ -143,7 +143,7 @@ public class ChildDeviceInfoFragment extends Fragment{
 			        CardThumbnail thumb = new CardThumbnail(getActivity());
 			           
 			        card.setBackgroundResourceId(R.drawable.card_background);
-			        
+			        card.setResourceIdThumbnail(R.drawable.android_icon);
 
 				   
 			        //Set resource
@@ -178,14 +178,14 @@ try {
 			        //Create a CardHeader
 			        CardHeader header = new CardHeader(getActivity());
 			        card.setTitle(object.getString("name"));
-			        card.setSecondaryTitle("number");
+			        card.setSecondaryTitle(object.getString("number"));
 			        //Add Header to card
 			        card.addCardHeader(header);
 			      //Create thumbnail
 			        CardThumbnail thumb = new CardThumbnail(getActivity());
 			           
 			        card.setBackgroundResourceId(R.drawable.card_background);
-			        
+			        card.setResourceIdThumbnail(R.drawable.person);
 
 				   
 			        //Set resource
@@ -229,7 +229,15 @@ try {
 			        CardThumbnail thumb = new CardThumbnail(getActivity());
 			           
 			        card.setBackgroundResourceId(R.drawable.card_background);
+			        String temp = object.getString("type");
 			        
+			        if(temp.equals("OUTGOING")){
+			        	card.setResourceIdThumbnail(R.drawable.dialed_calls_icon);	
+			        }else if(temp.equals("INCOMING")){
+			        	card.setResourceIdThumbnail(R.drawable.received_calls_icon);
+			        }else if(temp.equals("MISSED")){
+			        	card.setResourceIdThumbnail(R.drawable.missed_calls_icon);
+			        }
 
 				   
 			        //Set resource
@@ -402,8 +410,11 @@ try {
             if (mSecondaryTitle != null)
             	mSecondaryTitle.setText(secondaryTitle);
 
-            
-            mImageView.setImageResource(R.drawable.calendar);
+          
+            	mImageView.setImageResource(resourceIdThumbnail);
+            	
+         
+
           
 
         }

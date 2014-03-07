@@ -13,86 +13,89 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
+import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.view.CardListView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.rbarnes.myfamilyassistant.CalendarFragment.MainCard;
+import com.rbarnes.myfamilyassistant.CalendarFragment.RemoteDataTask;
+
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class UpcomingFragment extends Fragment {
+	private ProgressDialog mProgressDialog;
+	private Context _context;
 	List<ParseObject> ob;
-	ArrayList<Card> cards;
+	ArrayList<Card> futureCards;
 	CardListView listView;
+	PopupWindow pw; 
+	CardArrayAdapter futureAdapter;
+	Date today;
+	Calendar c;
+	private int page;
 	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
 		LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_kids, container, false);
 		
-		cards = new ArrayList<Card>();
-		listView = (CardListView) view.findViewById(R.id.choir_list);
 		
-		MainCard card1 = new MainCard(getActivity());
-	    //Create a CardHeader
-	    CardHeader header = new CardHeader(getActivity());
-	    
-	    card1.setTitle("Dad's work party");
-	    card1.setSecondaryTitle("2/22/2014  2:30pm");
-	    //Add Header to card
-	    card1.addCardHeader(header);
-	  //Create thumbnail
-	    CardThumbnail thumb = new CardThumbnail(getActivity());
-	      
-	    card1.setBackgroundResourceId(R.drawable.card_background);
-	       
+		
+		_context = getActivity();
+		futureCards = new ArrayList<Card>();
+		
+		listView = (CardListView) view.findViewById(R.id.list);
+		
+		
+		
+  
+		new RemoteDataTask().execute();
 
-	    //Set resource
-	    thumb.setDrawableResource(R.drawable.ic_launcher);
-	    
-	    //Add thumbnail to a card
-	    
-	    cards.add(card1);
-	    
-	    MainCard card2 = new MainCard(getActivity());
-	    //Create a CardHeader
+
+		
+		c = Calendar.getInstance();
+		 // set the calendar to start of today
+	   c.set(Calendar.HOUR_OF_DAY, 0);
+	   c.set(Calendar.MINUTE, 0);
+	   c.set(Calendar.SECOND, 0);
+	   c.set(Calendar.MILLISECOND, 0);
+
+	   today = c.getTime();
 	   
-	    
-	    card2.setTitle("Doug's game");
-	    card2.setSecondaryTitle("3/12/2014  5:30pm");
-	    //Add Header to card
-	    
-	    card2.setBackgroundResourceId(R.drawable.card_background);
-	    
-	    //Add thumbnail to a card
-	    
-	    cards.add(card2);
-	    
-	    MainCard card3 = new MainCard(getActivity());
-	    //Create a CardHeader
-	    
-	    card3.setTitle("Mom has a pta meeting");
-	    //Add Header to card
-	    
-	    card3.setBackgroundResourceId(R.drawable.card_background);
-	    card3.setSecondaryTitle("2/12/2014  7:45pm");
-	    cards.add(card3);
-	    CardArrayAdapter adapter = new CardArrayAdapter(getActivity(),cards);
-		if (listView!=null){
-			listView.setAdapter(adapter);
-	    }
+	   
+	   today = c.getTime();
+	   
+	   ViewPager vp=(ViewPager) getActivity().findViewById(R.id.pager);
+	   
+	   Log.i("pager","%d" + vp.getCurrentItem() );
+	   
+		
 		return view;
 	}
 	
@@ -107,7 +110,106 @@ public class UpcomingFragment extends Fragment {
 		v.setTypeface(t);
 	}
 	
-	public class MainCard extends Card {
+	// RemoteDataTask AsyncTask
+    public class RemoteDataTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create a progressdialog
+            mProgressDialog = new ProgressDialog(getActivity());
+            // Set progressdialog title
+            mProgressDialog.setTitle("");
+            // Set progressdialog message
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.setIndeterminate(false);
+            // Show progressdialog
+            mProgressDialog.show();
+        }
+        
+        
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Locate the class table named "Country" in Parse.com
+            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
+                    "Calendar");
+            query.orderByDescending("_created_at");
+            try {
+                ob = query.find();
+            } catch (ParseException e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return null;
+        }
+ 
+        @SuppressWarnings({ })
+		@Override
+        protected void onPostExecute(Void result) {
+        	
+        	
+        	
+            
+        	
+        	
+        	for (ParseObject item : ob) {
+            	
+        		//Create a Card
+                
+        		MainCard card = new MainCard(getActivity());
+                //Create a CardHeader
+                CardHeader header = new CardHeader(getActivity());
+                card.setTitle((String) item.get("title"));
+                //Add Header to card
+                card.addCardHeader(header);
+              //Create thumbnail
+		        CardThumbnail thumb = new CardThumbnail(getActivity());
+		        card.setObj(item);   
+		        card.setBackgroundResourceId(R.drawable.card_background);
+		        Date date = item.getDate("date");
+        		
+    		       
+
+    		    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+
+    		    String dateString = simpleDate.format(date);
+    		    card.setSecondaryTitle(dateString);
+		        //Set resource
+		        thumb.setDrawableResource(R.drawable.ic_launcher);
+		        card.setSwipeable(true);
+		        card.setClickable(true);
+		        //Add thumbnail to a card
+		        
+		        c.setTime(date);
+        		c.set(Calendar.HOUR_OF_DAY, 0);
+    		    c.set(Calendar.MINUTE, 0);
+    		    c.set(Calendar.SECOND, 0);
+    		    c.set(Calendar.MILLISECOND, 0);
+    		    // and get that as a Date
+    		    Date dateSpecified = c.getTime();
+		        
+    		     if (dateSpecified.after(today)) {
+    		            	 futureCards.add(card);      	 
+   
+    		    }
+                
+            }
+        	
+
+        	
+
+        	
+        	
+        	futureAdapter = new CardArrayAdapter(getActivity(),futureCards);
+        	
+        	if (listView != null){
+        		listView.setAdapter(futureAdapter);
+            }
+        	mProgressDialog.dismiss();
+        	
+        }
+    }
+    
+    public class MainCard extends Card {
 
     	protected TextView mTitle;
         protected TextView mSecondaryTitle;
@@ -145,12 +247,12 @@ public class UpcomingFragment extends Fragment {
                     @Override
                     public void onClick(Card card, View view) {
                         if(mCheckbox.isChecked()){
-                        	Toast.makeText(getContext(), "You need to do" + title, Toast.LENGTH_SHORT).show();
+                        	Toast.makeText(getContext(), "You need to buy more" + title, Toast.LENGTH_SHORT).show();
                             
                             mCheckbox.setChecked(false);
                             card.changeBackgroundResourceId(R.drawable.card_background);
                         }else{
-                        	Toast.makeText(getContext(), title + "was completed", Toast.LENGTH_SHORT).show();
+                        	Toast.makeText(getContext(), title + "was purchased", Toast.LENGTH_SHORT).show();
                             
                             mCheckbox.setChecked(true);
                             card.changeBackgroundResourceId(R.drawable.card_background2);
@@ -176,10 +278,11 @@ public class UpcomingFragment extends Fragment {
             changeEditTextFont(mTitle);
             changeEditTextFont(mSecondaryTitle);
             
+            if (mTitle != null)
                 mTitle.setText(title);
 
-            
-                mSecondaryTitle.setText(secondaryTitle);
+            if (mSecondaryTitle != null)
+            	mSecondaryTitle.setText(secondaryTitle);
 
             
             mImageView.setImageResource(R.drawable.calendar);
