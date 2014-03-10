@@ -58,11 +58,11 @@ public class ChoreFragment extends Fragment{
 	private Context _context;
 	List<ParseObject> ob;
 	ArrayList<Card> cards;
-	ArrayList<Card> completedCards;
+	static ArrayList<Card> completedCards;
 	CardListView listView;
 	PopupWindow pw; 
 	CardArrayAdapter adapter;
-	CardArrayAdapter completedAdapter;
+	static CardArrayAdapter completedAdapter;
 	private int page; 
 	
 	
@@ -489,10 +489,12 @@ public class ChoreFragment extends Fragment{
                             card.changeBackgroundResourceId(R.drawable.card_background2);
                         }
                         obj.saveEventually();
-                        cards.remove(card);
                         completedCards.add(card);
-                        adapter.notifyDataSetChanged();
                         completedAdapter.notifyDataSetChanged();
+                        cards.remove(card);
+                        
+                        adapter.notifyDataSetChanged();
+                        
                     }
                 });
 

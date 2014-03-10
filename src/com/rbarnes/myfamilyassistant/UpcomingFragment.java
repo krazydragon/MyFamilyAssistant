@@ -178,7 +178,7 @@ public class UpcomingFragment extends Fragment {
 		        card.setSwipeable(true);
 		        card.setClickable(true);
 		        //Add thumbnail to a card
-		        
+		        card.addCardThumbnail(thumb);
 		        c.setTime(date);
         		c.set(Calendar.HOUR_OF_DAY, 0);
     		    c.set(Calendar.MINUTE, 0);

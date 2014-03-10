@@ -18,6 +18,9 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.AlertDialog;
+import android.app.admin.DeviceAdminReceiver;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -52,6 +55,7 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseRole;
 import com.parse.ParseUser;
+import com.rbarnes.other.FamDeviceAdminReceiver;
 import com.rbarnes.other.SendParseService;
 
 
@@ -71,7 +75,8 @@ public class MainActivity extends FragmentActivity {
     private Boolean _fam_auth;
     String _tempString;
     ParseUser _currentUser;
-    
+    DevicePolicyManager devicePolicyManager;
+	ComponentName deviceAdmin;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,16 +86,12 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 		mainView = (LinearLayout)this.findViewById(R.id.mainFrag);
 		  
-	    
+		
 	    _context = this;
 		Parse.initialize(this, "wAoWswK6kE9xpSqkrHrKjrIbWDMfeF0xYGWkDWFc", "2wZeexj6posiXETwFUbQ0LJFkT62wg63wnaS711L");
 		
 		
-		ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-        installation.put("mode", "parent");
-		installation.put("parent", true);
-		installation.put("family", "lazy");
-		installation.saveInBackground();
+		
 		
 		JSONObject data = new JSONObject();
 		
@@ -328,7 +329,22 @@ public class MainActivity extends FragmentActivity {
 			            
 			    		ParseAnalytics.trackAppOpened(getIntent());
 			    
-		    			    	
+			    		devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+			    		deviceAdmin = new ComponentName(_context, FamDeviceAdminReceiver.class);
+			    		
+			    		ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+			            installation.put("mode", "parent");
+			    		installation.put("parent", true);
+			    		installation.put("family", "lazy");
+			    		installation.saveInBackground();
+			    		
+			    		Intent intent = new Intent(
+			    				DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+			    		intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+			    				deviceAdmin);
+			    		intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+			    				"Your boss told you to do this");
+			    		//startActivityForResult(intent, 3);   	
 		    	
 		    	
 		    	
@@ -387,7 +403,7 @@ public class MainActivity extends FragmentActivity {
 			     }
 			  }
 	    }
-		  
+	    super.onActivityResult(requestCode, resultCode, data);
 		}
 	
 }

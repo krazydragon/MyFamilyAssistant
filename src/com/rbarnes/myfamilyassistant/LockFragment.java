@@ -10,6 +10,8 @@
 package com.rbarnes.myfamilyassistant;
 
 
+import android.app.admin.DevicePolicyManager;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,7 +38,7 @@ public class LockFragment extends Fragment{
 	
 	TextView tv = (TextView) view.findViewById(R.id.lockView);
 	lockButton = (Button)view.findViewById(R.id.lockButton);
-	
+	 final DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getActivity().getSystemService(Context.DEVICE_POLICY_SERVICE);
 	
 	
 	
@@ -55,6 +57,8 @@ public class LockFragment extends Fragment{
     		
     		if(isUnlocked){
     			lockImage.setBackgroundResource(R.drawable.lock);
+    			devicePolicyManager.lockNow();
+    			devicePolicyManager.resetPassword("", 1);
     			lockButton.setText("Unlock");
     			isUnlocked = false;
     		}else{

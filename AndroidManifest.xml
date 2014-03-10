@@ -55,6 +55,22 @@
 		<meta-data
     android:name="com.google.android.maps.v2.API_KEY"
     android:value="AIzaSyDBJy2gl5K0C7fIlik4oUJ8OWlDv1EXKX4"/>
+		
+		 
+        <receiver
+            android:name="com.rbarnes.other.FamDeviceAdminReceiver"
+            android:permission="android.permission.BIND_DEVICE_ADMIN" >
+            <intent-filter>
+
+                <!-- This action is required -->
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+
+            
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin" />
+        </receiver>
 		<service android:name="com.rbarnes.other.SendParseService" >
         </service>
     <service android:name="com.parse.PushService" />

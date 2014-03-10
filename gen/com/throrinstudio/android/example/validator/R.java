@@ -16,44 +16,44 @@ public final class R {
 		public static final int ic_launcher = 0x7f0200b1;
 	}
 	public static final class id {
-		public static final int contentTextFields = 0x7f0a0055;
-		public static final int email = 0x7f0a0058;
-		public static final int okCancelBar = 0x7f0a005c;
-		public static final int orrequired1 = 0x7f0a0057;
-		public static final int password1 = 0x7f0a0059;
-		public static final int password2 = 0x7f0a005a;
-		public static final int required = 0x7f0a0056;
-		public static final int url = 0x7f0a005b;
-		public static final int widget_okcancelbar_cancel = 0x7f0a0065;
-		public static final int widget_okcancelbar_ok = 0x7f0a0066;
+		public static final int contentTextFields = 0x7f0b0055;
+		public static final int email = 0x7f0b0058;
+		public static final int okCancelBar = 0x7f0b005c;
+		public static final int orrequired1 = 0x7f0b0057;
+		public static final int password1 = 0x7f0b0059;
+		public static final int password2 = 0x7f0b005a;
+		public static final int required = 0x7f0b0056;
+		public static final int url = 0x7f0b005b;
+		public static final int widget_okcancelbar_cancel = 0x7f0b0065;
+		public static final int widget_okcancelbar_ok = 0x7f0b0066;
 	}
 	public static final class layout {
 		public static final int main = 0x7f030026;
 		public static final int widget_ok_cancel_bar = 0x7f03002c;
 	}
 	public static final class string {
-		public static final int app_name = 0x7f040000;
-		public static final int global_about = 0x7f040002;
-		public static final int global_accept = 0x7f04000a;
-		public static final int global_address = 0x7f040009;
-		public static final int global_cancel = 0x7f040003;
-		public static final int global_email = 0x7f040007;
-		public static final int global_name = 0x7f040005;
-		public static final int global_password = 0x7f040004;
-		public static final int global_phone = 0x7f040006;
-		public static final int global_submit = 0x7f040001;
-		public static final int global_website = 0x7f040008;
-		public static final int validator_alnum = 0x7f04000f;
-		public static final int validator_confirm = 0x7f04000e;
-		public static final int validator_email = 0x7f04000b;
-		public static final int validator_empty = 0x7f04000c;
-		public static final int validator_hex = 0x7f040010;
-		public static final int validator_phone = 0x7f040012;
-		public static final int validator_regexp = 0x7f040011;
-		public static final int validator_url = 0x7f04000d;
+		public static final int app_name = 0x7f050000;
+		public static final int global_about = 0x7f050002;
+		public static final int global_accept = 0x7f05000a;
+		public static final int global_address = 0x7f050009;
+		public static final int global_cancel = 0x7f050003;
+		public static final int global_email = 0x7f050007;
+		public static final int global_name = 0x7f050005;
+		public static final int global_password = 0x7f050004;
+		public static final int global_phone = 0x7f050006;
+		public static final int global_submit = 0x7f050001;
+		public static final int global_website = 0x7f050008;
+		public static final int validator_alnum = 0x7f05000f;
+		public static final int validator_confirm = 0x7f05000e;
+		public static final int validator_email = 0x7f05000b;
+		public static final int validator_empty = 0x7f05000c;
+		public static final int validator_hex = 0x7f050010;
+		public static final int validator_phone = 0x7f050012;
+		public static final int validator_regexp = 0x7f050011;
+		public static final int validator_url = 0x7f05000d;
 	}
 	public static final class style {
-		public static final int Validator_Light = 0x7f050000;
+		public static final int Validator_Light = 0x7f060000;
 	}
 	public static final class styleable {
 		public static final int[] OkCancelBar = { 0x7f010000, 0x7f010001 };
