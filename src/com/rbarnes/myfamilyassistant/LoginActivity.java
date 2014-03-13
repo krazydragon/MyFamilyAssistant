@@ -14,6 +14,8 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,13 +36,16 @@ import android.widget.TextView;
 import com.parse.FindCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseACL;
+import com.parse.ParseAnalytics;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.rbarnes.other.EmailRetriever;
+import com.rbarnes.other.FamDeviceAdminReceiver;
 import com.throrinstudio.android.common.libs.validator.Form;
 import com.throrinstudio.android.common.libs.validator.Validate;
 import com.throrinstudio.android.common.libs.validator.validate.ConfirmValidate;
@@ -70,10 +75,13 @@ public class LoginActivity extends Activity implements OnClickListener{
 	private String _famPass;
 	private String _kidPass;
 	private Boolean _isFamThere=true;
+	private Boolean _parent=false;
 	List<ParseObject> ob;
 	LinearLayout _view;
 	Context _context;
-	
+    private String _pass;
+    private String _passName;
+	private ParseUser _user;
 	
 	private String _msg;
 	
@@ -213,29 +221,138 @@ _regForm = new Form();
 		}
 	}
 	public void checkPass(View v){
+		_user = ParseUser.getCurrentUser();
 		if(_isFamThere){
 			_famName = _famNameInput.getText().toString();
-			ParseQuery<ParseObject> query = ParseQuery.getQuery("FamList");
+			ParseQuery<ParseRole> query = ParseRole.getQuery();
 			
 			
-			query.whereEqualTo("Name", _famName);
-			query.findInBackground(new FindCallback<ParseObject>() {
-			    public void done(List<ParseObject> famPass, ParseException e) {
-			    	if(famPass.isEmpty()){
+			query.whereEqualTo("name", _famName);
+			query.findInBackground(new FindCallback<ParseRole>() {
+			    public void done(List<ParseRole> allRoles, ParseException e) {
+			    	if(allRoles.isEmpty()){
 			    		_isFamThere = false;
 			    		
 			    		_view.setVisibility(View.VISIBLE);
 			    	}else{
-			    		loginUser();
+			    		
+			    		for(ParseRole role : allRoles) {
+			    	        
+			    	        
+			    	        
+					    		if(_user != null){
+					    		role.getUsers().add(_user);
+					    		role.saveInBackground();
+					    		
+			    	        }
+					    		checkFamPass();
+			    	    }       
+			    		
+			    		
+			    		}
+				    	
+			    		
 			    	}
 			    	
 			    	
-			    }
+			    
 			});
 			
 		}else{
-			loginUser();	
+			
+			ParseACL roleACL = new ParseACL();
+			roleACL.setPublicReadAccess(true);
+			roleACL.setPublicWriteAccess(true);
+			ParseRole role = new ParseRole(_famName, roleACL);
+			
+	    	role.getUsers().add(_user);
+			role.saveInBackground();
+			
+			ParseObject famPass = new ParseObject("Family");
+			roleACL = new ParseACL();
+			roleACL.setRoleReadAccess(_famName, true);
+			roleACL.setRoleWriteAccess(_famName, true);
+			famPass.put("password", _ParPasswordInput.getText().toString());
+			famPass.put("kidPass", _kidPassInput.getText().toString());
+			famPass.setACL(roleACL);
+			famPass.saveInBackground();
+			
+			_user.add("parent", true);
+			_user.saveInBackground();
+			_parent = true;
+			loginUser();
 		}
+	}
+	private void checkFamPass(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(_context);
+	    builder.setTitle("Enter Family Password");
+
+	    // Set up the input
+	    final EditText input = new EditText(_context);
+	    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+	    input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+	    builder.setView(input);
+
+	    // Set up the buttons
+	    builder.setPositiveButton("Parent", new DialogInterface.OnClickListener() { 
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+	            _pass = input.getText().toString();
+	            _passName = "password";
+	            _parent = true;
+	            _user.add("parent", true);
+	            _user.saveInBackground();
+	            verFamCheck();
+	        }
+	    });
+	    builder.setNegativeButton("Kid", new DialogInterface.OnClickListener() {
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+	        	
+	        	_passName = "kidPass";
+	        	_pass = input.getText().toString();
+	        	_user.add("parent", false);
+	        	_user.saveInBackground();
+
+	        	verFamCheck();
+	        }
+	    });
+
+	    builder.show();
+	}
+	
+	private void verFamCheck(){
+		
+		
+		
+		
+		
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Family");
+		
+		query.whereEqualTo(_passName, _pass);
+		query.findInBackground(new FindCallback<ParseObject>() {
+		    public void done(List<ParseObject> famPass, ParseException e) {
+		    	
+				
+		    	if(famPass.isEmpty()){
+		    		checkFamPass();
+		    	}else{
+		    		if(!_parent){
+		    			ParseObject kidName = new ParseObject("KidName");
+			        	ParseACL roleACL = new ParseACL();
+						roleACL = new ParseACL();
+						roleACL.setRoleReadAccess(_famName, true);
+						roleACL.setRoleWriteAccess(_famName, true);
+						kidName.put("name", _user.getString("firstName"));
+						kidName.setACL(roleACL);
+						kidName.saveInBackground();
+						Log.i("Name",""+ _user.getString("firstName"));
+		    		}
+		    		loginUser();
+		    		
+		    	}
+		    }
+		});
 	}
 		
 		private void famCheck(){
@@ -252,12 +369,20 @@ _regForm = new Form();
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
        
         editor.putBoolean("fam_auth", true);
+        editor.putBoolean("parent", _parent);
         editor.putString("fam_name", _famName);
+        editor.putString("user", _user.getString("firstName"));
         editor.commit();
 		Intent returnIntent = new Intent();
 		 returnIntent.putExtra("msg",_msg);
 		 
 		 setResult(RESULT_OK, returnIntent);    
+		 
+		ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+        installation.put("name", _user.getString("firstName"));
+ 		installation.put("parent", _parent);
+ 		installation.put("family", _famName);
+ 		installation.saveInBackground();
 		 finish();
 	}
 	void changeButtonFont(TextView v){

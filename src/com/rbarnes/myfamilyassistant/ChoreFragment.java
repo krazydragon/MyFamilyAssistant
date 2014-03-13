@@ -19,10 +19,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
@@ -49,19 +53,21 @@ import android.widget.Toast;
 
 import com.parse.ParseACL;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 
 public class ChoreFragment extends Fragment{
 	
 	private ProgressDialog mProgressDialog;
 	private Context _context;
-	List<ParseObject> ob;
-	ArrayList<Card> cards;
-	static ArrayList<Card> completedCards;
-	CardListView listView;
-	PopupWindow pw; 
-	CardArrayAdapter adapter;
+	private List<ParseObject> ob;
+	private static ArrayList<Card> cards;
+	private static ArrayList<Card> completedCards;
+	private CardListView listView;
+	private PopupWindow pw; 
+	static CardArrayAdapter adapter;
 	static CardArrayAdapter completedAdapter;
 	private int page; 
 	
@@ -295,13 +301,13 @@ public class ChoreFragment extends Fragment{
         		MainCard card = new MainCard(getActivity());
                 //Create a CardHeader
                 CardHeader header = new CardHeader(getActivity());
-                card.setTitle((String) item.get("item"));
+                header.setTitle((String) item.get("item"));
                 //Add Header to card
                 card.addCardHeader(header);
               //Create thumbnail
 		        CardThumbnail thumb = new CardThumbnail(getActivity());
 	              
-		        card.setBackgroundResourceId(R.drawable.card_background);
+		        
 		        card.setObj(item);   
 		        card.setChecked((Boolean) item.get("completed"));
 		        Date date = new Date();
@@ -361,7 +367,6 @@ public class ChoreFragment extends Fragment{
 
     	protected TextView mTitle;
         protected TextView mSecondaryTitle;
-        protected ImageView mImageView;
         protected CheckBox mCheckbox;
         protected ParseObject mObj;
         protected int resourceIdThumbnail;
@@ -494,6 +499,24 @@ public class ChoreFragment extends Fragment{
                         cards.remove(card);
                         
                         adapter.notifyDataSetChanged();
+                        JSONObject data = new JSONObject();
+                		try {
+                			data.put("action", "com.rbarnes.UPDATE_STATUS");
+                			data.put("alert", "Chore was completed");
+                		} catch (JSONException e) {
+                			// TODO Auto-generated catch block
+                			e.printStackTrace();
+                		}
+                        ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+                		query.whereEqualTo("parent", true);
+                		query.whereEqualTo("family", "krazy");
+
+                		
+                		
+                		ParsePush push = new ParsePush();
+                		push.setQuery(query);
+                		push.setData(data);
+                		push.sendInBackground();
                         
                     }
                 });
@@ -509,7 +532,6 @@ public class ChoreFragment extends Fragment{
             //Retrieve elements
             mTitle = (TextView) view.findViewById(R.id.inner_title);
             mSecondaryTitle = (TextView) parent.findViewById(R.id.inner_title2);
-            mImageView = (ImageView) parent.findViewById(R.id.imageView1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  );
             mCheckbox = (CheckBox)parent.findViewById(R.id.checkBox1);
             
             changeEditTextFont(mTitle);
@@ -530,7 +552,7 @@ public class ChoreFragment extends Fragment{
                 
 
             
-            mImageView.setImageResource(R.drawable.broom);
+
           
 
         }

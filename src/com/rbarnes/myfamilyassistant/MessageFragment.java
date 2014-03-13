@@ -16,6 +16,7 @@ import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardListView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -195,8 +196,12 @@ public class MessageFragment extends Fragment{
        		MainCard card = new MainCard(getActivity());
                //Create a CardHeader
                CardHeader header = new CardHeader(getActivity());
+               header.setTitle("from "+(String) item.get("from"));
                card.setTitle((String) item.get("message"));
-               card.setSecondaryTitle((String) item.get("from"));
+               
+               Date date = item.getCreatedAt();
+               
+               card.setSecondaryTitle("Sent on " +(String) android.text.format.DateFormat.format("EEEE MMMM d yyyy hh:mm a", date));
                //Add Header to card
                card.addCardHeader(header);
              //Create thumbnail
@@ -254,7 +259,10 @@ public class MessageFragment extends Fragment{
        }
 
        private void init() {
-
+    	   CardThumbnail cardThumbnail = new CardThumbnail(mContext);
+           cardThumbnail.setDrawableResource(R.drawable.message);
+           addCardThumbnail(cardThumbnail);
+           
     	   setOnSwipeListener(new Card.OnSwipeListener() {
                @Override
                public void onSwipe(Card card) {
@@ -294,7 +302,7 @@ public class MessageFragment extends Fragment{
                mSecondaryTitle.setText(secondaryTitle);
 
            
-           mImageView.setImageResource(R.drawable.message);
+           
            count = 0;
 
        }

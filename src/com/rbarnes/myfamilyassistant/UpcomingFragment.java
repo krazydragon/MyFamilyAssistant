@@ -157,8 +157,10 @@ public class UpcomingFragment extends Fragment {
                 
         		MainCard card = new MainCard(getActivity());
                 //Create a CardHeader
-                CardHeader header = new CardHeader(getActivity());
+                
                 card.setTitle((String) item.get("title"));
+                CardHeader header = new CardHeader(getActivity());
+                header.setTitle((String) item.get("title"));
                 //Add Header to card
                 card.addCardHeader(header);
               //Create thumbnail
@@ -174,7 +176,7 @@ public class UpcomingFragment extends Fragment {
     		    String dateString = simpleDate.format(date);
     		    card.setSecondaryTitle(dateString);
 		        //Set resource
-		        thumb.setDrawableResource(R.drawable.ic_launcher);
+		        thumb.setDrawableResource(R.drawable.calendar);
 		        card.setSwipeable(true);
 		        card.setClickable(true);
 		        //Add thumbnail to a card
@@ -213,10 +215,8 @@ public class UpcomingFragment extends Fragment {
 
     	protected TextView mTitle;
         protected TextView mSecondaryTitle;
-        protected ImageView mImageView;
         protected CheckBox mCheckbox;
         protected ParseObject mObj;
-        protected int resourceIdThumbnail;
         protected int count;
         protected ParseObject obj;
         protected String title;
@@ -234,7 +234,10 @@ public class UpcomingFragment extends Fragment {
         }
 
         private void init() {
-
+        	
+        	
+            CardThumbnail cardThumbnail = new CardThumbnail(mContext);
+            cardThumbnail.setDrawableResource(R.drawable.calendar);
         	setOnSwipeListener(new Card.OnSwipeListener() {
                 @Override
                 public void onSwipe(Card card) {
@@ -272,20 +275,18 @@ public class UpcomingFragment extends Fragment {
             //Retrieve elements
             mTitle = (TextView) view.findViewById(R.id.inner_title);
             mSecondaryTitle = (TextView) parent.findViewById(R.id.inner_title2);
-            mImageView = (ImageView) parent.findViewById(R.id.imageView1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  );
             mCheckbox = (CheckBox)parent.findViewById(R.id.checkBox1);
             
             changeEditTextFont(mTitle);
             changeEditTextFont(mSecondaryTitle);
             
-            if (mTitle != null)
-                mTitle.setText(title);
-
+            
+            mTitle.setText("");
             if (mSecondaryTitle != null)
             	mSecondaryTitle.setText(secondaryTitle);
 
             
-            mImageView.setImageResource(R.drawable.calendar);
+            
           
 
         }
@@ -317,12 +318,5 @@ public class UpcomingFragment extends Fragment {
             this.obj = obj;
         }
 
-        public int getResourceIdThumbnail() {
-            return resourceIdThumbnail;
-        }
-
-        public void setResourceIdThumbnail(int resourceIdThumbnail) {
-            this.resourceIdThumbnail = resourceIdThumbnail;
-        }
     }
 }

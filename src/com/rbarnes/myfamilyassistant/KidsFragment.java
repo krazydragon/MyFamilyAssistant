@@ -180,13 +180,13 @@ public class KidsFragment extends Fragment {
             changeEditTextFont(mTitle);
             changeEditTextFont(mSecondaryTitle);
             
-                mTitle.setText(title);
+                mTitle.setText("");
 
             
                 mSecondaryTitle.setText(secondaryTitle);
 
             
-            mImageView.setImageResource(R.drawable.broom);
+            
           
 
         }

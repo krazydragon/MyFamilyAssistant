@@ -1,8 +1,11 @@
 package com.rbarnes.other;
 
+import java.util.Iterator;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,37 +17,33 @@ public class MyParseReceiver extends BroadcastReceiver {
 	  public void onReceive(Context context, Intent intent) {
 	    String TAG = "Fam";
 	    
+	    Log.d("INTENT",intent.toString());
+	    Log.d("INTENT",intent.getAction());
+	    if(intent.getAction().equals("com.rbarnes.UPDATE_STATUS")){
 	    
-	    
-	    /*
 		try {
-	      String action = intent.getAction();
-	      
+		Intent i= new Intent(context, SendParseService.class);
 	      JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
-	      
-	      
-	      if(json.getString("goal")=="lock"){
-	        	
-		  }else if(json.getString("goal")=="getInfo"){
-		    	 
-		    	 
-		    	    	
-		    	    	
-		    			
-		    			
-		    			
-		    			
+	     
+	      Log.d("GOAL",""+ json.getString("goal"));
+	      if(json.getString("goal").equals("lock")){
+	    	  
+	    	  i.putExtra("name", json.getString("name"));
+	    	  i.putExtra("goal", "lock");
+	    	  context.startService(i); 
+		  }else if(json.getString("goal").equals("getLocation")){
+		
+			  i.putExtra("name", json.getString("name"));
+	    	  i.putExtra("goal", "getLocation");		
+	    	  context.startService(i); 		
 		     }
 	      
 	      
-		
-	      
-	        
-	     
-	      
 	    } catch (JSONException e) {
 	      Log.d(TAG, "JSONException: " + e.getMessage());
-	    }*/
+	    }
+	  
+	    }
 	  }
 	}
 /*ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();

@@ -191,8 +191,10 @@ public class AlertsFragment extends Fragment {
                
        		MainCard card = new MainCard(getActivity());
                //Create a CardHeader
-               CardHeader header = new CardHeader(getActivity());
-               card.setTitle((String) item.get("message"));
+       		CardHeader header = new CardHeader(getActivity());
+            header.setTitle((String) item.get("message"));
+            //Add Header to card
+            
                card.setSecondaryTitle((String) item.get("from"));
                //Add Header to card
                card.addCardHeader(header);
@@ -254,6 +256,9 @@ public class AlertsFragment extends Fragment {
        }
 
        private void init() {
+    	   CardThumbnail cardThumbnail = new CardThumbnail(mContext);
+           cardThumbnail.setDrawableResource(R.drawable.calendar);
+           addCardThumbnail(cardThumbnail);
 
     	   setOnSwipeListener(new Card.OnSwipeListener() {
                @Override
@@ -288,13 +293,13 @@ public class AlertsFragment extends Fragment {
            changeEditTextFont(mTitle);
            changeEditTextFont(mSecondaryTitle);
            
-               mTitle.setText(title);
+               mTitle.setText("");
 
           
                mSecondaryTitle.setText(secondaryTitle);
 
            
-           mImageView.setImageResource(R.drawable.message);
+           
            count = 0;
 
        }

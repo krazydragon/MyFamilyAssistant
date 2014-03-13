@@ -108,23 +108,13 @@ public class CalendarFragment extends Fragment{
 	
 	
 	TextView titleText = (TextView)view.findViewById(R.id.title);
-	ImageButton button = (ImageButton)view.findViewById(R.id.addButton);     
+	     
 	new RemoteDataTask().execute();
 
 	titleText.setText("Calendar");
 	changeTextViewFont(titleText);
 	
-	button.setOnClickListener(new Button.OnClickListener(){
-
-    	@Override
-    	public void onClick(View v) {
-    		// TODO Auto-generated method stub
-
-    		addPopUp();
-
-    	}
-    	}
-    );
+	
 	c = Calendar.getInstance();
 	 // set the calendar to start of today
    c.set(Calendar.HOUR_OF_DAY, 0);
@@ -320,9 +310,9 @@ public class CalendarFragment extends Fragment{
         		MainCard card = new MainCard(getActivity());
                 //Create a CardHeader
                 CardHeader header = new CardHeader(getActivity());
+                
                 card.setTitle((String) item.get("title"));
-                //Add Header to card
-                card.addCardHeader(header);
+                
               //Create thumbnail
 		        CardThumbnail thumb = new CardThumbnail(getActivity());
 		        card.setObj(item);   
@@ -331,9 +321,11 @@ public class CalendarFragment extends Fragment{
         		
     		       
 
-    		    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-
-    		    String dateString = simpleDate.format(date);
+    		    SimpleDateFormat simpleDate =  new SimpleDateFormat("hh:mm a");
+    		    header.setTitle((String) android.text.format.DateFormat.format("EEEE MMMM d yyyy", date));
+    		  //Add Header to card
+                card.addCardHeader(header);
+    		    String dateString = "at "+simpleDate.format(date);
     		    card.setSecondaryTitle(dateString);
 		        //Set resource
 		        thumb.setDrawableResource(R.drawable.ic_launcher);
@@ -412,6 +404,9 @@ public class CalendarFragment extends Fragment{
         }
 
         private void init() {
+        	CardThumbnail cardThumbnail = new CardThumbnail(mContext);
+            cardThumbnail.setDrawableResource(R.drawable.calendar);
+            addCardThumbnail(cardThumbnail);
 
         	setOnSwipeListener(new Card.OnSwipeListener() {
                 @Override
@@ -463,7 +458,7 @@ public class CalendarFragment extends Fragment{
             	mSecondaryTitle.setText(secondaryTitle);
 
             
-            mImageView.setImageResource(R.drawable.calendar);
+            
           
 
         }

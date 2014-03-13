@@ -34,11 +34,7 @@ public class ParentMainFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	Boolean fam_auth = false;
-	fam_auth = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("fam_auth", fam_auth);
-    if(fam_auth){
-    	
-    }
+	
 	
 	view = (LinearLayout ) inflater.inflate(R.layout.child_main_activity, container, false);
 

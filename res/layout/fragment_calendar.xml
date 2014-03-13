@@ -27,15 +27,6 @@
                 android:text="Large Text"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <ImageButton
-                android:id="@+id/addButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:onClick="myButtonMethod"
-                android:src="@drawable/plus" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -46,7 +37,7 @@
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        card:card_layout_resourceID="@layout/card_thumbnail_layout" />
+        card:list_card_layout_resourceID="@layout/list_card_thumbnail_layout" />
 
     
 

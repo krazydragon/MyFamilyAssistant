@@ -16,7 +16,9 @@ import org.json.JSONObject;
 
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.admin.DeviceAdminReceiver;
 import android.app.admin.DevicePolicyManager;
@@ -55,6 +57,7 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseRole;
 import com.parse.ParseUser;
+import com.parse.PushService;
 import com.rbarnes.other.FamDeviceAdminReceiver;
 import com.rbarnes.other.SendParseService;
 
@@ -68,15 +71,15 @@ public class MainActivity extends FragmentActivity {
     private ListView drawerListView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     LinearLayout mainView;
-    private String _pass;
-    private String _passName;
-    private String _famName;
     private Context _context;
-    private Boolean _fam_auth;
+    private Boolean _fam_auth = false;
+    private Boolean _parent = false;
     String _tempString;
     ParseUser _currentUser;
-    DevicePolicyManager devicePolicyManager;
-	ComponentName deviceAdmin;
+    FragmentManager _manager;
+    FragmentTransaction _transaction;
+    ComponentName _deviceAdmin;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -88,49 +91,23 @@ public class MainActivity extends FragmentActivity {
 		  
 		
 	    _context = this;
+	    
 		Parse.initialize(this, "wAoWswK6kE9xpSqkrHrKjrIbWDMfeF0xYGWkDWFc", "2wZeexj6posiXETwFUbQ0LJFkT62wg63wnaS711L");
+		PushService.setDefaultPushCallback(this, MainActivity.class);
+		_manager = getSupportFragmentManager();
 		
-		
-		
-		
-		JSONObject data = new JSONObject();
-		
-		try {
-			data.put("action", "com.rbarnes.UPDATE_STATUS");
-			data.put("name", "kid1");
-			data.put("goal", "lock");
-			data.put("alert", "I work!");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
-		query.whereEqualTo("parent", true);
-		query.whereEqualTo("family", "krazy");
-		
-		
-		ParsePush push = new ParsePush();
-		push.setQuery(query);
-		push.setData(data);
-		//push.sendInBackground();
-		_fam_auth = false;
-		
+
 		 _currentUser = ParseUser.getCurrentUser();
 		 
 		 
-		_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
-		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
 		
-		if ((_famName != null) && _currentUser!= null) {
-			//Crouton.makeText(this, "Welcome Back "+ currentUser.getUsername() + "!", Style.INFO).show();
-			android.support.v4.app.FragmentManager anager = getSupportFragmentManager();
-            android.support.v4.app.FragmentTransaction ransaction = anager.beginTransaction();
-            ransaction.replace(R.id.main_frame, new ParentMainFragment());
-            ransaction.commit();
+		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
+		_parent = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("parent", _parent);
+		if ((_fam_auth) && _currentUser!= null) {
+			checkParent();
 			
-			//new RemoteDataTask().execute();
+			
+           
 			
 		} else {
 			//ParseUser.logOut();
@@ -263,127 +240,51 @@ public class MainActivity extends FragmentActivity {
                 break;
             }
             mainView.setVisibility(View.INVISIBLE);
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.content_frame, frag);
-            transaction.commit();
+            _transaction = _manager.beginTransaction();
+            _transaction.replace(R.id.content_frame, frag);
+            _transaction.commit();
  
         }
     }
-	private void checkAccess(){
-		AlertDialog.Builder builder = new AlertDialog.Builder(_context);
-	    builder.setTitle("Enter Family Password");
-
-	    // Set up the input
-	    final EditText input = new EditText(_context);
-	    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-	    input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-	    builder.setView(input);
-
-	    // Set up the buttons
-	    builder.setPositiveButton("Parent", new DialogInterface.OnClickListener() { 
-	        @Override
-	        public void onClick(DialogInterface dialog, int which) {
-	            _pass = input.getText().toString();
-	            _passName = "password";
-	            verFamCheck();
-	        }
-	    });
-	    builder.setNegativeButton("Kid", new DialogInterface.OnClickListener() {
-	        @Override
-	        public void onClick(DialogInterface dialog, int which) {
-	        	
-	        	_passName = "kidPass";
-	        	_pass = input.getText().toString();
-	        	verFamCheck();
-	        }
-	    });
-
-	    builder.show();
+	private void checkParent(){
+		DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+		 _deviceAdmin = new ComponentName(_context, FamDeviceAdminReceiver.class);
+        _transaction = _manager.beginTransaction();
+        
+        	Log.i("Parent",""+ _parent);
+       if(_parent){ 
+       _transaction.replace(R.id.main_frame, new ParentMainFragment());
+       }else{
+    	   _transaction.replace(R.id.main_frame, new ChildMainFragment());
+    	   if(!devicePolicyManager.isAdminActive(_deviceAdmin)){
+	 	    	 installAdmin();
+	 	    }
+    	   
+       }
+       _transaction.commit();
 	}
 	
-	private void verFamCheck(){
-		
-		final ParseACL roleACL = new ParseACL();
-		
-		
-		roleACL.setRoleReadAccess(_famName, true);
-		roleACL.setRoleWriteAccess(_famName, true);
-		ParseACL.setDefaultACL(roleACL, true);
-		ParseQuery<ParseObject> query = ParseQuery.getQuery("Family");
-		
-		query.whereEqualTo(_passName, _pass);
-		query.findInBackground(new FindCallback<ParseObject>() {
-		    public void done(List<ParseObject> famPass, ParseException e) {
-		    	ParseRole role = new ParseRole(_famName, roleACL);
-		    	
-		    	role.getUsers().add(ParseUser.getCurrentUser());
-		    	role.saveEventually();
-		    	
-			    		Log.d("YES", "It worked!!!");
-			    		android.support.v4.app.FragmentManager anager = getSupportFragmentManager();
-			            android.support.v4.app.FragmentTransaction ransaction = anager.beginTransaction();
-			            ransaction.replace(R.id.main_frame, new ParentMainFragment());
-			            ransaction.commit();
-			            
-			            
-			    		ParseAnalytics.trackAppOpened(getIntent());
-			    
-			    		devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-			    		deviceAdmin = new ComponentName(_context, FamDeviceAdminReceiver.class);
-			    		
-			    		ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-			            installation.put("mode", "parent");
-			    		installation.put("parent", true);
-			    		installation.put("family", "lazy");
-			    		installation.saveInBackground();
-			    		
-			    		Intent intent = new Intent(
-			    				DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-			    		intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-			    				deviceAdmin);
-			    		intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-			    				"Your boss told you to do this");
-			    		//startActivityForResult(intent, 3);   	
-		    	
-		    	
-		    	
-		    }
-		});
-	}
+	
 	@Override
 	public void onResume() {
 	    super.onResume();  // Always call the superclass method first
 	    
-	    	
+	    
 	   
 	}
-	private void pleaseWait(){
-		if(_fam_auth){
-	    	
-	    	Editor editor = PreferenceManager.getDefaultSharedPreferences(_context).edit();
-	        
-	        editor.putBoolean("fam_auth", false);
-	        
-	        editor.commit();
-	        
-	        
-	            	_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
-	        	    
-	        	    
-	        	    checkAccess();
-	            
-	    }
-		
-	}
 	
-	public void myButtonMethod(View v) {
+	
+	public void installAdmin() {
+		Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+	   	intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, _deviceAdmin);
+	   	intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Your Parents told you to do this");
+	   	startActivityForResult(intent, 3);
 		
-		Toast.makeText(_context,"ImageButton is working!", Toast.LENGTH_SHORT).show();
 	}
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
-	    if(_fam_auth){
+		final Handler handler = new Handler();
+		if(_fam_auth){
 	    	if (requestCode == 1) {
 
 			     if(resultCode == RESULT_OK){      
@@ -391,9 +292,16 @@ public class MainActivity extends FragmentActivity {
 			         //String msg = data.getStringExtra("msg"); 
 			         //Crouton.makeText(this, msg, Style.INFO).show();
 			        
-			         _famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
+			    	 _parent = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("parent", _parent);
 			         
-			        pleaseWait();
+			    	 
+			    	 handler.postDelayed(new Runnable() {
+			    	     @Override
+			    	     public void run() {
+			    	    	 checkParent();
+			    	     }
+			    	 }, 1000);
+			          
 			         
 			 		
 			     }else if (resultCode == RESULT_CANCELED) {    
@@ -401,7 +309,20 @@ public class MainActivity extends FragmentActivity {
 			    	Intent loginIntent = new Intent(this, LoginActivity.class);
 					startActivityForResult(loginIntent,1);		
 			     }
-			  }
+			  }else if(requestCode == 3){
+			    	if (resultCode == Activity.RESULT_OK) {
+						Log.i("admin", "Administration enabled!");
+						
+					} else {
+						Log.i("admin", "Administration enable FAILED!");
+						handler.postDelayed(new Runnable() {
+				    	     @Override
+				    	     public void run() {
+				    	    	 //installAdmin();
+				    	     }
+				    	 }, 1000);
+					}
+			    }
 	    }
 	    super.onActivityResult(requestCode, resultCode, data);
 		}

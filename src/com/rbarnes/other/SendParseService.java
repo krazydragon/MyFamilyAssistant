@@ -7,19 +7,34 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.parse.ParseACL;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
+import com.parse.ParseQuery;
 
 import android.app.IntentService;
+import android.app.admin.DevicePolicyManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.location.Location;
+import android.location.LocationManager;
+import android.preference.PreferenceManager;
 import android.provider.CallLog;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.util.Log;
 
 public class SendParseService extends IntentService {
 
+	LocationManager locationManager;
+	private String _famName;
+	private String _user;
+	
+	
 	public SendParseService() {
 		super("SendParseService");
 		// TODO Auto-generated constructor stub
@@ -28,6 +43,52 @@ public class SendParseService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		_famName = PreferenceManager.getDefaultSharedPreferences(this).getString("fam_name", _famName);
+		_user = PreferenceManager.getDefaultSharedPreferences(this).getString("user", _user);
+		
+		String goal = (String) intent.getExtras().get("goal");
+		String name = (String) intent.getExtras().get("name");
+		if(goal.equals("lock")){
+			lockDevice(name);
+		}else if(goal.equals("getLocation")){
+			sendLocation();
+		}else if(goal.equals("getKidInfo")){
+			sendKidInfo();
+		}
+		
+	
+	}
+	
+	private void lockDevice(String s){
+		JSONObject data = new JSONObject();
+		
+		String tempString = _user + "'s phone is now locked";
+		
+		DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+	  	devicePolicyManager.lockNow();
+		try {
+			data.put("action", "com.rbarnes.UPDATE_STATUS");
+			data.put("alert", tempString);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+		query.whereEqualTo("parent", true);
+		query.whereEqualTo("family", _famName);
+		query.whereEqualTo("name", s);
+		
+		
+		ParsePush push = new ParsePush();
+		push.setQuery(query);
+		push.setData(data);
+		push.sendInBackground();
+	};
+	private void sendKidInfo(){
 		JSONObject kidInfoObj = new JSONObject();
 		// TODO Auto-generated method stub
 		try {
@@ -41,10 +102,43 @@ public class SendParseService extends IntentService {
 		Log.i("json", kidInfoObj.toString());
 		ParseObject kidInfo = new ParseObject("kidContent");
 		kidInfo.put("content", kidInfoObj);
-		
+		kidInfo.put("name", _user);
 		kidInfo.saveInBackground();
 	}
-	
+	private void sendLocation(){
+		Location l = getLastBestLocation();
+		
+		ParseObject obj = new ParseObject("kidLocation");
+		ParseACL postACL = new ParseACL();
+		postACL.setRoleWriteAccess(_famName, true);
+		postACL.setRoleReadAccess(_famName, true);
+		//obj.setACL(postACL);
+		ParseGeoPoint gp = new ParseGeoPoint(l.getLatitude(),l.getLongitude());
+		obj.put("kid_loc", gp);
+		obj.put("name", _user);
+		obj.saveEventually();
+	}
+	private Location getLastBestLocation() {
+	    Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+	    Location locationNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+	    long GPSLocationTime = 0;
+	    if (null != locationGPS) { GPSLocationTime = locationGPS.getTime(); }
+
+	    long NetLocationTime = 0;
+
+	    if (null != locationNet) {
+	        NetLocationTime = locationNet.getTime();
+	    }
+
+	    if ( 0 < GPSLocationTime - NetLocationTime ) {
+	        return locationGPS;
+	    }
+	    else{
+	        return locationNet;
+	    }
+
+	}
 	private JSONArray getAppList(){
 		
 		JSONArray jsonArray = new JSONArray();
