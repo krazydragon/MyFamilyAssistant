@@ -40,6 +40,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -75,25 +76,25 @@ public class GroceryFragment extends Fragment{
 	cards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
 	TextView titleText = (TextView)view.findViewById(R.id.title);
-	ImageButton button = (ImageButton)view.findViewById(R.id.addButton);     
+	    
 	new RemoteDataTask().execute();
 
 	titleText.setText("Groceries");
 	changeTextViewFont(titleText);
 	
-	button.setOnClickListener(new Button.OnClickListener(){
-
-    	@Override
-    	public void onClick(View v) {
-    		// TODO Auto-generated method stub
-
-    		addPopUp();
-
-    	}
-    	}
-    );
-	
+	setHasOptionsMenu(true);	
 	return view;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	   // handle item selection
+	   switch (item.getItemId()) {
+	   case R.id.menu_add:
+	        addPopUp();
+	        return true;
+	      default:
+	         return super.onOptionsItemSelected(item);
+	   }
 	}
 	
 	public void addPopUp(){
@@ -275,6 +276,7 @@ public class GroceryFragment extends Fragment{
                 CardHeader header = new CardHeader(getActivity());
                 card.setTitle((String) item.get("item"));
                 //Add Header to card
+                header.setTitle("Groceries");
                 card.addCardHeader(header);
               //Create thumbnail
 		        CardThumbnail thumb = new CardThumbnail(getActivity());
@@ -339,7 +341,11 @@ public class GroceryFragment extends Fragment{
         }
 
         private void init() {
-
+        	//Add thumbnail
+            CardThumbnail cardThumbnail = new CardThumbnail(mContext);
+            cardThumbnail.setDrawableResource(R.drawable.shopping_cart_icon);
+            addCardThumbnail(cardThumbnail);
+            
         	setOnSwipeListener(new Card.OnSwipeListener() {
                 @Override
                 public void onSwipe(Card card) {
@@ -387,7 +393,7 @@ public class GroceryFragment extends Fragment{
                 mTitle.setText(title);
 
             if (mSecondaryTitle != null)
-                mSecondaryTitle.setText("Groceries");
+                mSecondaryTitle.setText("");
 
             mCheckbox.setChecked(checked);
             if(checked){

@@ -328,7 +328,7 @@ public class CalendarFragment extends Fragment{
     		    String dateString = "at "+simpleDate.format(date);
     		    card.setSecondaryTitle(dateString);
 		        //Set resource
-		        thumb.setDrawableResource(R.drawable.ic_launcher);
+		        
 		        card.setSwipeable(true);
 		        card.setClickable(true);
 		        //Add thumbnail to a card

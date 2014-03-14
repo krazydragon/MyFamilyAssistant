@@ -159,21 +159,22 @@ public class UpcomingFragment extends Fragment {
                 //Create a CardHeader
                 
                 card.setTitle((String) item.get("title"));
-                CardHeader header = new CardHeader(getActivity());
-                header.setTitle((String) item.get("title"));
-                //Add Header to card
-                card.addCardHeader(header);
+                
               //Create thumbnail
 		        CardThumbnail thumb = new CardThumbnail(getActivity());
 		        card.setObj(item);   
 		        card.setBackgroundResourceId(R.drawable.card_background);
 		        Date date = item.getDate("date");
-        		
+		        CardHeader header = new CardHeader(getActivity());
+                header.setTitle((String) android.text.format.DateFormat.format("EEEE MMMM d yyyy", date));
+                //Add Header to card
+                card.addCardHeader(header);
     		       
 
-    		    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+    		    SimpleDateFormat simpleDate =  new SimpleDateFormat("hh:mm a");
 
     		    String dateString = simpleDate.format(date);
+    		    card.setTitle((String) item.get("title"));
     		    card.setSecondaryTitle(dateString);
 		        //Set resource
 		        thumb.setDrawableResource(R.drawable.calendar);
@@ -280,8 +281,8 @@ public class UpcomingFragment extends Fragment {
             changeEditTextFont(mTitle);
             changeEditTextFont(mSecondaryTitle);
             
-            
-            mTitle.setText("");
+            if (mSecondaryTitle != null)
+            	mTitle.setText(title);
             if (mSecondaryTitle != null)
             	mSecondaryTitle.setText(secondaryTitle);
 

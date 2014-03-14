@@ -53,7 +53,7 @@ public class KidsFragment extends Fragment {
 	    //Create a CardHeader
 	    CardHeader header = new CardHeader(getActivity());
 	    header.setTitle("Kids Information");
-	    card1.setTitle("Tom has 3 new contacts");
+	    card1.setTitle("Tom has 7 new contacts");
 	    //Add Header to card
 	    card1.addCardHeader(header);
 	  //Create thumbnail
@@ -73,7 +73,7 @@ public class KidsFragment extends Fragment {
 	    //Create a CardHeader
 	    CardHeader header2 = new CardHeader(getActivity());
 	    header2.setTitle("Kids Information");
-	    card2.setTitle("Tom's phone was unlocked");
+	    card2.setTitle("Tom has installed 5 new apps");
 	    
 	    //Add Header to card
 	    card2.addCardHeader(header2);
@@ -87,12 +87,14 @@ public class KidsFragment extends Fragment {
 	    //Create a CardHeader
 	    CardHeader header3 = new CardHeader(getActivity());
 	    header3.setTitle("Kids Information");
-	    card3.setTitle("Tom is at home");
+	    card3.setTitle("Tom has 13 recent cards");
 	    //Add Header to card
 	    card3.addCardHeader(header3);
 	    card3.setBackgroundResourceId(R.drawable.card_background);
 	    
 	    cards.add(card3);
+	    
+	    
 	    CardArrayAdapter adapter = new CardArrayAdapter(getActivity(),cards);
 		if (listView!=null){
 			listView.setAdapter(adapter);
@@ -136,6 +138,10 @@ public class KidsFragment extends Fragment {
         }
 
         private void init() {
+        	
+        	CardThumbnail cardThumbnail = new CardThumbnail(mContext);
+            cardThumbnail.setDrawableResource(R.drawable.person);
+            addCardThumbnail(cardThumbnail);
 
         	setOnSwipeListener(new Card.OnSwipeListener() {
                 @Override
@@ -180,7 +186,7 @@ public class KidsFragment extends Fragment {
             changeEditTextFont(mTitle);
             changeEditTextFont(mSecondaryTitle);
             
-                mTitle.setText("");
+                mTitle.setText(title);
 
             
                 mSecondaryTitle.setText(secondaryTitle);

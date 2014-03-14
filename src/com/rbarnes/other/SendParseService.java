@@ -33,6 +33,9 @@ public class SendParseService extends IntentService {
 	LocationManager locationManager;
 	private String _famName;
 	private String _user;
+	private String _name;
+	private DevicePolicyManager _devicePolicyManager;
+	private String _tempString;
 	
 	
 	public SendParseService() {
@@ -43,34 +46,33 @@ public class SendParseService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		
+		_devicePolicyManager= (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		_famName = PreferenceManager.getDefaultSharedPreferences(this).getString("fam_name", _famName);
 		_user = PreferenceManager.getDefaultSharedPreferences(this).getString("user", _user);
 		
 		String goal = (String) intent.getExtras().get("goal");
-		String name = (String) intent.getExtras().get("name");
+		_name = (String) intent.getExtras().get("name");
 		if(goal.equals("lock")){
-			lockDevice(name);
+			lockDevice();
 		}else if(goal.equals("getLocation")){
 			sendLocation();
 		}else if(goal.equals("getKidInfo")){
 			sendKidInfo();
+		}else if(goal.equals("unlock")){
+			unlockDevice();
 		}
 		
 	
 	}
-	
-	private void lockDevice(String s){
+	private void sendNotiBack(){
 		JSONObject data = new JSONObject();
 		
-		String tempString = _user + "'s phone is now locked";
 		
-		DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-	  	devicePolicyManager.lockNow();
+		
 		try {
 			data.put("action", "com.rbarnes.UPDATE_STATUS");
-			data.put("alert", tempString);
+			data.put("alert", _tempString);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -80,14 +82,30 @@ public class SendParseService extends IntentService {
 		ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
 		query.whereEqualTo("parent", true);
 		query.whereEqualTo("family", _famName);
-		query.whereEqualTo("name", s);
+		query.whereEqualTo("name", _name);
 		
 		
 		ParsePush push = new ParsePush();
 		push.setQuery(query);
 		push.setData(data);
 		push.sendInBackground();
-	};
+	}
+	private void lockDevice(){
+		
+	  	_devicePolicyManager.lockNow();
+	  	_devicePolicyManager.resetPassword("password", 1);
+	  	_tempString = _user + "'s phone is now locked";
+	  	sendNotiBack();
+	}
+	
+	private void unlockDevice(){
+		_devicePolicyManager.lockNow();
+	  	_devicePolicyManager.resetPassword("", 1);
+	  	_tempString = _user + "'s phone is now unlocked";
+	  	sendNotiBack();
+	}
+	
+	
 	private void sendKidInfo(){
 		JSONObject kidInfoObj = new JSONObject();
 		// TODO Auto-generated method stub
@@ -117,6 +135,8 @@ public class SendParseService extends IntentService {
 		obj.put("kid_loc", gp);
 		obj.put("name", _user);
 		obj.saveEventually();
+		_tempString = _user + "'s location was updated";
+		sendNotiBack();
 	}
 	private Location getLastBestLocation() {
 	    Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);

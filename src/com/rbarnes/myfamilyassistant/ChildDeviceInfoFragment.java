@@ -33,6 +33,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 
+import android.R.integer;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Point;
@@ -121,6 +122,7 @@ public class ChildDeviceInfoFragment extends Fragment{
 	}
 	void setupList(){
 		
+		String _kid = "Tom";
 		
 		switch (page) {
         case 0:
@@ -132,22 +134,31 @@ public class ChildDeviceInfoFragment extends Fragment{
 				for(int n = 0; n < appArray.length(); n++)
 				{
 				    JSONObject object = appArray.getJSONObject(n);
+				    
+				    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+
+	    		    String dateString = simpleDate.format(Double.parseDouble((object.getString("date_installed"))));
 				    MainCard card = new MainCard(_context);
 				    Log.i("NAME", object.getString("name"));
 			        //Create a CardHeader
 			        CardHeader header = new CardHeader(getActivity());
+			        header.setTitle(_kid + "'s apps");
 			        card.setTitle(object.getString("name"));
+			        
+			        
+			        card.setSecondaryTitle("installed on " + dateString);
 			        //Add Header to card
 			        card.addCardHeader(header);
 			      //Create thumbnail
 			        CardThumbnail thumb = new CardThumbnail(getActivity());
 			           
 			        card.setBackgroundResourceId(R.drawable.card_background);
-			        card.setResourceIdThumbnail(R.drawable.android_icon);
+			        
 
 				   
 			        //Set resource
-			        thumb.setDrawableResource(R.drawable.ic_launcher);
+			        thumb.setDrawableResource(R.drawable.android_icon);
+			        card.addCardThumbnail(thumb);
 			        card.setSwipeable(false);
 			        card.setClickable(true);
 				    cards.add(card);
@@ -177,6 +188,7 @@ try {
 				    
 			        //Create a CardHeader
 			        CardHeader header = new CardHeader(getActivity());
+			        header.setTitle(_kid + "'s contacts");
 			        card.setTitle(object.getString("name"));
 			        card.setSecondaryTitle(object.getString("number"));
 			        //Add Header to card
@@ -185,11 +197,10 @@ try {
 			        CardThumbnail thumb = new CardThumbnail(getActivity());
 			           
 			        card.setBackgroundResourceId(R.drawable.card_background);
-			        card.setResourceIdThumbnail(R.drawable.person);
-
-				   
+			        
 			        //Set resource
-			        thumb.setDrawableResource(R.drawable.ic_launcher);
+			        thumb.setDrawableResource(R.drawable.person);
+			        card.addCardThumbnail(thumb);
 			        card.setSwipeable(false);
 			        card.setClickable(true);
 				    cards.add(card);
@@ -213,16 +224,22 @@ try {
 				{
 				    JSONObject object = appArray.getJSONObject(n);
 				    MainCard card = new MainCard(_context);
-				    Log.i("NAME", object.getString("name"));
+				    
 			        //Create a CardHeader
 			        CardHeader header = new CardHeader(getActivity());
+			        header.setTitle(_kid + "'s call log");
 			        card.setTitle(object.getString("name"));
-			        
-			        //SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+			        SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 
-	    		   // String dateString = simpleDate.format(object.getString("date"));
+	    		    String dateString = simpleDate.format(Double.parseDouble((object.getString("date"))));
+	    		    int i = Integer.parseInt((object.getString("duration")));
+	    		    int tempDur = i/60;
 	    		    
-	    		   // card.setSecondaryTitle(dateString);
+	    		    String dur = Integer.toString(tempDur); 
+	    		    
+	    		    
+	    		    card.setSecondaryTitle("on " + dateString +" for " + dur + " minutes");
+	    		    
 			        //Add Header to card
 			        card.addCardHeader(header);
 			      //Create thumbnail
@@ -232,16 +249,17 @@ try {
 			        String temp = object.getString("type");
 			        
 			        if(temp.equals("OUTGOING")){
-			        	card.setResourceIdThumbnail(R.drawable.dialed_calls_icon);	
+			        	thumb.setDrawableResource(R.drawable.dialed_calls_icon);	
 			        }else if(temp.equals("INCOMING")){
-			        	card.setResourceIdThumbnail(R.drawable.received_calls_icon);
+			        	thumb.setDrawableResource(R.drawable.received_calls_icon);
 			        }else if(temp.equals("MISSED")){
-			        	card.setResourceIdThumbnail(R.drawable.missed_calls_icon);
+			        	thumb.setDrawableResource(R.drawable.missed_calls_icon);
 			        }
 
 				   
 			        //Set resource
-			        thumb.setDrawableResource(R.drawable.ic_launcher);
+			        
+			        card.addCardThumbnail(thumb);
 			        card.setSwipeable(false);
 			        card.setClickable(true);
 				    cards.add(card);
@@ -260,62 +278,7 @@ try {
 		adapter = new CardArrayAdapter(_context, cards);
 		listView.setAdapter(adapter);
 		
-		//Create a Card
-      /*  
-		MainCard card = new MainCard(getActivity());
-        //Create a CardHeader
-        CardHeader header = new CardHeader(getActivity());
-        card.setTitle((String) item.get("title"));
-        //Add Header to card
-        card.addCardHeader(header);
-      //Create thumbnail
-        CardThumbnail thumb = new CardThumbnail(getActivity());
-        card.setObj(item);   
-        card.setBackgroundResourceId(R.drawable.card_background);
-        
-
-	   
-        //Set resource
-        thumb.setDrawableResource(R.drawable.ic_launcher);
-        card.setSwipeable(false);
-        card.setClickable(true);
-        //Add thumbnail to a card
-        
-        
-        
-	    if (page == 0) {
-	    	 pastCards.add(card);
-	       
-	    } else if (page == 1) {
-	    	 todayCards.add(card);
-	        
-	    } 
-	        else if (page == 2) {
-	          futureCards.add(card);
-	            	 
-	        
-	    }
-        
-    }
-	
-
-	
-
-	
-	pastAdapter = new CardArrayAdapter(getActivity(),pastCards);
-	todayAdapter = new CardArrayAdapter(getActivity(),todayCards);
-	futureAdapter = new CardArrayAdapter(getActivity(),futureCards);
-	if (page == 2){
-		listView.setAdapter(pastAdapter);
-    }
-	
-	if (page == 0){
-		listView.setAdapter(todayAdapter);
-    }
-	
-	if (page == 1){
-		listView.setAdapter(futureAdapter);
-    }*/
+		
 	}
 
 	void changeButtonFont(TextView v){
@@ -398,7 +361,6 @@ try {
             //Retrieve elements
             mTitle = (TextView) view.findViewById(R.id.inner_title);
             mSecondaryTitle = (TextView) parent.findViewById(R.id.inner_title2);
-            mImageView = (ImageView) parent.findViewById(R.id.imageView1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  );
             mCheckbox = (CheckBox)parent.findViewById(R.id.checkBox1);
             
             changeEditTextFont(mTitle);
@@ -411,7 +373,7 @@ try {
             	mSecondaryTitle.setText(secondaryTitle);
 
           
-            	mImageView.setImageResource(resourceIdThumbnail);
+            	
             	
          
 

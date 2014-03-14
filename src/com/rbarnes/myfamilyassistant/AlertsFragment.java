@@ -17,6 +17,7 @@ import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.view.CardListView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.parse.ParseACL;
@@ -54,7 +55,7 @@ public class AlertsFragment extends Fragment {
 	ArrayList<Card> cards;
 	CardListView listView;
 	CardArrayAdapter adapter; 
-	EditText messageInput;
+
 	
 	@SuppressWarnings({ })
 	@Override
@@ -62,68 +63,17 @@ public class AlertsFragment extends Fragment {
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_messages, container, false);
+	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_kids, container, false);
 	
 	_context = getActivity();
 	cards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
-	TextView titleText = (TextView)view.findViewById(R.id.title);
-	Button button = (Button)view.findViewById(R.id.addButton); 
-	messageInput = (EditText)view.findViewById(R.id.messageInput); 
+
+
+	
 	
 	new RemoteDataTask().execute();
-	changeTextViewFont(titleText);
-	changeEditTextFont(messageInput);
-	changeButtonFont(button);
-	button.setOnClickListener(new Button.OnClickListener(){
-
-    	@Override
-    	public void onClick(View v) {
-    		// TODO Auto-generated method stub
-    		ParseUser currentUser = ParseUser.getCurrentUser();
-    		String s = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", "error");
-    		
-			ParseObject obj = new ParseObject("Supplies");
-			ParseACL postACL = new ParseACL();
-			postACL.setRoleWriteAccess(s, true);
-			postACL.setRoleReadAccess(s, true);
-			//obj.setACL(postACL);
-			
-			obj.put("item", messageInput.getText().toString());
-			obj.put("completed", false);
-			
-			obj.saveEventually();
-    			
-    			
-			//Create a Card
-            
-       		MainCard card = new MainCard(getActivity());
-               //Create a CardHeader
-               CardHeader header = new CardHeader(getActivity());
-               card.setTitle(messageInput.getText().toString());
-               card.setSecondaryTitle("From " +(String) currentUser.get("firstName"));
-               //Add Header to card
-               card.addCardHeader(header);
-             //Create thumbnail
-		        
-	              
-		        
-		        card.setObj(obj);   
-		        card.setSwipeable(true);
-		        card.setClickable(false);
-		       
-		        card.setBackgroundResourceId(R.drawable.card_background);
-		           
-		        
-		        
-		        //Add thumbnail to a card
-		        
-               cards.add(card);
-			adapter.notifyDataSetChanged();
-
-    	}
-    	}
-    );
+	
 	
 	return view;
 	}
@@ -192,10 +142,11 @@ public class AlertsFragment extends Fragment {
        		MainCard card = new MainCard(getActivity());
                //Create a CardHeader
        		CardHeader header = new CardHeader(getActivity());
-            header.setTitle((String) item.get("message"));
+       		header.setTitle("From "+(String) item.get("from"));
+            card.setTitle((String) item.get("message"));
             //Add Header to card
-            
-               card.setSecondaryTitle((String) item.get("from"));
+            Date date = item.getCreatedAt();
+            	card.setSecondaryTitle("Sent on " +(String) android.text.format.DateFormat.format("EEEE MMMM d yyyy hh:mm a", date));
                //Add Header to card
                card.addCardHeader(header);
              //Create thumbnail
@@ -293,7 +244,7 @@ public class AlertsFragment extends Fragment {
            changeEditTextFont(mTitle);
            changeEditTextFont(mSecondaryTitle);
            
-               mTitle.setText("");
+               mTitle.setText(title);
 
           
                mSecondaryTitle.setText(secondaryTitle);

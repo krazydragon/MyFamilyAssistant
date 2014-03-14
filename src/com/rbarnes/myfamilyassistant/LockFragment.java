@@ -93,7 +93,7 @@ public class LockFragment extends Fragment{
     		// TODO Auto-generated method stub
 
     		ImageView lockImage = (ImageView)view.findViewById(R.id.lockImage);
-    
+    		JSONObject data = new JSONObject();
     		
     		if(isUnlocked){
     			lockImage.setBackgroundResource(R.drawable.lock);
@@ -101,7 +101,7 @@ public class LockFragment extends Fragment{
     			lockButton.setText("Unlock");
     			isUnlocked = false;
     			
-    			JSONObject data = new JSONObject();
+    			
         		
         		try {
         			data.put("action", "com.rbarnes.UPDATE_STATUS");
@@ -114,22 +114,33 @@ public class LockFragment extends Fragment{
         		}
         		
         		
-        		ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
-        		query.whereEqualTo("parent", false);
-        		query.whereEqualTo("family", _famName);
-        		query.whereEqualTo("name", _kid);
-        		
-        		
-        		ParsePush push = new ParsePush();
-        		push.setQuery(query);
-        		push.setData(data);
-        		push.sendInBackground();
     		}else{
-    			//lockImage.setBackgroundResource(R.drawable.unlock);
-    			//lockButton.setText("Lock");
-    			//isUnlocked = true;
+    			lockImage.setBackgroundResource(R.drawable.unlock);
+    			lockButton.setText("Lock");
+    			isUnlocked = true;
+    			
+    			try {
+        			data.put("action", "com.rbarnes.UPDATE_STATUS");
+        			data.put("name", _user);
+        			data.put("goal", "unlock");
+        			data.put("family", _famName);
+        		} catch (JSONException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}
     		}
 
+
+    		ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+    		query.whereEqualTo("parent", false);
+    		query.whereEqualTo("family", _famName);
+    		query.whereEqualTo("name", _kid);
+    		
+    		
+    		ParsePush push = new ParsePush();
+    		push.setQuery(query);
+    		push.setData(data);
+    		push.sendInBackground();
     	}
     	}
     );

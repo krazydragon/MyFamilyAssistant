@@ -172,7 +172,7 @@ public class LocationFragment extends Fragment {
 			            map.addMarker(new MarkerOptions()
 			                    .position(ll)
 			                    .title(item.getString("name")))
-			                    .setSnippet("Last updated 2/22/2014  2:30pm");
+			                    .setSnippet("Last updated 03/13/2014  5:30pm");
 			            map.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, 16));
 			    	
 			            

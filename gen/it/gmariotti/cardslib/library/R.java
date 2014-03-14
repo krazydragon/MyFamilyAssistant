@@ -96,16 +96,16 @@ public final class R {
 	}
 	public static final class id {
 		public static final int card_content_expand_layout = 0x7f0b001d;
-		public static final int card_expand_inner_simple_title = 0x7f0b004c;
+		public static final int card_expand_inner_simple_title = 0x7f0b004b;
 		public static final int card_header_button_expand = 0x7f0b0014;
 		public static final int card_header_button_frame = 0x7f0b0012;
 		public static final int card_header_button_other = 0x7f0b0015;
 		public static final int card_header_button_overflow = 0x7f0b0013;
 		public static final int card_header_inner_frame = 0x7f0b0011;
-		public static final int card_header_inner_simple_title = 0x7f0b004d;
+		public static final int card_header_inner_simple_title = 0x7f0b004c;
 		public static final int card_header_layout = 0x7f0b001c;
 		public static final int card_main_content_layout = 0x7f0b0019;
-		public static final int card_main_inner_simple_title = 0x7f0b004e;
+		public static final int card_main_inner_simple_title = 0x7f0b004d;
 		public static final int card_main_layout = 0x7f0b001b;
 		public static final int card_overlap = 0x7f0b001e;
 		public static final int card_shadow_layout = 0x7f0b001a;
@@ -113,10 +113,10 @@ public final class R {
 		public static final int card_thumb_and_content_layout = 0x7f0b001f;
 		public static final int card_thumbnail_image = 0x7f0b0017;
 		public static final int card_thumbnail_layout = 0x7f0b0020;
-		public static final int list_cardId = 0x7f0b0051;
-		public static final int list_card_undobar = 0x7f0b0052;
-		public static final int list_card_undobar_button = 0x7f0b0054;
-		public static final int list_card_undobar_message = 0x7f0b0053;
+		public static final int list_cardId = 0x7f0b0050;
+		public static final int list_card_undobar = 0x7f0b0051;
+		public static final int list_card_undobar_button = 0x7f0b0053;
+		public static final int list_card_undobar_message = 0x7f0b0052;
 		public static final int undobar = 0x7f0b0021;
 		public static final int undobar_button = 0x7f0b0023;
 		public static final int undobar_message = 0x7f0b0022;

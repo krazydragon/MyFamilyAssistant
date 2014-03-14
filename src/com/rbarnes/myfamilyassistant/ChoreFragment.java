@@ -39,6 +39,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -63,11 +64,11 @@ public class ChoreFragment extends Fragment{
 	private ProgressDialog mProgressDialog;
 	private Context _context;
 	private List<ParseObject> ob;
-	private static ArrayList<Card> cards;
+	private ArrayList<Card> cards;
 	private static ArrayList<Card> completedCards;
 	private CardListView listView;
 	private PopupWindow pw; 
-	static CardArrayAdapter adapter;
+	CardArrayAdapter adapter;
 	static CardArrayAdapter completedAdapter;
 	private int page; 
 	
@@ -105,26 +106,28 @@ public class ChoreFragment extends Fragment{
 	completedCards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
 	TextView titleText = (TextView)view.findViewById(R.id.title);
-	ImageButton button = (ImageButton)view.findViewById(R.id.addButton);     
+	    
 	new RemoteDataTask().execute();
 
 	titleText.setText("Chores");
 	changeTextViewFont(titleText);
 	
-	button.setOnClickListener(new Button.OnClickListener(){
+	setHasOptionsMenu(true);
 
-    	@Override
-    	public void onClick(View v) {
-    		// TODO Auto-generated method stub
-
-    		addPopUp();
-
-    	}
-    	}
-    );
 	
 	return view;
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	   // handle item selection
+	   switch (item.getItemId()) {
+	     
+	      default:
+	         return super.onOptionsItemSelected(item);
+	   }
+	}
+	
 	public void addPopUp(){
 		
 		
@@ -407,6 +410,15 @@ public class ChoreFragment extends Fragment{
                     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 				_context);
                  
+                    	Date date = new Date();
+	       		        
+	       		        
+	               		
+	         		       
+
+	           		    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+
+	           		    final String dateString = simpleDate.format(date);
                 			// set title
                 			alertDialogBuilder.setTitle("Chore Completed");
                  
@@ -437,15 +449,7 @@ public class ChoreFragment extends Fragment{
                 	                       CardHeader header = new CardHeader(getActivity());
                 	                       newCard.setTitle(getTitle());
                 	                       
-                	                       Date date = new Date();
-                	       		        
-                	       		        
-                	               		
-                	         		       
-
-                	           		    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-
-                	           		    String dateString = simpleDate.format(date);
+                	                       
                 	           		    
                 	           		    newCard.setSecondaryTitle(dateString);
                 	                       //Add Header to card
@@ -482,23 +486,40 @@ public class ChoreFragment extends Fragment{
                  
                 				// show it
                 				alertDialog.show();
-                        if(mCheckbox.isChecked()){
+                        
                         	
-                        	obj.put("completed", false);
-                            mCheckbox.setChecked(false);
-                            card.changeBackgroundResourceId(R.drawable.card_background);
-                        }else{
+                        
+                       
                         	
-                        	obj.put("completed", true);
-                        	mCheckbox.setChecked(true);
-                            card.changeBackgroundResourceId(R.drawable.card_background2);
-                        }
+                        	
                         obj.saveEventually();
-                        completedCards.add(card);
-                        completedAdapter.notifyDataSetChanged();
                         cards.remove(card);
                         
+                        
+                        MainCard newCard = new MainCard(getActivity());
+	                       //Create a CardHeader
+	                       CardHeader header = new CardHeader(getActivity());
+	                       newCard.setTitle(getTitle());
+	                       header.setTitle(title);
+	                       
+	           		    
+	           		    newCard.setSecondaryTitle(dateString);
+	                       //Add Header to card
+	                       newCard.addCardHeader(header);
+	                     //Create thumbnail
+	        		        
+	                       ParseObject newObj = new ParseObject("Chores");   
+	                       newCard.setChecked(true);
+	                       newCard.setObj(newObj);   
+	                       newCard.setBackgroundResourceId(R.drawable.card_background2);
+	                       newCard.setSwipeable(false);
+	                       newCard.setClickable(true);
+                        
+                        
                         adapter.notifyDataSetChanged();
+                        completedCards.add(newCard);
+                        completedAdapter.notifyDataSetChanged();
+                        
                         JSONObject data = new JSONObject();
                 		try {
                 			data.put("action", "com.rbarnes.UPDATE_STATUS");
@@ -539,14 +560,16 @@ public class ChoreFragment extends Fragment{
             
             mCheckbox.setChecked(checked);
             if(checked){
+            	mTitle.setText("Tom");
          	   mCheckbox.setChecked(true);
          	  mSecondaryTitle.setText("Completed on" + secondaryTitle); 
             }else {
+            	mTitle.setText("Dad");
          	   mCheckbox.setChecked(false);
          	  mSecondaryTitle.setText( "Created on "+ secondaryTitle);
             }
             
-                mTitle.setText(title);
+                
 
             
                 

@@ -77,23 +77,12 @@ public class SuppliesFragment extends Fragment{
 	cards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
 	TextView titleText = (TextView)view.findViewById(R.id.title);
-	ImageButton button = (ImageButton)view.findViewById(R.id.addButton);     
+	     
 	new RemoteDataTask().execute();
 
 	titleText.setText("Supplies");
 	changeTextViewFont(titleText);
 	
-	button.setOnClickListener(new Button.OnClickListener(){
-
-    	@Override
-    	public void onClick(View v) {
-    		// TODO Auto-generated method stub
-
-    		addPopUp();
-
-    	}
-    	}
-    );
 	
 	return view;
 	}
@@ -278,6 +267,7 @@ public class SuppliesFragment extends Fragment{
                CardHeader header = new CardHeader(getActivity());
                card.setTitle((String) item.get("item"));
                //Add Header to card
+               header.setTitle("Supplies");
                card.addCardHeader(header);
              //Create thumbnail
 		        
@@ -341,6 +331,11 @@ public class SuppliesFragment extends Fragment{
 
        private void init() {
 
+    	 //Add thumbnail
+           CardThumbnail cardThumbnail = new CardThumbnail(mContext);
+           cardThumbnail.setDrawableResource(R.drawable.broom);
+           addCardThumbnail(cardThumbnail);
+           
     	   setOnSwipeListener(new Card.OnSwipeListener() {
                @Override
                public void onSwipe(Card card) {
@@ -391,7 +386,7 @@ public class SuppliesFragment extends Fragment{
                mTitle.setText(title);
 
            if (mSecondaryTitle != null)
-               mSecondaryTitle.setText("Supplies");
+               mSecondaryTitle.setText("");
            
            mCheckbox.setChecked(checked);
            if(checked){
@@ -404,7 +399,7 @@ public class SuppliesFragment extends Fragment{
         	   
 
            
-           mImageView.setImageResource(R.drawable.supplies);
+           
          
 
        }

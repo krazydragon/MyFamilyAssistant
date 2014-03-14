@@ -9,5 +9,5 @@
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        card:card_layout_resourceID="@layout/card_thumbnail_layout" />
+        card:list_card_layout_resourceID="@layout/list_card_thumbnail_layout"/>
 </LinearLayout>

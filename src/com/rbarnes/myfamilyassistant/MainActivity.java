@@ -181,11 +181,10 @@ public class MainActivity extends FragmentActivity {
          // call ActionBarDrawerToggle.onOptionsItemSelected(), if it returns true
         // then it has handled the app icon touch event
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-        	LinearLayout mainfrag = (LinearLayout)findViewById(R.id.mainFrag);
-        	mainfrag.setVisibility(View.INVISIBLE);
+        	
             return true;
              
-        }else{
+        }else if(item.getItemId()== R.id.action_settings){
         	ParseUser.logOut();
         	finish();
         }
@@ -197,7 +196,8 @@ public class MainActivity extends FragmentActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             
             drawerLayout.closeDrawer(drawerListView);
-            
+            LinearLayout mainfrag = (LinearLayout)findViewById(R.id.mainFrag);
+        	mainfrag.setVisibility(View.INVISIBLE);
 			
             Fragment frag = null;
             switch (position) {

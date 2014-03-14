@@ -36,7 +36,12 @@ public class MyParseReceiver extends BroadcastReceiver {
 			  i.putExtra("name", json.getString("name"));
 	    	  i.putExtra("goal", "getLocation");		
 	    	  context.startService(i); 		
-		     }
+		     }else if(json.getString("goal").equals("unlock")){
+		    	  
+		    	  i.putExtra("name", json.getString("name"));
+		    	  i.putExtra("goal", "unlock");
+		    	  context.startService(i); 
+			  }
 	      
 	      
 	    } catch (JSONException e) {
