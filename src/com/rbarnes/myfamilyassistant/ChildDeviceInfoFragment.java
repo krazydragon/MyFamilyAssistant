@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.parse.FindCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -47,6 +49,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -55,24 +59,30 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 
 public class ChildDeviceInfoFragment extends Fragment{
 	
 	private ProgressDialog mProgressDialog;
 	private Context _context;
-	List<ParseObject> ob;
-	ArrayList<Card> cards;
+	static List<ParseObject> ob;
+	static ArrayList<Card> appCards = new ArrayList<Card>();
+	static ArrayList<Card> contactCards = new ArrayList<Card>();
+	static ArrayList<Card> recentCards = new ArrayList<Card>();
 	CardListView listView;
 	PopupWindow pw; 
-	CardArrayAdapter adapter; 
 	Date today;
 	Calendar c;
 	private int page;
 	private static JSONObject infoObj;
+	private PopupMenu popupMenu;
+	static String _kid;
+	CardArrayAdapter adapter; 
 	
 	 // newInstance constructor for creating fragment with arguments
     public static ChildDeviceInfoFragment newInstance(int page) {
@@ -96,41 +106,82 @@ public class ChildDeviceInfoFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_child_device_info, container, false);
+	final LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_child_device_info, container, false);
 	
 	
 	
 	_context = getActivity();
-	cards = new ArrayList<Card>();
-
 	
+
+	_kid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("child_list_0", "");
 	listView = (CardListView) view.findViewById(R.id.listView);
 	
 	
 	
 	
-	
-	if(infoObj == null)   {
-	new RemoteDataTask().execute();
-	}else{
+	setHasOptionsMenu(true);
+	if(ob != null){
 		setupList();
+	}else{
+		new RemoteDataTask().execute();
 	}
-
+	
    
 	
 	return view;
 	}
+	
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	   // handle item selection
+	   switch (item.getItemId()) {
+	   case R.id.menu_child:
+		   
+		   View menuItemView = getActivity().findViewById(R.id.menu_child);
+		   PopupMenu menu = new PopupMenu(_context, menuItemView);
+		   
+		   
+		   menu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      		 
+               @Override
+               public boolean onMenuItemClick(MenuItem item) {
+                   _kid = item.getTitle().toString();
+                   Log.d("KIDNAME",_kid);
+                   return true;
+               }
+           });
+		   int size = PreferenceManager.getDefaultSharedPreferences(_context).getInt("child_list_size",0);
+		   for(int i = 0; i<size;i++){
+	            String childName = PreferenceManager.getDefaultSharedPreferences(_context).getString("child_list_"+i, "");
+	            menu.getMenu().add(Menu.NONE, 0, Menu.NONE, childName);
+	        }
+		   
+		   menu.show();
+		   
+	        return true;
+	      default:
+	         return super.onOptionsItemSelected(item);
+	   }
+	}
+	
 	void setupList(){
+		if (adapter!=null){
+			adapter.clear();
+			adapter.notifyDataSetChanged();
+			}
 		
-		String _kid = "Tom";
 		
+		
+		ArrayList<Card> cards = new ArrayList<Card>();
 		switch (page) {
         case 0:
         	
         	try {
         		
 				JSONArray appArray= infoObj.getJSONArray("appList");
-				
+				appCards.clear();
 				for(int n = 0; n < appArray.length(); n++)
 				{
 				    JSONObject object = appArray.getJSONObject(n);
@@ -161,7 +212,7 @@ public class ChildDeviceInfoFragment extends Fragment{
 			        card.addCardThumbnail(thumb);
 			        card.setSwipeable(false);
 			        card.setClickable(true);
-				    cards.add(card);
+				    appCards.add(card);
 				    
 				    
 				}
@@ -171,7 +222,7 @@ public class ChildDeviceInfoFragment extends Fragment{
 			}
         	
         	
-        	
+        	cards = appCards;
         	
         	break;
         case 1:
@@ -180,7 +231,7 @@ public class ChildDeviceInfoFragment extends Fragment{
 try {
         		
 				JSONArray appArray= infoObj.getJSONArray("contacts");
-				
+				contactCards.clear();
 				for(int n = 0; n < appArray.length(); n++)
 				{
 				    JSONObject object = appArray.getJSONObject(n);
@@ -203,7 +254,7 @@ try {
 			        card.addCardThumbnail(thumb);
 			        card.setSwipeable(false);
 			        card.setClickable(true);
-				    cards.add(card);
+				    contactCards.add(card);
 				    
 				    
 				}
@@ -212,14 +263,14 @@ try {
 				e.printStackTrace();
 			}
 
-        	
+			cards = contactCards;
         	break ;
         case 2:
         	
 try {
         		
 				JSONArray appArray= infoObj.getJSONArray("callLog");
-				
+				recentCards.clear();
 				for(int n = 0; n < appArray.length(); n++)
 				{
 				    JSONObject object = appArray.getJSONObject(n);
@@ -262,7 +313,7 @@ try {
 			        card.addCardThumbnail(thumb);
 			        card.setSwipeable(false);
 			        card.setClickable(true);
-				    cards.add(card);
+				    recentCards.add(card);
 				    
 				    
 				}
@@ -271,12 +322,14 @@ try {
 				e.printStackTrace();
 			}
 
-        	
+	cards = recentCards;
         	
         	break;
     }
+		
 		adapter = new CardArrayAdapter(_context, cards);
 		listView.setAdapter(adapter);
+		Log.d("size", "" + cards.size());
 		
 		
 	}

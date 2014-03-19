@@ -63,6 +63,8 @@ public class GroceryFragment extends Fragment{
 	CardListView listView;
 	PopupWindow pw; 
 	CardArrayAdapter adapter; 
+	private String _famName;
+	private String _user;
 	
 	@SuppressWarnings({ })
 	@Override
@@ -73,6 +75,8 @@ public class GroceryFragment extends Fragment{
 	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
 	
 	_context = getActivity();
+	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
+	_user = PreferenceManager.getDefaultSharedPreferences(_context).getString("user", _user);
 	cards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
 	TextView titleText = (TextView)view.findViewById(R.id.title);
@@ -140,13 +144,12 @@ public class GroceryFragment extends Fragment{
         		if(popupInput.getText().toString().trim().length() > 0){
 
         			// TODO Auto-generated method stub
-            		String s = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", "error");
             		
         			ParseObject obj = new ParseObject("Groceries");
         			ParseACL postACL = new ParseACL();
-        			postACL.setRoleWriteAccess(s, true);
-        			postACL.setRoleReadAccess(s, true);
-        			//obj.setACL(postACL);
+        			postACL.setRoleWriteAccess(_famName, true);
+        			postACL.setRoleReadAccess(_famName, true);
+        			obj.setACL(postACL);
         			
         			obj.put("item", popupInput.getText().toString());
         			obj.put("completed", false);
@@ -159,6 +162,7 @@ public class GroceryFragment extends Fragment{
                		MainCard card = new MainCard(getActivity());
                        //Create a CardHeader
                        CardHeader header = new CardHeader(getActivity());
+                       header.setTitle("Groceries");
                        card.setTitle(popupInput.getText().toString());
                        //Add Header to card
                        card.addCardHeader(header);

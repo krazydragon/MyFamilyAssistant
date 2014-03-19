@@ -67,7 +67,7 @@ public class KidsFragment extends Fragment {
 	    
 	    //Add thumbnail to a card
 	    
-	    cards.add(card1);
+	    //cards.add(card1);
 	    
 	    MainCard card2 = new MainCard(getActivity());
 	    //Create a CardHeader
@@ -81,7 +81,7 @@ public class KidsFragment extends Fragment {
 	    
 	    //Add thumbnail to a card
 	    
-	    cards.add(card2);
+	   // cards.add(card2);
 	    
 	    MainCard card3 = new MainCard(getActivity());
 	    //Create a CardHeader
@@ -92,7 +92,7 @@ public class KidsFragment extends Fragment {
 	    card3.addCardHeader(header3);
 	    card3.setBackgroundResourceId(R.drawable.card_background);
 	    
-	    cards.add(card3);
+	    //cards.add(card3);
 	    
 	    
 	    CardArrayAdapter adapter = new CardArrayAdapter(getActivity(),cards);

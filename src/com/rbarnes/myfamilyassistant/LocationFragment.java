@@ -29,9 +29,6 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
-import com.rbarnes.myfamilyassistant.LockFragment.RemoteDataTask;
-
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -74,6 +71,7 @@ public class LocationFragment extends Fragment {
 	super.onCreate(savedInstanceState); 
 	 
 	_context = getActivity();
+	_kid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("child_list_0", "");
 	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
 	_user = PreferenceManager.getDefaultSharedPreferences(_context).getString("user", _user);
 	
@@ -136,6 +134,8 @@ public class LocationFragment extends Fragment {
         		push.setData(data);
         		push.sendInBackground();
         		
+        		findLocation();
+        		
         	}
         	}
         );
@@ -143,13 +143,45 @@ public class LocationFragment extends Fragment {
     }
 
    
-	
-    new RemoteDataTask().execute();
+    setHasOptionsMenu(true);
+    
 	return view;
 	
 	
 	
 	
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	   // handle item selection
+	   switch (item.getItemId()) {
+	   case R.id.menu_child:
+		   
+		   View menuItemView = getActivity().findViewById(R.id.menu_child);
+		   PopupMenu menu = new PopupMenu(_context, menuItemView);
+		   
+		   
+		   menu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      		 
+               @Override
+               public boolean onMenuItemClick(MenuItem item) {
+                   _kid = item.getTitle().toString();
+                   Log.d("KIDNAME",_kid);
+                   return true;
+               }
+           });
+		   int size = PreferenceManager.getDefaultSharedPreferences(_context).getInt("child_list_size",0);
+		   for(int i = 0; i<size;i++){
+	            String childName = PreferenceManager.getDefaultSharedPreferences(_context).getString("child_list_"+i, "");
+	            menu.getMenu().add(Menu.NONE, 0, Menu.NONE, childName);
+	        }
+		   
+		   menu.show();
+		   
+	        return true;
+	      default:
+	         return super.onOptionsItemSelected(item);
+	   }
 	}
 	private void findLocation(){
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("kidLocation");

@@ -276,9 +276,10 @@ _regForm = new Form();
 			famPass.put("kidPass", _kidPassInput.getText().toString());
 			famPass.setACL(roleACL);
 			famPass.saveInBackground();
+			_user.add("famName", _famName);
+            _user.add("parent", true);
+            _user.saveInBackground();
 			
-			_user.add("parent", true);
-			_user.saveInBackground();
 			_parent = true;
 			loginUser();
 		}
@@ -300,7 +301,9 @@ _regForm = new Form();
 	            _pass = input.getText().toString();
 	            _passName = "password";
 	            _parent = true;
-	            _user.add("parent", true);
+	            Log.d("USER", ""+_user);
+	            _user.put("famName", _famName);
+	            _user.put("parent", true);
 	            _user.saveInBackground();
 	            verFamCheck();
 	        }
@@ -310,8 +313,10 @@ _regForm = new Form();
 	        public void onClick(DialogInterface dialog, int which) {
 	        	
 	        	_passName = "kidPass";
+	        	 _parent = false;
 	        	_pass = input.getText().toString();
-	        	_user.add("parent", false);
+	        	_user.put("famName", _famName);
+	        	_user.put("parent", false);
 	        	_user.saveInBackground();
 
 	        	verFamCheck();
@@ -337,17 +342,6 @@ _regForm = new Form();
 		    	if(famPass.isEmpty()){
 		    		checkFamPass();
 		    	}else{
-		    		if(!_parent){
-		    			ParseObject kidName = new ParseObject("KidName");
-			        	ParseACL roleACL = new ParseACL();
-						roleACL = new ParseACL();
-						roleACL.setRoleReadAccess(_famName, true);
-						roleACL.setRoleWriteAccess(_famName, true);
-						kidName.put("name", _user.getString("firstName"));
-						kidName.setACL(roleACL);
-						kidName.saveInBackground();
-						Log.i("Name",""+ _user.getString("firstName"));
-		    		}
 		    		loginUser();
 		    		
 		    	}
@@ -383,6 +377,8 @@ _regForm = new Form();
  		installation.put("parent", _parent);
  		installation.put("family", _famName);
  		installation.saveInBackground();
+ 		
+ 		
 		 finish();
 	}
 	void changeButtonFont(TextView v){

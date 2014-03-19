@@ -10,30 +10,14 @@
 package com.rbarnes.myfamilyassistant;
 
 
-import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
-import it.gmariotti.cardslib.library.internal.CardHeader;
-import it.gmariotti.cardslib.library.internal.CardThumbnail;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.parse.ParseException;
 import com.parse.ParseInstallation;
-import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
-import com.rbarnes.myfamilyassistant.ChoreFragment.MainCard;
-import com.rbarnes.myfamilyassistant.ChoreFragment.RemoteDataTask;
-
-import android.app.ProgressDialog;
-import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -45,12 +29,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListPopupWindow;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class LockFragment extends Fragment{
 	
@@ -60,26 +42,21 @@ public class LockFragment extends Fragment{
 	private String _famName;
 	private String _user;
 	private String _kid;
-	private Boolean _lock = false;
-	private ProgressDialog mProgressDialog;
 	private Context _context;
-	private List<ParseObject> ob;
-	private PopupMenu popupMenu;
-	
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
 	view = (RelativeLayout) inflater.inflate(R.layout.fragment_lock, container, false);
-	new RemoteDataTask().execute();
+	_kid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("child_list_0", "");
 	_context = getActivity();
 	TextView tv = (TextView) view.findViewById(R.id.lockView);
 	lockButton = (Button)view.findViewById(R.id.lockButton);
 	
 	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
 	_user = PreferenceManager.getDefaultSharedPreferences(_context).getString("user", _user);
+	
 	
 	
 	Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "primer.ttf");
@@ -145,7 +122,7 @@ public class LockFragment extends Fragment{
     	}
     );
 	
-	
+	setHasOptionsMenu(true);
 	return view;
 	
 	
@@ -153,73 +130,39 @@ public class LockFragment extends Fragment{
 	
 	}
 	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	   // handle item selection
+	   switch (item.getItemId()) {
+	   case R.id.menu_child:
+		   
+		   View menuItemView = getActivity().findViewById(R.id.menu_child);
+		   PopupMenu menu = new PopupMenu(_context, menuItemView);
+		   
+		   
+		   menu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      		 
+               @Override
+               public boolean onMenuItemClick(MenuItem item) {
+                   _kid = item.getTitle().toString();
+                   Log.d("KIDNAME",_kid);
+                   return true;
+               }
+           });
+		   int size = PreferenceManager.getDefaultSharedPreferences(_context).getInt("child_list_size",0);
+		   for(int i = 0; i<size;i++){
+	            String childName = PreferenceManager.getDefaultSharedPreferences(_context).getString("child_list_"+i, "");
+	            menu.getMenu().add(Menu.NONE, 0, Menu.NONE, childName);
+	        }
+		   
+		   menu.show();
+		   
+	        return true;
+	      default:
+	         return super.onOptionsItemSelected(item);
+	   }
+	}
 	
-	// RemoteDataTask AsyncTask
-    public class RemoteDataTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Create a progressdialog
-            mProgressDialog = new ProgressDialog(getActivity());
-            // Set progressdialog title
-            mProgressDialog.setTitle("");
-            // Set progressdialog message
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
-            // Show progressdialog
-            mProgressDialog.show();
-        }
-        
-        
-        @Override
-        protected Void doInBackground(Void... params) {
-            // Locate the class table named "Country" in Parse.com
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
-                    "KidName");
-            query.orderByDescending("_created_at");
-            try {
-                ob = query.find();
-            } catch (ParseException e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return null;
-        }
- 
-        @SuppressWarnings({ })
-		@Override
-        protected void onPostExecute(Void result) {
-        	
-        	
-        	
-            
-        	popupMenu = new PopupMenu(_context, view.findViewById(R.id.lockView));
-        	
-        	
-        	popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-        		 
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    _kid = item.getTitle().toString();
-                    return true;
-                }
-            });
-        	
-        	int i = 1;
-        	for (ParseObject item : ob) {
-            	
-        		popupMenu.getMenu().add(Menu.NONE, 0, Menu.NONE, (String) item.get("name"));
-                i++;
-                
-		           
-                
-            }
-        	
-
-        	
-        	mProgressDialog.dismiss();
-        	popupMenu.show();
-        }
-    }
+	
 
 }

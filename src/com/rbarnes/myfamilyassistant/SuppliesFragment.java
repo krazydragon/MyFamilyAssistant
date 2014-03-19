@@ -41,6 +41,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -64,6 +65,8 @@ public class SuppliesFragment extends Fragment{
 	CardListView listView;
 	PopupWindow pw; 
 	CardArrayAdapter adapter;
+	private String _famName;
+	private String _user;
 	
 	@SuppressWarnings({ })
 	@Override
@@ -74,6 +77,8 @@ public class SuppliesFragment extends Fragment{
 	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
 	
 	_context = getActivity();
+	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
+	_user = PreferenceManager.getDefaultSharedPreferences(_context).getString("user", _user);
 	cards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
 	TextView titleText = (TextView)view.findViewById(R.id.title);
@@ -83,11 +88,21 @@ public class SuppliesFragment extends Fragment{
 	titleText.setText("Supplies");
 	changeTextViewFont(titleText);
 	
-	
+	setHasOptionsMenu(true);
 	return view;
 	}
 	
-	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	   // handle item selection
+	   switch (item.getItemId()) {
+	   case R.id.menu_add:
+	        addPopUp();
+	        return true;
+	      default:
+	         return super.onOptionsItemSelected(item);
+	   }
+	}
 	
 	public void addPopUp(){
 		
@@ -151,6 +166,7 @@ public class SuppliesFragment extends Fragment{
                		MainCard card = new MainCard(getActivity());
                        //Create a CardHeader
                        CardHeader header = new CardHeader(getActivity());
+                       header.setTitle("Supplies");
                        card.setTitle(popupInput.getText().toString());
                        //Add Header to card
                        card.addCardHeader(header);

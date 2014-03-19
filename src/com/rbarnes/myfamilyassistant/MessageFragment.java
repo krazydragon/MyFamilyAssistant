@@ -14,21 +14,27 @@ import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardListView;
+import it.gmariotti.cardslib.library.view.CardView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -38,6 +44,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,7 +65,9 @@ public class MessageFragment extends Fragment{
 	ArrayList<Card> cards;
 	CardListView listView;
 	CardArrayAdapter adapter; 
-
+	PopupWindow pw;
+	private String _famName;
+	private String _user;
 	
 	@SuppressWarnings({ })
 	@Override
@@ -69,6 +78,8 @@ public class MessageFragment extends Fragment{
 	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_messages, container, false);
 	
 	_context = getActivity();
+	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
+	_user = PreferenceManager.getDefaultSharedPreferences(_context).getString("user", _user);
 	cards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
 	TextView titleText = (TextView)view.findViewById(R.id.title);
@@ -78,12 +89,141 @@ public class MessageFragment extends Fragment{
 	new RemoteDataTask().execute();
 	changeTextViewFont(titleText);
 	
-	
+	setHasOptionsMenu(true);
 	
 	return view;
 	}
 	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	   // handle item selection
+	   switch (item.getItemId()) {
+	   case R.id.menu_add:
+	        addPopUp();
+	        return true;
+	      default:
+	         return super.onOptionsItemSelected(item);
+	   }
+	}
 	
+	public void addPopUp(){
+		
+		
+		
+		
+		//We need to get the instance of the LayoutInflater, use the context of this activity
+        LayoutInflater inflater = (LayoutInflater) MessageFragment.this
+                .getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //Inflate the view from a predefined XML layout
+        View layout = inflater.inflate(R.layout.fragment_main_add,
+                (ViewGroup) getActivity().findViewById(R.id.PopUpAddLayout));
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x/2;
+        int height = size.y/4;
+        pw = new PopupWindow(layout, width, height, true);
+        // display the popup in the center
+       
+        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);//Intent loginIntent = new Intent(this, LoginActivity.class);
+        TextView addTitleText = (TextView)layout.findViewById(R.id.addTitle);
+        Button submit = (Button)layout.findViewById(R.id.addButton);
+        Button cancel =(Button)layout.findViewById(R.id.cancelButton);
+        final EditText popupInput = (EditText) layout.findViewById(R.id.addInput);
+
+        
+        
+        changeEditTextFont(popupInput);
+		changeButtonFont(submit);
+		changeButtonFont(cancel);
+		changeTextViewFont(addTitleText);
+        
+		addTitleText.setText("Add Message");
+		popupInput.setHint("Enter message");
+		
+        submit.setOnClickListener(new Button.OnClickListener(){
+
+        	@Override
+        	public void onClick(View v) {
+        		
+        		if(popupInput.getText().toString().trim().length() > 0){
+
+        			// TODO Auto-generated method stub
+            		
+            		
+        			ParseObject obj = new ParseObject("Messages");
+        			ParseACL postACL = new ParseACL();
+        			postACL.setRoleWriteAccess(_famName, true);
+        			postACL.setRoleReadAccess(_famName, true);
+        			obj.setACL(postACL);
+        			
+        			obj.put("message", popupInput.getText().toString());
+        			obj.put("from", _user);
+        			obj.put("read", false);
+        			
+        			obj.saveEventually();
+            			
+            			
+        			//Create a Card
+                    
+               		MainCard card = new MainCard(getActivity());
+                       //Create a CardHeader
+                       CardHeader header = new CardHeader(getActivity());
+                       header.setTitle("From "+ _user);
+                       card.setTitle(popupInput.getText().toString());
+                       //Add Header to card
+                       card.addCardHeader(header);
+                     //Create thumbnail
+        		        
+        	              
+        		        
+        		        card.setObj(obj);   
+        		       
+        		       
+        		        card.setBackgroundResourceId(R.drawable.card_background);
+        		        Calendar c = Calendar.getInstance();
+        				
+        		        Date date = c.getTime();
+        	               
+        	            card.setSecondaryTitle("Sent on " +(String) android.text.format.DateFormat.format("EEEE MMMM d yyyy hh:mm a", date));   
+        		        CardView cardView = (CardView) getActivity().findViewById(R.id.list_cardId);
+        		        cardView.setCard(card); 
+        		        card.setSwipeable(true);
+        		        card.setClickable(true);
+        		        //Add thumbnail to a card
+        		        cardView.refreshCard(card);
+                       cards.add(card);
+        			adapter.notifyDataSetChanged();
+            		pw.dismiss();
+
+   				}
+
+   				else {
+
+   					Toast.makeText(getActivity(),"Input can not be blank!", Toast.LENGTH_SHORT).show();
+   					
+   				}
+        		
+        		
+        		
+        	}
+        	}
+       );
+
+        cancel.setOnClickListener(new Button.OnClickListener(){
+
+        	@Override
+        	public void onClick(View v) {
+        		// TODO Auto-generated method stub
+
+        		pw.dismiss();
+ 
+        	}
+        	}
+        );
+        
+        
+	}
 	void changeButtonFont(TextView v){
 		Typeface t=Typeface.createFromAsset(getActivity().getAssets(),
 			"primer.ttf");

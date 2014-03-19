@@ -44,8 +44,10 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.google.android.gms.internal.ed;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
@@ -74,6 +76,7 @@ public class MainActivity extends FragmentActivity {
     private Context _context;
     private Boolean _fam_auth = false;
     private Boolean _parent = false;
+    private String _famName = "";
     String _tempString;
     ParseUser _currentUser;
     FragmentManager _manager;
@@ -96,9 +99,10 @@ public class MainActivity extends FragmentActivity {
 		PushService.setDefaultPushCallback(this, MainActivity.class);
 		_manager = getSupportFragmentManager();
 		
-
-		 _currentUser = ParseUser.getCurrentUser();
-		 
+		_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
+		_parent = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("parent", _parent);
+		_currentUser = ParseUser.getCurrentUser();
+		 getChildNames();
 		 
 		
 		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
@@ -120,7 +124,17 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		// get list items from strings.xml
-        drawerListViewItems = getResources().getStringArray(R.array.items);
+		drawerListViewItems = getResources().getStringArray(R.array.items);
+		if(!_parent){
+			String temp[] = new String[5];
+			for (int i = 0; i < 5; i++)
+			{
+			    temp[i] = drawerListViewItems[i];
+			}
+			
+			drawerListViewItems = temp;
+		}
+        
         // get ListView defined in activity_main.xml
         drawerListView = (ListView) findViewById(R.id.left_drawer);
  
@@ -154,6 +168,39 @@ public class MainActivity extends FragmentActivity {
     
     //startService(intent);
 	}
+	
+	private void getChildNames(){
+		ParseQuery<ParseUser> query = ParseUser.getQuery();
+		final Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+		int size = PreferenceManager.getDefaultSharedPreferences(_context).getInt("child_list_size",0);
+		
+		for (int i = 0; i < size; i++) {
+            editor.remove("child_list_"+i);
+        }
+		
+		editor.commit();
+		
+		query.whereEqualTo("parent", false);
+		query.whereEqualTo("famName", "krazy");
+		query.findInBackground(new FindCallback<ParseUser>() {
+		  public void done(List<ParseUser> objects, ParseException e) {
+		    if (e == null) {
+		    	
+		    	int tempNum = 0;
+	        	for (ParseUser user : objects) {
+	            	
+	        		editor.putString("child_list_"+tempNum,(String) user.getString("firstName"));
+	        		
+	        		tempNum++;
+	            }
+	        	editor.putInt("child_list_size", objects.size());
+	        	editor.commit();   
+		    } else {
+		    	
+		    }
+		  }
+		});
+	}
 
 	 @Override
 	    public void onConfigurationChanged(Configuration newConfig) {
@@ -164,6 +211,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
+		
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
@@ -231,7 +279,7 @@ public class MainActivity extends FragmentActivity {
                 frag = new ChildInfoMainFragment();
                 break;
             case 8:
-                frag = new SettingsFragment();
+                frag = new EditUserFragment();
                 break;
 
             
@@ -247,6 +295,7 @@ public class MainActivity extends FragmentActivity {
         }
     }
 	private void checkParent(){
+		_parent = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("parent", _parent);
 		DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 		 _deviceAdmin = new ComponentName(_context, FamDeviceAdminReceiver.class);
         _transaction = _manager.beginTransaction();
@@ -292,7 +341,7 @@ public class MainActivity extends FragmentActivity {
 			         //String msg = data.getStringExtra("msg"); 
 			         //Crouton.makeText(this, msg, Style.INFO).show();
 			        
-			    	 _parent = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("parent", _parent);
+			    	 
 			         
 			    	 
 			    	 handler.postDelayed(new Runnable() {

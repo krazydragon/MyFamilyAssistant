@@ -67,7 +67,7 @@ public class AlertsFragment extends Fragment {
 	
 	_context = getActivity();
 	cards = new ArrayList<Card>();
-	listView = (CardListView) view.findViewById(R.id.choir_list);
+	listView = (CardListView) view.findViewById(R.id.list);
 
 
 	

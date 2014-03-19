@@ -134,7 +134,7 @@ public class SendParseService extends IntentService {
 		ParseGeoPoint gp = new ParseGeoPoint(l.getLatitude(),l.getLongitude());
 		obj.put("kid_loc", gp);
 		obj.put("name", _user);
-		obj.saveEventually();
+		//obj.saveEventually();
 		_tempString = _user + "'s location was updated";
 		sendNotiBack();
 	}

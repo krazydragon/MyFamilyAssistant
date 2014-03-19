@@ -16,6 +16,7 @@ import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardListView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -71,6 +72,8 @@ public class ChoreFragment extends Fragment{
 	CardArrayAdapter adapter;
 	static CardArrayAdapter completedAdapter;
 	private int page; 
+	private String _famName;
+	private String _user;
 	
 	
 	
@@ -102,6 +105,8 @@ public class ChoreFragment extends Fragment{
 	
 	
 	_context = getActivity();
+	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
+	_user = PreferenceManager.getDefaultSharedPreferences(_context).getString("user", _user);
 	cards = new ArrayList<Card>();
 	completedCards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
@@ -122,7 +127,9 @@ public class ChoreFragment extends Fragment{
 	public boolean onOptionsItemSelected(MenuItem item) {
 	   // handle item selection
 	   switch (item.getItemId()) {
-	     
+	   case R.id.menu_add:
+	        addPopUp();
+	        return true;
 	      default:
 	         return super.onOptionsItemSelected(item);
 	   }
@@ -171,17 +178,16 @@ public class ChoreFragment extends Fragment{
         		if(popupInput.getText().toString().trim().length() > 0){
 
         			// TODO Auto-generated method stub
-            		String s = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", "error");
             		
         			ParseObject obj = new ParseObject("Chores");
         			ParseACL postACL = new ParseACL();
-        			postACL.setRoleWriteAccess(s, true);
-        			postACL.setRoleReadAccess(s, true);
-        			//obj.setACL(postACL);
+        			postACL.setRoleWriteAccess(_famName, true);
+        			postACL.setRoleReadAccess(_famName, true);
+        			obj.setACL(postACL);
         			
         			obj.put("item", popupInput.getText().toString());
         			obj.put("completed", false);
-        			
+        			obj.put("from", _user);
         			obj.saveEventually();
             			
             			
@@ -190,15 +196,19 @@ public class ChoreFragment extends Fragment{
                		MainCard card = new MainCard(getActivity());
                        //Create a CardHeader
                        CardHeader header = new CardHeader(getActivity());
-                       card.setTitle(popupInput.getText().toString());
+                       header.setTitle(popupInput.getText().toString());
                        //Add Header to card
                        card.addCardHeader(header);
                      //Create thumbnail
         		        
-        	              
+                       Calendar c = Calendar.getInstance();
+       				
+       		        Date date = c.getTime();
+       	               
+       	            card.setSecondaryTitle((String) android.text.format.DateFormat.format("EEEE MMMM d yyyy hh:mm a", date));   
         		        card.setChecked(false);
         		        card.setObj(obj);   
-        		       
+        		       card.setTitle(_user);
         		       
         		        card.setBackgroundResourceId(R.drawable.card_background);
         		           
@@ -335,6 +345,7 @@ public class ChoreFragment extends Fragment{
 		        	card.setSecondaryTitle(dateString);
 		               card.setBackgroundResourceId(R.drawable.card_background2);
 		               card.setClickable(false);
+		               card.setTitle(item.getString("by"));
 		               completedCards.add(card);
 		           }else {
 		        	   date = item.getCreatedAt();
@@ -342,6 +353,7 @@ public class ChoreFragment extends Fragment{
 		        	   card.setSecondaryTitle(dateString);
 		               card.setBackgroundResourceId(R.drawable.card_background);
 		               card.setClickable(true);
+		               card.setTitle(item.getString("from"));
 		               cards.add(card);
 		           }
                 
@@ -441,13 +453,13 @@ public class ChoreFragment extends Fragment{
                 	        			
                 	        			newObj.put("item", getTitle());
                 	        			newObj.put("completed", false);
-                	        			
+                	        			newObj.put("by", _user);
                 	        			newObj.saveEventually();
                 	        			
                 	        			MainCard newCard = new MainCard(getActivity());
                 	                       //Create a CardHeader
                 	                       CardHeader header = new CardHeader(getActivity());
-                	                       newCard.setTitle(getTitle());
+                	                       newCard.setTitle(_user);
                 	                       
                 	                       
                 	           		    
@@ -491,7 +503,7 @@ public class ChoreFragment extends Fragment{
                         
                        
                         	
-                        	
+                        obj.put("completed", true);	
                         obj.saveEventually();
                         cards.remove(card);
                         
@@ -500,7 +512,7 @@ public class ChoreFragment extends Fragment{
 	                       //Create a CardHeader
 	                       CardHeader header = new CardHeader(getActivity());
 	                       newCard.setTitle(getTitle());
-	                       header.setTitle(title);
+	                       header.setTitle(card.getCardHeader().getTitle());
 	                       
 	           		    
 	           		    newCard.setSecondaryTitle(dateString);
@@ -560,11 +572,11 @@ public class ChoreFragment extends Fragment{
             
             mCheckbox.setChecked(checked);
             if(checked){
-            	mTitle.setText("Tom");
+            	mTitle.setText("Completed by " + title);
          	   mCheckbox.setChecked(true);
          	  mSecondaryTitle.setText("Completed on" + secondaryTitle); 
             }else {
-            	mTitle.setText("Dad");
+            	mTitle.setText("Assigned by " + title);
          	   mCheckbox.setChecked(false);
          	  mSecondaryTitle.setText( "Created on "+ secondaryTitle);
             }

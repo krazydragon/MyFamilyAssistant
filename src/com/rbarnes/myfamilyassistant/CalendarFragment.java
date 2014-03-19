@@ -40,16 +40,19 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class CalendarFragment extends Fragment{
@@ -68,6 +71,8 @@ public class CalendarFragment extends Fragment{
 	CardArrayAdapter futureAdapter;
 	Date today;
 	Calendar c;
+	private String _famName;
+	private String _user;
 	private int page;
 	
 	
@@ -98,6 +103,8 @@ public class CalendarFragment extends Fragment{
 	
 	
 	_context = getActivity();
+	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
+	_user = PreferenceManager.getDefaultSharedPreferences(_context).getString("user", _user);
 	todayCards = new ArrayList<Card>();
 	pastCards = new ArrayList<Card>();
 	futureCards = new ArrayList<Card>();
@@ -130,10 +137,25 @@ public class CalendarFragment extends Fragment{
    ViewPager vp=(ViewPager) getActivity().findViewById(R.id.pager);
    
    Log.i("pager","%d" + vp.getCurrentItem() );
-   
+   setHasOptionsMenu(true);
 	
 	return view;
 	}
+	
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	   // handle item selection
+	   switch (item.getItemId()) {
+	   case R.id.menu_add:
+	        addPopUp();
+	        return true;
+	      default:
+	         return super.onOptionsItemSelected(item);
+	   }
+	}
+	
 	public void addPopUp(){
 		
 		
@@ -143,13 +165,13 @@ public class CalendarFragment extends Fragment{
         LayoutInflater inflater = (LayoutInflater) CalendarFragment.this
                 .getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         //Inflate the view from a predefined XML layout
-        View layout = inflater.inflate(R.layout.fragment_main_add,
+        View layout = inflater.inflate(R.layout.fragment_add_cal,
                 (ViewGroup) getActivity().findViewById(R.id.PopUpAddLayout));
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        int width = size.x/2;
-        int height = size.y/2;
+        int width = size.x;
+        int height = size.y;
         pw = new PopupWindow(layout, width, height, true);
         // display the popup in the center
        
@@ -158,8 +180,8 @@ public class CalendarFragment extends Fragment{
         Button submit = (Button)layout.findViewById(R.id.addButton);
         Button cancel =(Button)layout.findViewById(R.id.cancelButton);
         final EditText popupInput = (EditText) layout.findViewById(R.id.addInput);
-
-        
+        final TimePicker timePicker = (TimePicker) layout.findViewById(R.id.calTimePicker);
+        final DatePicker datePicker = (DatePicker) layout.findViewById(R.id.calDatePicker);
         
         changeEditTextFont(popupInput);
 		changeButtonFont(submit);
@@ -167,7 +189,7 @@ public class CalendarFragment extends Fragment{
 		changeTextViewFont(addTitleText);
         
 		addTitleText.setText("Add Events");
-		popupInput.setHint("Enter supply needed");
+		popupInput.setHint("Enter event detail");
 		
         submit.setOnClickListener(new Button.OnClickListener(){
 
@@ -177,18 +199,40 @@ public class CalendarFragment extends Fragment{
         		if(popupInput.getText().toString().trim().length() > 0){
 
         			// TODO Auto-generated method stub
-            		String s = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", "error");
+            		
+            		
+            		
+            		// Get the date from our datepicker
+            		int year = datePicker.getYear();
+            		int month = datePicker.getMonth();
+            		int day = datePicker.getDayOfMonth();
+            		int hour = timePicker.getCurrentHour();
+            		int minute = timePicker.getCurrentMinute();
+        
+            		// Create a new calendar set to the date chosen
+       
+            		Calendar cal = Calendar.getInstance();
+            		
+            		cal.set(Calendar.YEAR, year);
+            		cal.set(Calendar.MONTH, month);
+            		cal.set(Calendar.DAY_OF_MONTH, day);
+            		cal.set(Calendar.HOUR_OF_DAY, hour);
+            		cal.set(Calendar.MINUTE, minute);
+            		cal.set(Calendar.SECOND, 0);
+            		Date d = cal.getTime();
+            		
             		
         			ParseObject obj = new ParseObject("Calendar");
         			ParseACL postACL = new ParseACL();
-        			postACL.setRoleWriteAccess(s, true);
-        			postACL.setRoleReadAccess(s, true);
-        			//obj.setACL(postACL);
+        			postACL.setRoleWriteAccess(_famName, true);
+        			postACL.setRoleReadAccess(_famName, true);
+        			obj.setACL(postACL);
         			
-        			//obj.put("item", popupInput.getText().toString());
+        			obj.put("title", popupInput.getText().toString());
+        			obj.put("date", d);
+        			obj.put("name", _user);
         			
-        			
-        			//obj.saveEventually();
+        			obj.saveEventually();
             			
             			
         			//Create a Card
@@ -197,11 +241,13 @@ public class CalendarFragment extends Fragment{
                        //Create a CardHeader
                        CardHeader header = new CardHeader(getActivity());
                        card.setTitle(popupInput.getText().toString());
-                       //Add Header to card
-                       card.addCardHeader(header);
+                       header.setTitle((String) android.text.format.DateFormat.format("EEEE MMMM d yyyy", d));
+             		  //Add Header to card
+                         card.addCardHeader(header);
                      //Create thumbnail
-        		        
-        	              
+                         SimpleDateFormat simpleDate =  new SimpleDateFormat("hh:mm a");
+                         String dateString = "at "+ simpleDate.format(d);
+             		    card.setSecondaryTitle(dateString);  
         		        
         		        card.setObj(obj);   
         		       
@@ -325,7 +371,7 @@ public class CalendarFragment extends Fragment{
     		    header.setTitle((String) android.text.format.DateFormat.format("EEEE MMMM d yyyy", date));
     		  //Add Header to card
                 card.addCardHeader(header);
-    		    String dateString = "at "+simpleDate.format(date);
+    		    String dateString = "at "+ simpleDate.format(date);
     		    card.setSecondaryTitle(dateString);
 		        //Set resource
 		        

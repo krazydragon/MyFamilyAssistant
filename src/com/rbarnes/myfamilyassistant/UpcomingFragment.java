@@ -89,7 +89,7 @@ public class UpcomingFragment extends Fragment {
 	   today = c.getTime();
 	   
 	   
-	   today = c.getTime();
+	   
 	   
 	   ViewPager vp=(ViewPager) getActivity().findViewById(R.id.pager);
 	   

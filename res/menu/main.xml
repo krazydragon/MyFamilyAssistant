@@ -3,6 +3,10 @@
         android:title="" 
         android:icon="@drawable/plus" 
         android:showAsAction="always" />
+	<item android:id="@+id/menu_child" 
+        android:title="Child" 
+        android:showAsAction="always" />
+    
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
