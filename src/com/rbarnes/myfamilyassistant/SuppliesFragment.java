@@ -41,6 +41,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,6 +105,15 @@ public class SuppliesFragment extends Fragment{
 	         return super.onOptionsItemSelected(item);
 	   }
 	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	    super.onCreateOptionsMenu(menu,inflater);
+	    MenuItem addItem = menu.findItem(R.id.menu_add);
+		addItem.setVisible(true);
+	}
+	
+	
 	
 	public void addPopUp(){
 		

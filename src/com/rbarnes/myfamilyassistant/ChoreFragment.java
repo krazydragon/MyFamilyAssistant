@@ -36,10 +36,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +63,7 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 public class ChoreFragment extends Fragment{
 	
@@ -74,7 +79,8 @@ public class ChoreFragment extends Fragment{
 	private int page; 
 	private String _famName;
 	private String _user;
-	
+	private String _tempString;
+	private int _userColor;
 	
 	
 	 // newInstance constructor for creating fragment with arguments
@@ -111,7 +117,7 @@ public class ChoreFragment extends Fragment{
 	completedCards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
 	TextView titleText = (TextView)view.findViewById(R.id.title);
-	    
+	_userColor = ParseUser.getCurrentUser().getNumber("userColor").intValue();    
 	new RemoteDataTask().execute();
 
 	titleText.setText("Chores");
@@ -119,6 +125,23 @@ public class ChoreFragment extends Fragment{
 	
 	setHasOptionsMenu(true);
 
+	view.setFocusableInTouchMode(true);
+	view.requestFocus();
+	view.setOnKeyListener(new View.OnKeyListener() {
+	        @Override
+	        public boolean onKey(View v, int keyCode, KeyEvent event) {
+	            Log.i("does this work", "keyCode: " + keyCode);
+	            if( keyCode == KeyEvent.KEYCODE_BACK ) {
+	                    Log.i("does this work", "onKey Back listener is working!!!");
+	                getFragmentManager().popBackStack();
+	                return true;
+	            } else {
+	            	getFragmentManager().popBackStack();
+	                return false;
+	            }
+	            
+	        }
+	    });
 	
 	return view;
 	}
@@ -133,6 +156,40 @@ public class ChoreFragment extends Fragment{
 	      default:
 	         return super.onOptionsItemSelected(item);
 	   }
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	    super.onCreateOptionsMenu(menu,inflater);
+	    MenuItem addItem = menu.findItem(R.id.menu_add);
+		MenuItem childItem = menu.findItem(R.id.menu_child);
+		addItem.setVisible(true);
+		childItem.setVisible(false);
+	}
+	
+	private void sendNoti(){
+		JSONObject data = new JSONObject();
+		
+		
+		
+		try {
+			data.put("alert", _tempString);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+		query.whereEqualTo("parent", false);
+		query.whereEqualTo("family", _famName);
+
+		
+		
+		ParsePush push = new ParsePush();
+		push.setQuery(query);
+		push.setData(data);
+		push.sendInBackground();
 	}
 	
 	public void addPopUp(){
@@ -188,9 +245,11 @@ public class ChoreFragment extends Fragment{
         			obj.put("item", popupInput.getText().toString());
         			obj.put("completed", false);
         			obj.put("from", _user);
+        			obj.put("color", _userColor);
         			obj.saveEventually();
             			
-            			
+        			_tempString = _user + " says that " + popupInput.getText().toString() + " needs to be completed";
+        			sendNoti();
         			//Create a Card
                     
                		MainCard card = new MainCard(getActivity());
@@ -314,26 +373,27 @@ public class ChoreFragment extends Fragment{
         		MainCard card = new MainCard(getActivity());
                 //Create a CardHeader
                 CardHeader header = new CardHeader(getActivity());
+               
                 header.setTitle((String) item.get("item"));
                 //Add Header to card
                 card.addCardHeader(header);
               //Create thumbnail
 		        CardThumbnail thumb = new CardThumbnail(getActivity());
-	              
-		        
+	            
+		        //card.setCardColor(item.getNumber("color").intValue());
 		        card.setObj(item);   
 		        card.setChecked((Boolean) item.get("completed"));
 		        Date date = new Date();
 		        
 		        
         		
- 		       
+		        card.setCardColor(item.getNumber("color").intValue());
 
     		    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 
     		    String dateString = simpleDate.format(date);
     		    
-
+    		    card.setId(item.getObjectId());
 		        //Set resource
 		        thumb.setDrawableResource(R.drawable.ic_launcher);
 		        //card.setSwipeable(true);
@@ -365,7 +425,10 @@ public class ChoreFragment extends Fragment{
         	
         	
         	adapter = new CardArrayAdapter(getActivity(),cards);
+        	adapter.setEnableUndo(true);
+        	adapter.setNotifyOnChange(true);
         	completedAdapter = new CardArrayAdapter(getActivity(),completedCards);
+        	
         	if (page == 0){
         		listView.setAdapter(adapter);
             }
@@ -384,7 +447,7 @@ public class ChoreFragment extends Fragment{
         protected TextView mSecondaryTitle;
         protected CheckBox mCheckbox;
         protected ParseObject mObj;
-        protected int resourceIdThumbnail;
+        protected int cardColor;
         protected int count;
         protected ParseObject obj;
         protected String title;
@@ -582,7 +645,7 @@ public class ChoreFragment extends Fragment{
             }
             
                 
-
+            view.setBackgroundColor(cardColor);
             
                 
 
@@ -626,12 +689,12 @@ public class ChoreFragment extends Fragment{
             this.checked = checked;
         }
 
-        public int getResourceIdThumbnail() {
-            return resourceIdThumbnail;
+        public int getCardColor() {
+            return cardColor;
         }
 
-        public void setResourceIdThumbnail(int resourceIdThumbnail) {
-            this.resourceIdThumbnail = resourceIdThumbnail;
+        public void setCardColor(int cardColor) {
+            this.cardColor = cardColor;
         }
     }
 

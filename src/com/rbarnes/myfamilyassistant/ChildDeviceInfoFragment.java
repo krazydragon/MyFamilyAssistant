@@ -50,6 +50,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,7 +132,12 @@ public class ChildDeviceInfoFragment extends Fragment{
 	return view;
 	}
 	
-	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	    super.onCreateOptionsMenu(menu,inflater);
+		MenuItem childItem = menu.findItem(R.id.menu_child);
+		childItem.setVisible(true);
+	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -50,20 +50,19 @@
                 android:hint="@string/VerifyPass"
                 android:inputType="textPassword" />
 
+            <Button
+                android:id="@+id/ColorButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="pickColor"
+                android:text="Pick user color" />
+
             <EditText
                 android:id="@+id/regFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="@string/FirstName"
-                android:inputType="textPersonName" />
-
-            <EditText
-                android:id="@+id/regLastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/LastName"
                 android:inputType="textPersonName" />
 
             <EditText
@@ -74,25 +73,15 @@
                 android:hint="@string/Email"
                 android:inputType="textEmailAddress" />
 
-            <LinearLayout
-                android:id="@+id/LinearLayout1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-                </LinearLayout>
-            </LinearLayout>
-
             <Button
                 android:id="@+id/SignupButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:onClick="startsignup"
                 android:text="@string/SignUp" />
+
         </LinearLayout>
+
     </ScrollView>
 
 </RelativeLayout>

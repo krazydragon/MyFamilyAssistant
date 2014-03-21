@@ -1,5 +1,6 @@
 package com.rbarnes.myfamilyassistant;
 
+import net.margaritov.preference.colorpicker.ColorPickerDialog;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 
 import com.parse.LogInCallback;
@@ -16,11 +17,13 @@ import com.throrinstudio.android.common.libs.validator.validate.ConfirmValidate;
 import com.throrinstudio.android.common.libs.validator.validator.NotEmptyValidator;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -34,17 +37,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class EditUserFragment extends Fragment{
+public class EditUserFragment extends Fragment implements ColorPickerDialog.OnColorChangedListener{
 	
 	private EditText _regUserInput;
 	private EditText _regPassInput;
 	private EditText _regFNameInput;
-	private EditText _regLNameInput;
 	private EditText _regEmailInput;
 	private Form _regForm;
 	private Context _context;
+	int _userColor;
 	ParseUser _currentUser;
 	PopupWindow pw;
+	ColorPickerDialog dialog;
+	Button colorButton;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -55,9 +60,11 @@ public class EditUserFragment extends Fragment{
 	_context = getActivity();
 	
 	_currentUser = ParseUser.getCurrentUser();
-	
+	_userColor =  _currentUser.getNumber("userColor").intValue();
+	Log.d("color", ""+_userColor);
+	dialog = new ColorPickerDialog(_context, _userColor);
 	Button signupButton = (Button)view.findViewById(R.id.SignupButton);
-
+	colorButton = (Button)view.findViewById(R.id.ColorButton);
 	signupButton.setText("Update User");
 	
 	
@@ -68,34 +75,31 @@ public class EditUserFragment extends Fragment{
 	EditText regRePassInput = (EditText)view.findViewById(R.id.regRePassword);
 	_regEmailInput = (EditText)view.findViewById(R.id.regEmail);
 	_regFNameInput = (EditText)view.findViewById(R.id.regFirstName);
-	_regLNameInput = (EditText)view.findViewById(R.id.regLastName);
+
 	
 	
 	_regUserInput.setEnabled(false);
 	_regUserInput.setText(_currentUser.getUsername());
 	_regEmailInput.setText(_currentUser.getEmail());
 	_regFNameInput.setText(_currentUser.getString("firstName"));
-	_regLNameInput.setText(_currentUser.getString("lastName"));
 	_regEmailInput.setText(EmailRetriever.getEmail(_context));
 	
 	Validate regUser = new Validate(_regUserInput);
 	Validate regEmail = new Validate(_regEmailInput);
 	Validate regFName = new Validate(_regFNameInput);
-	Validate regLName = new Validate(_regLNameInput);
 	ConfirmValidate confirmPass = new ConfirmValidate(_regPassInput, regRePassInput);
 	
 	regUser.addValidator(new NotEmptyValidator(_context));
 	regEmail.addValidator(new NotEmptyValidator(_context));
 	regFName.addValidator(new NotEmptyValidator(_context));
-	regLName.addValidator(new NotEmptyValidator(_context));
+
 
 	
 	_regForm.addValidates(regUser);
 	_regForm.addValidates(regEmail);
 	_regForm.addValidates(regFName);
-	_regForm.addValidates(regLName);
 	_regForm.addValidates(confirmPass);
-	
+	colorButton.setBackgroundColor(_userColor);
 	signupButton.setOnClickListener(new Button.OnClickListener(){
 
     	@Override
@@ -106,8 +110,7 @@ public class EditUserFragment extends Fragment{
     			_currentUser.setPassword(_regPassInput.getText().toString());
     			_currentUser.setEmail(_regEmailInput.getText().toString());
     			_currentUser.put("firstName", _regFNameInput.getText().toString());
-    			_currentUser.put("lastName", _regLNameInput.getText().toString());
-				
+				_currentUser.put("userColor", _userColor);
     			addPopUp();
 			}
     		
@@ -115,6 +118,21 @@ public class EditUserFragment extends Fragment{
     	}
     	}
     );
+	
+	colorButton.setOnClickListener(new Button.OnClickListener(){
+
+    	@Override
+    	public void onClick(View v) {
+    		// TODO Auto-generated method stub
+    					
+    		dialog.show();
+
+    	}
+    	}
+    );
+	dialog.setOnColorChangedListener(this);
+	
+	
 	return view;
 	
 	
@@ -221,5 +239,13 @@ void changeTextViewFont(TextView v){
 	Typeface t=Typeface.createFromAsset(getActivity().getAssets(),
         "primer.ttf");
 	v.setTypeface(t);
+}
+
+@Override
+public void onColorChanged(int color) {
+	// TODO Auto-generated method stub
+	colorButton.setBackgroundColor(color);
+	Log.d("my color", "" + color);
+	_userColor = color;
 }
 }

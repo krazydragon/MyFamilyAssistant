@@ -130,7 +130,7 @@ public class SendParseService extends IntentService {
 		ParseACL postACL = new ParseACL();
 		postACL.setRoleWriteAccess(_famName, true);
 		postACL.setRoleReadAccess(_famName, true);
-		//obj.setACL(postACL);
+		obj.setACL(postACL);
 		ParseGeoPoint gp = new ParseGeoPoint(l.getLatitude(),l.getLongitude());
 		obj.put("kid_loc", gp);
 		obj.put("name", _user);

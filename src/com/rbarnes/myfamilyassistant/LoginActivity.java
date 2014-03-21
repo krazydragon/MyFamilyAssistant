@@ -11,6 +11,8 @@ package com.rbarnes.myfamilyassistant;
 
 import java.util.List;
 
+import net.margaritov.preference.colorpicker.ColorPickerDialog;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -20,6 +22,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -51,19 +54,19 @@ import com.throrinstudio.android.common.libs.validator.Validate;
 import com.throrinstudio.android.common.libs.validator.validate.ConfirmValidate;
 import com.throrinstudio.android.common.libs.validator.validator.NotEmptyValidator;
 
-public class LoginActivity extends Activity implements OnClickListener{
+public class LoginActivity extends Activity implements OnClickListener,ColorPickerDialog.OnColorChangedListener{
 	
 	private Button _loginButton;
 	private Button _regButton;
 	private Button _checkButton;
 	private Button _signupButton;
+	private Button _colorButton;
 	private EditText _regEmailInput;
 	private EditText _usernameInput;
 	private EditText _passwordInput;
 	private EditText _regUserInput;
 	private EditText _regPassInput;
 	private EditText _regFNameInput;
-	private EditText _regLNameInput;
 	private EditText _ParPasswordInput;
 	private EditText _famNameInput;
 	private EditText _regParPassInput;
@@ -82,6 +85,8 @@ public class LoginActivity extends Activity implements OnClickListener{
     private String _pass;
     private String _passName;
 	private ParseUser _user;
+	private ColorPickerDialog _colorDialog;
+	private int _userColor;
 	
 	private String _msg;
 	
@@ -116,13 +121,15 @@ public class LoginActivity extends Activity implements OnClickListener{
 			changeButtonFont(_loginButton);
 			changeButtonFont(_passwordInput);
 			changeTextViewFont(titleText);
-			
+			_colorDialog = new ColorPickerDialog(_context, Color.BLACK);
+			_colorDialog.setOnColorChangedListener(this);
 			
 			
 	}
 
 	@Override
 	public void onClick(View v) {
+		Log.d("VIEW", "" + v);
 		//Login old user, Register new user, or skip and test application. 
 		final ProgressDialog dlg = new ProgressDialog(LoginActivity.this);
         dlg.setTitle("Please wait.");
@@ -139,7 +146,14 @@ public class LoginActivity extends Activity implements OnClickListener{
 							    if (user != null) {
 							    	Log.i("login","worked");
 							    	_msg = "Welcome back " + _usernameInput.getText().toString() + "!";
-							    	famCheck();
+							    	if(user.getString("famName")!=null){
+							    		_famName = user.getString("famName");
+							    		_parent = user.getBoolean("parent");
+							    		_user = user;
+							    		loginUser();
+							    	}else{
+							    		famCheck();
+							    	}
 							    } else {
 							    	//show error msg
 							    	Log.i("login",e.toString());
@@ -150,21 +164,24 @@ public class LoginActivity extends Activity implements OnClickListener{
 					}
 					
 					
-					//loginUser();
+					
 					
 				}else if(v == _regButton){
 					dlg.dismiss();
 			setContentView(R.layout.fragment_edituser);
 			_signupButton = (Button)findViewById(R.id.SignupButton);
+			_colorButton = (Button)findViewById(R.id.ColorButton);
 			_signupButton.setOnClickListener(this);
-_regForm = new Form();
+			_colorButton.setBackgroundColor(Color.BLACK);
+			_colorButton.setOnClickListener(this);
+			_regForm = new Form();
 			
 			_regUserInput = (EditText)findViewById(R.id.regUsername);
 			_regPassInput = (EditText)findViewById(R.id.descriptionInput);
 			EditText regRePassInput = (EditText)findViewById(R.id.regRePassword);
 			_regEmailInput = (EditText)findViewById(R.id.regEmail);
 			_regFNameInput = (EditText)findViewById(R.id.regFirstName);
-			_regLNameInput = (EditText)findViewById(R.id.regLastName);
+			//_regLNameInput = (EditText)findViewById(R.id.regLastName);
 			
 			
 			_regEmailInput.setText(EmailRetriever.getEmail(this));
@@ -172,20 +189,17 @@ _regForm = new Form();
 			Validate regUser = new Validate(_regUserInput);
 			Validate regEmail = new Validate(_regEmailInput);
 			Validate regFName = new Validate(_regFNameInput);
-			Validate regLName = new Validate(_regLNameInput);
 			
 			ConfirmValidate confirmPass = new ConfirmValidate(_regPassInput, regRePassInput);
 			
 			regUser.addValidator(new NotEmptyValidator(this));
 			regEmail.addValidator(new NotEmptyValidator(this));
 			regFName.addValidator(new NotEmptyValidator(this));
-			regLName.addValidator(new NotEmptyValidator(this));
 			
 			
 			_regForm.addValidates(regUser);
 			_regForm.addValidates(regEmail);
 			_regForm.addValidates(regFName);
-			_regForm.addValidates(regLName);
 			
 			_regForm.addValidates(confirmPass);
 
@@ -198,7 +212,6 @@ _regForm = new Form();
 				user.setPassword(_regPassInput.getText().toString());
 				user.setEmail(_regEmailInput.getText().toString());
 				user.put("firstName", _regFNameInput.getText().toString());
-				user.put("lastName", _regLNameInput.getText().toString());
 				
 				user.signUpInBackground(new SignUpCallback() {
 					  @Override
@@ -219,6 +232,13 @@ _regForm = new Form();
 			
 			
 		}
+	else if(v == _colorButton){
+		dlg.dismiss();	
+	_colorDialog.show();	
+	
+		
+		
+	}
 	}
 	public void checkPass(View v){
 		_user = ParseUser.getCurrentUser();
@@ -304,6 +324,7 @@ _regForm = new Form();
 	            Log.d("USER", ""+_user);
 	            _user.put("famName", _famName);
 	            _user.put("parent", true);
+	            _user.put("userColor", _userColor);
 	            _user.saveInBackground();
 	            verFamCheck();
 	        }
@@ -317,6 +338,7 @@ _regForm = new Form();
 	        	_pass = input.getText().toString();
 	        	_user.put("famName", _famName);
 	        	_user.put("parent", false);
+	        	_user.put("userColor", _userColor);
 	        	_user.saveInBackground();
 
 	        	verFamCheck();
@@ -395,5 +417,12 @@ _regForm = new Form();
 		Typeface t=Typeface.createFromAsset(getAssets(),
 	            "primer.ttf");
 		v.setTypeface(t);
+	}
+	
+	@Override
+	public void onColorChanged(int color) {
+		// TODO Auto-generated method stub
+		_colorButton.setBackgroundColor(color);
+		_userColor = color;
 	}
 }

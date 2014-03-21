@@ -60,19 +60,20 @@ import com.parse.ParseQuery;
 import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.PushService;
+import com.rbarnes.myfamilyassistant.R.menu;
+import com.rbarnes.myfamilyassistant.SettingsFragment.SettingsListener;
 import com.rbarnes.other.FamDeviceAdminReceiver;
 import com.rbarnes.other.SendParseService;
 
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements SettingsListener{
 
 	
 	private String[] drawerListViewItems;
 	private DrawerLayout drawerLayout;
     private ListView drawerListView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    LinearLayout mainView;
     private Context _context;
     private Boolean _fam_auth = false;
     private Boolean _parent = false;
@@ -82,6 +83,7 @@ public class MainActivity extends FragmentActivity {
     FragmentManager _manager;
     FragmentTransaction _transaction;
     ComponentName _deviceAdmin;
+    Editor _editor;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +92,7 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		setContentView(R.layout.activity_main);
-		mainView = (LinearLayout)this.findViewById(R.id.mainFrag);
+		
 		  
 		
 	    _context = this;
@@ -106,9 +108,9 @@ public class MainActivity extends FragmentActivity {
 		 
 		
 		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
-		_parent = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("parent", _parent);
+		
 		if ((_fam_auth) && _currentUser!= null) {
-			checkParent();
+			//checkParent();
 			
 			
            
@@ -171,14 +173,14 @@ public class MainActivity extends FragmentActivity {
 	
 	private void getChildNames(){
 		ParseQuery<ParseUser> query = ParseUser.getQuery();
-		final Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+		_editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		int size = PreferenceManager.getDefaultSharedPreferences(_context).getInt("child_list_size",0);
 		
 		for (int i = 0; i < size; i++) {
-            editor.remove("child_list_"+i);
+            _editor.remove("child_list_"+i);
         }
 		
-		editor.commit();
+		_editor.commit();
 		
 		query.whereEqualTo("parent", false);
 		query.whereEqualTo("famName", "krazy");
@@ -189,12 +191,12 @@ public class MainActivity extends FragmentActivity {
 		    	int tempNum = 0;
 	        	for (ParseUser user : objects) {
 	            	
-	        		editor.putString("child_list_"+tempNum,(String) user.getString("firstName"));
+	        		_editor.putString("child_list_"+tempNum,(String) user.getString("firstName"));
 	        		
 	        		tempNum++;
 	            }
-	        	editor.putInt("child_list_size", objects.size());
-	        	editor.commit();   
+	        	_editor.putInt("child_list_size", objects.size());
+	        	_editor.commit();   
 		    } else {
 		    	
 		    }
@@ -211,8 +213,11 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		
 		getMenuInflater().inflate(R.menu.main, menu);
+		MenuItem addItem = menu.findItem(R.id.menu_add);
+		MenuItem childItem = menu.findItem(R.id.menu_child);
+		addItem.setVisible(false);
+		childItem.setVisible(false);
 		return true;
 	}
 	
@@ -234,6 +239,8 @@ public class MainActivity extends FragmentActivity {
              
         }else if(item.getItemId()== R.id.action_settings){
         	ParseUser.logOut();
+        	_editor.putBoolean("fam_auth", false);
+        	_editor.commit();
         	finish();
         }
         return super.onOptionsItemSelected(item);
@@ -244,9 +251,7 @@ public class MainActivity extends FragmentActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             
             drawerLayout.closeDrawer(drawerListView);
-            LinearLayout mainfrag = (LinearLayout)findViewById(R.id.mainFrag);
-        	mainfrag.setVisibility(View.INVISIBLE);
-			
+            
             Fragment frag = null;
             switch (position) {
             case 0:
@@ -279,7 +284,7 @@ public class MainActivity extends FragmentActivity {
                 frag = new ChildInfoMainFragment();
                 break;
             case 8:
-                frag = new EditUserFragment();
+                frag = new SettingsFragment();
                 break;
 
             
@@ -287,9 +292,9 @@ public class MainActivity extends FragmentActivity {
                 frag = new MessageFragment();
                 break;
             }
-            mainView.setVisibility(View.INVISIBLE);
             _transaction = _manager.beginTransaction();
-            _transaction.replace(R.id.content_frame, frag);
+            _transaction.replace(R.id.content_frame, frag, null);
+            _transaction.addToBackStack(null);
             _transaction.commit();
  
         }
@@ -302,9 +307,9 @@ public class MainActivity extends FragmentActivity {
         
         	Log.i("Parent",""+ _parent);
        if(_parent){ 
-       _transaction.replace(R.id.main_frame, new ParentMainFragment());
+       _transaction.replace(R.id.content_frame, new ParentMainFragment());
        }else{
-    	   _transaction.replace(R.id.main_frame, new ChildMainFragment());
+    	   _transaction.replace(R.id.content_frame, new ChildMainFragment());
     	   if(!devicePolicyManager.isAdminActive(_deviceAdmin)){
 	 	    	 installAdmin();
 	 	    }
@@ -375,5 +380,43 @@ public class MainActivity extends FragmentActivity {
 	    }
 	    super.onActivityResult(requestCode, resultCode, data);
 		}
+
+	@Override
+	public void onSettingsButtonPress(int opt) {
+		
+		switch (opt) {
+        case 0:
+        	_transaction = _manager.beginTransaction();
+            _transaction.replace(R.id.content_frame, new EditUserFragment());
+            _transaction.commit();
+            break;
+
+        case 1:
+        	_transaction = _manager.beginTransaction();
+            _transaction.replace(R.id.content_frame, new EditFamPassFragment());
+            _transaction.commit();
+            break;
+
+        case 2:
+           
+            break;
+
+        case 3:
+            
+            break;
+        case 4:
+            
+            break;
+
+        
+        }
+		// TODO Auto-generated method stub
+		
+	}
+	
+	 @Override
+	  public void onBackPressed() {
+	    moveTaskToBack(true);
+	  }
 	
 }

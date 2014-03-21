@@ -24,6 +24,7 @@ import java.util.List;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -34,6 +35,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -68,6 +71,8 @@ public class MessageFragment extends Fragment{
 	PopupWindow pw;
 	private String _famName;
 	private String _user;
+	private int _userColor;
+	
 	
 	@SuppressWarnings({ })
 	@Override
@@ -80,6 +85,7 @@ public class MessageFragment extends Fragment{
 	_context = getActivity();
 	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
 	_user = PreferenceManager.getDefaultSharedPreferences(_context).getString("user", _user);
+	_userColor = ParseUser.getCurrentUser().getNumber("userColor").intValue();
 	cards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
 	TextView titleText = (TextView)view.findViewById(R.id.title);
@@ -104,6 +110,13 @@ public class MessageFragment extends Fragment{
 	      default:
 	         return super.onOptionsItemSelected(item);
 	   }
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	    super.onCreateOptionsMenu(menu,inflater);
+	    MenuItem addItem = menu.findItem(R.id.menu_add);
+		addItem.setVisible(true);
 	}
 	
 	public void addPopUp(){
@@ -160,6 +173,7 @@ public class MessageFragment extends Fragment{
         			obj.put("message", popupInput.getText().toString());
         			obj.put("from", _user);
         			obj.put("read", false);
+        			obj.put("color", _userColor);
         			
         			obj.saveEventually();
             			
@@ -178,7 +192,7 @@ public class MessageFragment extends Fragment{
         	              
         		        
         		        card.setObj(obj);   
-        		       
+        		       card.setCardColor(ParseUser.getCurrentUser().getNumber("userColor").intValue());
         		       
         		        card.setBackgroundResourceId(R.drawable.card_background);
         		        Calendar c = Calendar.getInstance();
@@ -300,6 +314,7 @@ public class MessageFragment extends Fragment{
 	              
 		        card.setBackgroundResourceId(R.drawable.card_background);
 		        card.setObj(item);  
+		        card.setCardColor(item.getNumber("color").intValue());
 
 		        //Set resource
 		        
@@ -336,7 +351,7 @@ public class MessageFragment extends Fragment{
        protected ImageView mImageView;
        protected CheckBox mCheckbox;
        protected ParseObject mObj;
-       protected int resourceIdThumbnail;
+       protected int cardColor;
        protected int count;
        protected ParseObject obj;
        protected String title;
@@ -397,7 +412,7 @@ public class MessageFragment extends Fragment{
           
                mSecondaryTitle.setText(secondaryTitle);
 
-           
+           view.setBackgroundColor(cardColor);
            
            count = 0;
 
@@ -430,12 +445,12 @@ public class MessageFragment extends Fragment{
            this.obj = obj;
        }
 
-       public int getResourceIdThumbnail() {
-           return resourceIdThumbnail;
+       public int getCardColor() {
+           return cardColor;
        }
 
-       public void setResourceIdThumbnail(int resourceIdThumbnail) {
-           this.resourceIdThumbnail = resourceIdThumbnail;
+       public void setCardColor(int cardColor) {
+           this.cardColor = cardColor;
        }
    }
 

@@ -13,6 +13,7 @@ package com.rbarnes.myfamilyassistant;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
+import it.gmariotti.cardslib.library.internal.CardExpand;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardListView;
@@ -23,9 +24,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.parse.ParseACL;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -40,6 +46,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,6 +81,7 @@ public class CalendarFragment extends Fragment{
 	Calendar c;
 	private String _famName;
 	private String _user;
+	private String _tempString;
 	private int page;
 	
 	
@@ -143,6 +152,12 @@ public class CalendarFragment extends Fragment{
 	}
 	
 	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	    super.onCreateOptionsMenu(menu,inflater);
+	    MenuItem addItem = menu.findItem(R.id.menu_add);
+		addItem.setVisible(true);
+	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -154,6 +169,30 @@ public class CalendarFragment extends Fragment{
 	      default:
 	         return super.onOptionsItemSelected(item);
 	   }
+	}
+	
+	private void sendNoti(){
+		JSONObject data = new JSONObject();
+		
+		
+		
+		try {
+			data.put("alert", _tempString);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+		query.whereEqualTo("family", _famName);
+
+		
+		
+		ParsePush push = new ParsePush();
+		push.setQuery(query);
+		push.setData(data);
+		push.sendInBackground();
 	}
 	
 	public void addPopUp(){
@@ -234,7 +273,8 @@ public class CalendarFragment extends Fragment{
         			
         			obj.saveEventually();
             			
-            			
+        			_tempString = _user + " created a new calendar event.";
+        			sendNoti();	
         			//Create a Card
                     
                		MainCard card = new MainCard(getActivity());
@@ -256,7 +296,7 @@ public class CalendarFragment extends Fragment{
         		           
         		        
         		        card.setSwipeable(true);
-        		        card.setClickable(true);
+        		        
         		        //Add thumbnail to a card
         		        
         		        todayCards.add(card);
@@ -376,7 +416,7 @@ public class CalendarFragment extends Fragment{
 		        //Set resource
 		        
 		        card.setSwipeable(true);
-		        card.setClickable(true);
+		       
 		        //Add thumbnail to a card
 		        
 		        c.setTime(date);
@@ -386,6 +426,8 @@ public class CalendarFragment extends Fragment{
     		    c.set(Calendar.MILLISECOND, 0);
     		    // and get that as a Date
     		    Date dateSpecified = c.getTime();
+    		    
+    		  
 		        
     		    if (dateSpecified.before(today)) {
     		    	 pastCards.add(card);
@@ -461,24 +503,7 @@ public class CalendarFragment extends Fragment{
                 }
             });
 
-                //Add ClickListener
-                setOnClickListener(new OnCardClickListener() {
-                    @Override
-                    public void onClick(Card card, View view) {
-                        if(mCheckbox.isChecked()){
-                        	Toast.makeText(getContext(), "You need to buy more" + title, Toast.LENGTH_SHORT).show();
-                            
-                            mCheckbox.setChecked(false);
-                            card.changeBackgroundResourceId(R.drawable.card_background);
-                        }else{
-                        	Toast.makeText(getContext(), title + "was purchased", Toast.LENGTH_SHORT).show();
-                            
-                            mCheckbox.setChecked(true);
-                            card.changeBackgroundResourceId(R.drawable.card_background2);
-                        }
-                    	
-                    }
-                });
+                
 
 
 
