@@ -172,7 +172,7 @@ public class UpcomingFragment extends Fragment {
     		       
 
     		    SimpleDateFormat simpleDate =  new SimpleDateFormat("hh:mm a");
-
+    		    card.setCardColor(item.getNumber("color").intValue());
     		    String dateString = simpleDate.format(date);
     		    card.setTitle((String) item.get("title"));
     		    card.setSecondaryTitle(dateString);
@@ -223,7 +223,7 @@ public class UpcomingFragment extends Fragment {
         protected String title;
         protected String secondaryTitle;
         protected float image;
-
+        protected int cardColor;
 
         public MainCard(Context context) {
             this(context, R.layout.custom_card);
@@ -287,7 +287,7 @@ public class UpcomingFragment extends Fragment {
             	mSecondaryTitle.setText(secondaryTitle);
 
             
-            
+            view.setBackgroundColor(cardColor);
           
 
         }
@@ -310,13 +310,21 @@ public class UpcomingFragment extends Fragment {
         public void setSecondaryTitle(String secondaryTitle) {
             this.secondaryTitle = secondaryTitle;
         }
-
+        
         public ParseObject getObj() {
             return obj;
         }
 
         public void setObj(ParseObject obj) {
             this.obj = obj;
+        }
+
+        public int getCardColor() {
+            return cardColor;
+        }
+
+        public void setCardColor(int cardColor) {
+            this.cardColor = cardColor;
         }
 
     }

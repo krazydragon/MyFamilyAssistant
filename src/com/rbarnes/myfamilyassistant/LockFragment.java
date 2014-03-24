@@ -19,9 +19,11 @@ import com.parse.ParseQuery;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,13 +65,12 @@ public class LockFragment extends Fragment{
 	Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "primer.ttf");
 	tv.setTypeface(custom_font);
 	lockButton.setTypeface(custom_font);
-	
 	lockButton.setOnClickListener(new Button.OnClickListener(){
 
     	@Override
     	public void onClick(View v) {
     		// TODO Auto-generated method stub
-
+    		
     		ImageView lockImage = (ImageView)view.findViewById(R.id.lockImage);
     		JSONObject data = new JSONObject();
     		
@@ -124,6 +125,30 @@ public class LockFragment extends Fragment{
     );
 	
 	setHasOptionsMenu(true);
+	view.setFocusableInTouchMode(true);
+	view.requestFocus();
+	final Handler handler = new Handler();
+	handler.postDelayed(new Runnable() {
+	    @Override
+	    public void run() {
+	    	view.setOnKeyListener(new View.OnKeyListener() {
+		        @Override
+		        public boolean onKey(View v, int keyCode, KeyEvent event) {
+		         
+		            if( keyCode == KeyEvent.KEYCODE_BACK ) {
+		                    
+		                    getActivity().getSupportFragmentManager().popBackStack();
+		                return true;
+		            } else {
+		            	
+		                return false;
+		            }
+		            
+		        }
+		    });
+	    }
+	}, 3000);
+	
 	return view;
 	
 	

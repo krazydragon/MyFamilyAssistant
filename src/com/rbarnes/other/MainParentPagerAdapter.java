@@ -21,8 +21,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 public class MainParentPagerAdapter extends FragmentStatePagerAdapter {
 	 
-    private final int PAGES = 3;
-    private String[] titles={"Upcoming", "Alerts", "Kids"};
+    private final int PAGES = 2;
+    private String[] titles={"Upcoming", "Alerts"};
     @SuppressWarnings("unused")
 	private Context context = null;
     

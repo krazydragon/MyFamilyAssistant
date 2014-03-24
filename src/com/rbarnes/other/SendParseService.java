@@ -7,12 +7,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.parse.FindCallback;
 import com.parse.ParseACL;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
+import com.rbarnes.myfamilyassistant.LoginActivity;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 import android.app.IntentService;
 import android.app.admin.DevicePolicyManager;
@@ -36,7 +42,8 @@ public class SendParseService extends IntentService {
 	private String _name;
 	private DevicePolicyManager _devicePolicyManager;
 	private String _tempString;
-	
+	ParseObject _kidInfo;
+	ParseObject _location;
 	
 	public SendParseService() {
 		super("SendParseService");
@@ -63,7 +70,6 @@ public class SendParseService extends IntentService {
 			unlockDevice();
 		}
 		
-	
 	}
 	private void sendNotiBack(){
 		JSONObject data = new JSONObject();
@@ -107,7 +113,8 @@ public class SendParseService extends IntentService {
 	
 	
 	private void sendKidInfo(){
-		JSONObject kidInfoObj = new JSONObject();
+		final JSONObject kidInfoObj = new JSONObject();
+		
 		// TODO Auto-generated method stub
 		try {
 			kidInfoObj.put("appList", getAppList());
@@ -117,26 +124,72 @@ public class SendParseService extends IntentService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Log.i("json", kidInfoObj.toString());
-		ParseObject kidInfo = new ParseObject("kidContent");
-		kidInfo.put("content", kidInfoObj);
-		kidInfo.put("name", _user);
-		kidInfo.saveInBackground();
+		
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("kidContent");
+		
+		query.whereEqualTo("name", _user);
+		query.findInBackground(new FindCallback<ParseObject>() {
+		    public void done(List<ParseObject> info, ParseException e) {
+		    	
+				
+		    	if(info.isEmpty()){
+		    		_kidInfo =  new ParseObject("kidContent");
+		    		ParseACL postACL = new ParseACL();
+		    		postACL.setRoleWriteAccess(_famName, true);
+		    		postACL.setRoleReadAccess(_famName, true);
+		    		_kidInfo.setACL(postACL);
+		    	}else{
+		    		for (ParseObject item : info){
+		    			_kidInfo =  item;
+		    			
+		    		}
+		    	}
+		    	_kidInfo.put("content", kidInfoObj);
+				_kidInfo.put("name", _user);
+				_kidInfo.saveInBackground();
+		    }
+		});
+		
+		
 	}
 	private void sendLocation(){
-		Location l = getLastBestLocation();
 		
-		ParseObject obj = new ParseObject("kidLocation");
-		ParseACL postACL = new ParseACL();
-		postACL.setRoleWriteAccess(_famName, true);
-		postACL.setRoleReadAccess(_famName, true);
-		obj.setACL(postACL);
-		ParseGeoPoint gp = new ParseGeoPoint(l.getLatitude(),l.getLongitude());
-		obj.put("kid_loc", gp);
-		obj.put("name", _user);
-		//obj.saveEventually();
-		_tempString = _user + "'s location was updated";
-		sendNotiBack();
+		
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("kidLocation");
+		
+		query.whereEqualTo("name", _user);
+		query.findInBackground(new FindCallback<ParseObject>() {
+		    public void done(List<ParseObject> info, ParseException e) {
+		    	Location l = getLastBestLocation();
+				
+		    	if(info.isEmpty()){
+		    		_location = new ParseObject("kidLocation");
+		    		ParseACL postACL = new ParseACL();
+		    		postACL.setRoleWriteAccess(_famName, true);
+		    		postACL.setRoleReadAccess(_famName, true);
+		    		_location.setACL(postACL);
+		    	}else{
+		    		for (ParseObject item : info){
+		    			_location =  item;
+		    			
+		    		}
+		    		ParseGeoPoint gp = new ParseGeoPoint(l.getLatitude(),l.getLongitude());
+		    		_location.put("kid_loc", gp);
+		    		_location.put("name", _user);
+		    		_location.saveInBackground();
+		    		_tempString = _user + "'s location was updated";
+		    		sendNotiBack();
+		    	}
+		    }
+		});
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 	private Location getLastBestLocation() {
 	    Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);

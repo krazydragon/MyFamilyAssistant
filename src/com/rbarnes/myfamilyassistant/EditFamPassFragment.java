@@ -2,43 +2,31 @@ package com.rbarnes.myfamilyassistant;
 
 import java.util.List;
 
-import it.gmariotti.cardslib.library.internal.CardHeader;
-
 import com.parse.FindCallback;
-import com.parse.LogInCallback;
-import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRole;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
-import com.rbarnes.myfamilyassistant.MessageFragment.MainCard;
-import com.rbarnes.other.EmailRetriever;
 import com.throrinstudio.android.common.libs.validator.Form;
-import com.throrinstudio.android.common.libs.validator.Validate;
 import com.throrinstudio.android.common.libs.validator.validate.ConfirmValidate;
-import com.throrinstudio.android.common.libs.validator.validator.NotEmptyValidator;
-
 import android.content.Context;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class EditFamPassFragment extends Fragment{
 	
@@ -54,7 +42,7 @@ public class EditFamPassFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_fam_vaild, container, false);
+	final RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_fam_vaild, container, false);
 	
 	LinearLayout passView = (LinearLayout)view.findViewById(R.id.makePass);
 	passView.setVisibility(View.VISIBLE);
@@ -80,9 +68,9 @@ public class EditFamPassFragment extends Fragment{
 	famNameInput.setEnabled(false);
 	famNameInput.setText(_famName);
 	_parPassInput.setHint("Enter new or old parent password");
-	regParPassInput.setText("Reenter new or old parent password");
-	_kidPassInput.setText("Enter new or old child password");
-	reKidPassInput.setText("Renter new or old child password");
+	regParPassInput.setHint("Reenter new or old parent password");
+	_kidPassInput.setHint("Enter new or old child password");
+	reKidPassInput.setHint("Renter new or old child password");
 	
 	
 	ConfirmValidate confirmParPass = new ConfirmValidate(_parPassInput, regParPassInput);
@@ -109,6 +97,7 @@ public class EditFamPassFragment extends Fragment{
     		    			famPass.put("password", _parPassInput.getText().toString());
     		    			famPass.put("kidPass", _kidPassInput.getText().toString());
     		    			famPass.saveInBackground();
+    		    			getActivity().getSupportFragmentManager().popBackStack();
     		    		}
     		    	}else{
     		    		
@@ -122,6 +111,30 @@ public class EditFamPassFragment extends Fragment{
     	
     	}
     );
+	
+	view.setFocusableInTouchMode(true);
+	view.requestFocus();
+	final Handler handler = new Handler();
+	handler.postDelayed(new Runnable() {
+	    @Override
+	    public void run() {
+	    	view.setOnKeyListener(new View.OnKeyListener() {
+		        @Override
+		        public boolean onKey(View v, int keyCode, KeyEvent event) {
+		         
+		            if( keyCode == KeyEvent.KEYCODE_BACK ) {
+		                    
+		                    getActivity().getSupportFragmentManager().popBackStack();
+		                return true;
+		            } else {
+		            	
+		                return false;
+		            }
+		            
+		        }
+		    });
+	    }
+	}, 3000);
 	return view;
 	
 	
@@ -146,4 +159,6 @@ void changeTextViewFont(TextView v){
         "primer.ttf");
 	v.setTypeface(t);
 }
+
+
 }

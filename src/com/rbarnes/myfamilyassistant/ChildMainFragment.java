@@ -11,20 +11,11 @@ package com.rbarnes.myfamilyassistant;
 
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
-import com.rbarnes.other.FamDeviceAdminReceiver;
 import com.rbarnes.other.MainChildPagerAdapter;
-import com.rbarnes.other.MainParentPagerAdapter;
-
-import android.app.Activity;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;

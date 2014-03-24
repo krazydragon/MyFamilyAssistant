@@ -1,37 +1,31 @@
 package com.rbarnes.myfamilyassistant;
 
 import net.margaritov.preference.colorpicker.ColorPickerDialog;
-import it.gmariotti.cardslib.library.internal.CardHeader;
-
 import com.parse.LogInCallback;
-import com.parse.ParseACL;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.SignUpCallback;
-import com.rbarnes.myfamilyassistant.MessageFragment.MainCard;
 import com.rbarnes.other.EmailRetriever;
 import com.throrinstudio.android.common.libs.validator.Form;
 import com.throrinstudio.android.common.libs.validator.Validate;
 import com.throrinstudio.android.common.libs.validator.validate.ConfirmValidate;
 import com.throrinstudio.android.common.libs.validator.validator.NotEmptyValidator;
 
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -50,13 +44,13 @@ public class EditUserFragment extends Fragment implements ColorPickerDialog.OnCo
 	PopupWindow pw;
 	ColorPickerDialog dialog;
 	Button colorButton;
-	
+		
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_edituser, container, false);
+	final RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_edituser, container, false);
 	_context = getActivity();
 	
 	_currentUser = ParseUser.getCurrentUser();
@@ -133,12 +127,37 @@ public class EditUserFragment extends Fragment implements ColorPickerDialog.OnCo
 	dialog.setOnColorChangedListener(this);
 	
 	
+	view.setFocusableInTouchMode(true);
+	view.requestFocus();
+	final Handler handler = new Handler();
+	handler.postDelayed(new Runnable() {
+	    @Override
+	    public void run() {
+	    	view.setOnKeyListener(new View.OnKeyListener() {
+		        @Override
+		        public boolean onKey(View v, int keyCode, KeyEvent event) {
+		         
+		            if( keyCode == KeyEvent.KEYCODE_BACK ) {
+		                    
+		                    getActivity().getSupportFragmentManager().popBackStack();
+		                return true;
+		            } else {
+		            	
+		                return false;
+		            }
+		            
+		        }
+		    });
+	    }
+	}, 3000);
+	
 	return view;
 	
 	
 	
 	
 	}
+	
 
 public void addPopUp(){
 		
@@ -196,6 +215,7 @@ public void addPopUp(){
   					  }
   					});
             		pw.dismiss();
+            		//listener.onButtonPress();
 
    				}
 
@@ -217,13 +237,15 @@ public void addPopUp(){
         		// TODO Auto-generated method stub
 
         		pw.dismiss();
- 
+        		getActivity().getSupportFragmentManager().popBackStack();
         	}
         	}
         );
         
         
 	}
+
+
 
 void changeButtonFont(TextView v){
 	Typeface t=Typeface.createFromAsset(getActivity().getAssets(),

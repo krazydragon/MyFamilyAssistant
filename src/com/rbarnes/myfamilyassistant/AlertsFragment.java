@@ -16,7 +16,9 @@ import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.view.CardListView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -156,11 +158,28 @@ public class AlertsFragment extends Fragment {
 		        card.setObj(item);  
 
 		        //Set resource
-		        
+		        card.setCardColor(item.getNumber("color").intValue());
 		        card.setSwipeable(false);
 		        card.setClickable(false);
 		        //Add thumbnail to a card
-		        if(!(Boolean) item.get("read")){
+		        SimpleDateFormat simpleDate =  new SimpleDateFormat("hh:mm a");
+    		    Calendar c = Calendar.getInstance();
+				 // set the calendar to start of today
+			   c.set(Calendar.HOUR_OF_DAY, 0);
+			   c.set(Calendar.MINUTE, 0);
+			   c.set(Calendar.SECOND, 0);
+			   c.set(Calendar.MILLISECOND, 0);
+
+			    Date today = c.getTime();
+		        c.setTime(date);
+        		c.set(Calendar.HOUR_OF_DAY, 0);
+    		    c.set(Calendar.MINUTE, 0);
+    		    c.set(Calendar.SECOND, 0);
+    		    c.set(Calendar.MILLISECOND, 0);
+    		    // and get that as a Date
+    		    Date dateSpecified = c.getTime();
+		        
+    		    if (dateSpecified.equals(today)){
 		        	   
 		        	cards.add(card);
 		           }
@@ -194,7 +213,7 @@ public class AlertsFragment extends Fragment {
        protected String title;
        protected String secondaryTitle;
        protected float image;
-       
+       protected int cardColor;
 
 
        public MainCard(Context context) {
@@ -249,7 +268,7 @@ public class AlertsFragment extends Fragment {
           
                mSecondaryTitle.setText(secondaryTitle);
 
-           
+               view.setBackgroundColor(cardColor);
            
            count = 0;
 
@@ -282,12 +301,12 @@ public class AlertsFragment extends Fragment {
            this.obj = obj;
        }
 
-       public int getResourceIdThumbnail() {
-           return resourceIdThumbnail;
+       public int getCardColor() {
+           return cardColor;
        }
 
-       public void setResourceIdThumbnail(int resourceIdThumbnail) {
-           this.resourceIdThumbnail = resourceIdThumbnail;
+       public void setCardColor(int cardColor) {
+           this.cardColor = cardColor;
        }
    }
 

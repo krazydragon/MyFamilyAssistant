@@ -13,10 +13,11 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
-import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.view.CardListView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -25,20 +26,22 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.rbarnes.myfamilyassistant.ChoreFragment.MainCard;
-import com.rbarnes.myfamilyassistant.ChoreFragment.RemoteDataTask;
 
-
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,7 +51,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -74,7 +76,7 @@ public class GroceryFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
+	final LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
 	
 	_context = getActivity();
 	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
@@ -88,7 +90,31 @@ public class GroceryFragment extends Fragment{
 	titleText.setText("Groceries");
 	changeTextViewFont(titleText);
 	
-	setHasOptionsMenu(true);	
+	setHasOptionsMenu(true);
+	
+	view.setFocusableInTouchMode(true);
+	view.requestFocus();
+	final Handler handler = new Handler();
+	handler.postDelayed(new Runnable() {
+	    @Override
+	    public void run() {
+	    	view.setOnKeyListener(new View.OnKeyListener() {
+		        @Override
+		        public boolean onKey(View v, int keyCode, KeyEvent event) {
+		         
+		            if( keyCode == KeyEvent.KEYCODE_BACK ) {
+		                    
+		                    getActivity().getSupportFragmentManager().popBackStack();
+		                return true;
+		            } else {
+		            	
+		                return false;
+		            }
+		            
+		        }
+		    });
+	    }
+	}, 3000);
 	return view;
 	}
 	@Override
@@ -361,8 +387,38 @@ public class GroceryFragment extends Fragment{
             
         	setOnSwipeListener(new Card.OnSwipeListener() {
                 @Override
-                public void onSwipe(Card card) {
-                    obj.deleteInBackground();
+                public void onSwipe(final Card card) {
+                	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+            				_context);
+
+            			// set title
+            			alertDialogBuilder.setTitle("Delete "+ getTitle() + "?");
+             
+            			// set dialog message
+            			alertDialogBuilder
+            				.setMessage("Are you sure you want to delete "+ getTitle() + "?")
+            				.setCancelable(false)
+            				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+            					public void onClick(DialogInterface dialog,int id) {
+            						obj.deleteInBackground();
+            					}
+            				  })
+            				.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            					public void onClick(DialogInterface dialog,int id) {
+            						cards.add(card);
+            						adapter.notifyDataSetChanged();
+            						dialog.cancel();
+            						
+            						
+            					}
+            				});
+            				
+            				// create alert dialog
+            				AlertDialog alertDialog = alertDialogBuilder.create();
+             
+            				// show it
+            				alertDialog.show();
+                    
                 }
             });
 

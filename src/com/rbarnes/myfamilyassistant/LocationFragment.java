@@ -16,13 +16,10 @@ import org.json.JSONObject;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.parse.FindCallback;
-import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
@@ -31,15 +28,15 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.provider.SyncStateContract.Constants;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.InflateException;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,7 +44,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.PopupMenu.OnMenuItemClickListener;
@@ -61,7 +57,6 @@ public class LocationFragment extends Fragment {
 	private ProgressDialog mProgressDialog;
 	private Context _context;
 	private List<ParseObject> ob;
-	private LatLng _cords;
 	private String _famName;
 	private String _user;
 	
@@ -146,6 +141,30 @@ public class LocationFragment extends Fragment {
    
     setHasOptionsMenu(true);
     
+    view.setFocusableInTouchMode(true);
+	view.requestFocus();
+	final Handler handler = new Handler();
+	handler.postDelayed(new Runnable() {
+	    @Override
+	    public void run() {
+	    	view.setOnKeyListener(new View.OnKeyListener() {
+		        @Override
+		        public boolean onKey(View v, int keyCode, KeyEvent event) {
+		         
+		            if( keyCode == KeyEvent.KEYCODE_BACK ) {
+		                    
+		                    getActivity().getSupportFragmentManager().popBackStack();
+		                return true;
+		            } else {
+		            	
+		                return false;
+		            }
+		            
+		        }
+		    });
+	    }
+	}, 3000);
+	
 	return view;
 	
 	
@@ -175,7 +194,7 @@ public class LocationFragment extends Fragment {
                @Override
                public boolean onMenuItemClick(MenuItem item) {
                    _kid = item.getTitle().toString();
-                   Log.d("KIDNAME",_kid);
+                   findLocation();
                    return true;
                }
            });

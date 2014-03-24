@@ -13,7 +13,6 @@ package com.rbarnes.myfamilyassistant;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
-import it.gmariotti.cardslib.library.internal.CardExpand;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardListView;
@@ -33,18 +32,23 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,7 +59,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -83,6 +86,7 @@ public class CalendarFragment extends Fragment{
 	private String _user;
 	private String _tempString;
 	private int page;
+	private int _userColor;
 	
 	
 	 // newInstance constructor for creating fragment with arguments
@@ -107,13 +111,14 @@ public class CalendarFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_calendar, container, false);
+	final LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_calendar, container, false);
 	
 	
 	
 	_context = getActivity();
 	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
 	_user = PreferenceManager.getDefaultSharedPreferences(_context).getString("user", _user);
+	_userColor = ParseUser.getCurrentUser().getNumber("userColor").intValue(); 
 	todayCards = new ArrayList<Card>();
 	pastCards = new ArrayList<Card>();
 	futureCards = new ArrayList<Card>();
@@ -148,6 +153,29 @@ public class CalendarFragment extends Fragment{
    Log.i("pager","%d" + vp.getCurrentItem() );
    setHasOptionsMenu(true);
 	
+   view.setFocusableInTouchMode(true);
+	view.requestFocus();
+	final Handler handler = new Handler();
+	handler.postDelayed(new Runnable() {
+	    @Override
+	    public void run() {
+	    	view.setOnKeyListener(new View.OnKeyListener() {
+		        @Override
+		        public boolean onKey(View v, int keyCode, KeyEvent event) {
+		         
+		            if( keyCode == KeyEvent.KEYCODE_BACK ) {
+		                    
+		                    getActivity().getSupportFragmentManager().popBackStack();
+		                return true;
+		            } else {
+		            	
+		                return false;
+		            }
+		            
+		        }
+		    });
+	    }
+	}, 3000);
 	return view;
 	}
 	
@@ -232,7 +260,8 @@ public class CalendarFragment extends Fragment{
 		
         submit.setOnClickListener(new Button.OnClickListener(){
 
-        	@Override
+        	@SuppressLint("SimpleDateFormat")
+			@Override
         	public void onClick(View v) {
         		
         		if(popupInput.getText().toString().trim().length() > 0){
@@ -270,37 +299,38 @@ public class CalendarFragment extends Fragment{
         			obj.put("title", popupInput.getText().toString());
         			obj.put("date", d);
         			obj.put("name", _user);
-        			
+        			obj.put("color", _userColor);
         			obj.saveEventually();
             			
         			_tempString = _user + " created a new calendar event.";
         			sendNoti();	
-        			//Create a Card
-                    
                		MainCard card = new MainCard(getActivity());
-                       //Create a CardHeader
-                       CardHeader header = new CardHeader(getActivity());
-                       card.setTitle(popupInput.getText().toString());
-                       header.setTitle((String) android.text.format.DateFormat.format("EEEE MMMM d yyyy", d));
-             		  //Add Header to card
-                         card.addCardHeader(header);
-                     //Create thumbnail
-                         SimpleDateFormat simpleDate =  new SimpleDateFormat("hh:mm a");
-                         String dateString = "at "+ simpleDate.format(d);
-             		    card.setSecondaryTitle(dateString);  
-        		        
-        		        card.setObj(obj);   
-        		       
-        		       
-        		        card.setBackgroundResourceId(R.drawable.card_background);
-        		           
-        		        
-        		        card.setSwipeable(true);
-        		        
-        		        //Add thumbnail to a card
-        		        
-        		        todayCards.add(card);
-        			todayAdapter.notifyDataSetChanged();
+                    //Create a CardHeader
+                    CardHeader header = new CardHeader(getActivity());
+                    card.setTitle(popupInput.getText().toString());
+                    card.setCardColor(_userColor);
+                    header.setTitle((String) android.text.format.DateFormat.format("EEEE MMMM d yyyy", d));
+          		  //Add Header to card
+                      card.addCardHeader(header);
+                  //Create thumbnail
+                      SimpleDateFormat simpleDate =  new SimpleDateFormat("hh:mm a");
+                      String dateString = "at "+ simpleDate.format(d);
+          		    card.setSecondaryTitle(dateString);  
+     		        
+     		        card.setObj(obj);   
+     		       
+     		       
+     		        card.setBackgroundResourceId(R.drawable.card_background);
+     		           
+     		        
+     		        card.setSwipeable(true);
+     		        
+     		        //Add thumbnail to a card
+     		        
+     		        todayCards.add(card);
+     			todayAdapter.notifyDataSetChanged();
+
+        			
             		pw.dismiss();
 
    				}
@@ -380,7 +410,8 @@ public class CalendarFragment extends Fragment{
             return null;
         }
  
-        @SuppressWarnings({ })
+        @SuppressLint("SimpleDateFormat")
+		@SuppressWarnings({ })
 		@Override
         protected void onPostExecute(Void result) {
         	
@@ -400,7 +431,8 @@ public class CalendarFragment extends Fragment{
                 card.setTitle((String) item.get("title"));
                 
               //Create thumbnail
-		        CardThumbnail thumb = new CardThumbnail(getActivity());
+		        @SuppressWarnings("unused")
+				CardThumbnail thumb = new CardThumbnail(getActivity());
 		        card.setObj(item);   
 		        card.setBackgroundResourceId(R.drawable.card_background);
 		        Date date = item.getDate("date");
@@ -414,7 +446,7 @@ public class CalendarFragment extends Fragment{
     		    String dateString = "at "+ simpleDate.format(date);
     		    card.setSecondaryTitle(dateString);
 		        //Set resource
-		        
+    		    card.setCardColor(item.getNumber("color").intValue());
 		        card.setSwipeable(true);
 		       
 		        //Add thumbnail to a card
@@ -474,7 +506,7 @@ public class CalendarFragment extends Fragment{
         protected ImageView mImageView;
         protected CheckBox mCheckbox;
         protected ParseObject mObj;
-        protected int resourceIdThumbnail;
+        protected int cardColor;
         protected int count;
         protected ParseObject obj;
         protected String title;
@@ -505,7 +537,7 @@ public class CalendarFragment extends Fragment{
 
                 
 
-
+        	
 
             
             
@@ -528,7 +560,7 @@ public class CalendarFragment extends Fragment{
             if (mSecondaryTitle != null)
             	mSecondaryTitle.setText(secondaryTitle);
 
-            
+            view.setBackgroundColor(cardColor);
             
           
 
@@ -561,12 +593,12 @@ public class CalendarFragment extends Fragment{
             this.obj = obj;
         }
 
-        public int getResourceIdThumbnail() {
-            return resourceIdThumbnail;
+        public int getCardColor() {
+            return cardColor;
         }
 
-        public void setResourceIdThumbnail(int resourceIdThumbnail) {
-            this.resourceIdThumbnail = resourceIdThumbnail;
+        public void setCardColor(int cardColor) {
+            this.cardColor = cardColor;
         }
     }
 }

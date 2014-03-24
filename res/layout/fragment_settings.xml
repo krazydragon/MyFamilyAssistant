@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/settingsLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -16,23 +17,12 @@
         android:layout_height="wrap_content"
         android:text="Change Family Password" />
 
-    <Button
-        android:id="@+id/kidInfoButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Kid Information Settings" />
 
     <Button
         android:id="@+id/feedbackButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Send Feedback" />
-
-    <Button
-        android:id="@+id/aboutButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="About" />
     
     <Button
         android:id="@+id/famLogoutButton"

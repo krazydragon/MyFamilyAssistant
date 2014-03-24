@@ -12,7 +12,6 @@ package com.rbarnes.myfamilyassistant;
 
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
-import com.rbarnes.other.CalendarPagerAdapter;
 import com.rbarnes.other.ChildDevicePagerAdapter;
 
 import android.support.v4.app.Fragment;

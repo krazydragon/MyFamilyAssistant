@@ -11,20 +11,13 @@ package com.rbarnes.myfamilyassistant;
 
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.admin.DeviceAdminReceiver;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
@@ -34,36 +27,25 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupMenu;
-import android.widget.Toast;
-
-import com.google.android.gms.internal.ed;
 import com.parse.FindCallback;
 import com.parse.Parse;
-import com.parse.ParseACL;
-import com.parse.ParseAnalytics;
 import com.parse.ParseException;
-import com.parse.ParseInstallation;
-import com.parse.ParseObject;
-import com.parse.ParsePush;
 import com.parse.ParseQuery;
-import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.PushService;
-import com.rbarnes.myfamilyassistant.R.menu;
 import com.rbarnes.myfamilyassistant.SettingsFragment.SettingsListener;
 import com.rbarnes.other.FamDeviceAdminReceiver;
-import com.rbarnes.other.SendParseService;
+import com.suredigit.inappfeedback.FeedbackDialog;
 
 
 
@@ -84,6 +66,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
     FragmentTransaction _transaction;
     ComponentName _deviceAdmin;
     Editor _editor;
+    private FeedbackDialog feedBack;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +77,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 		setContentView(R.layout.activity_main);
 		
 		  
-		
+		feedBack = new FeedbackDialog(this, "AF-886F6AB586F4-68");
 	    _context = this;
 	    
 		Parse.initialize(this, "wAoWswK6kE9xpSqkrHrKjrIbWDMfeF0xYGWkDWFc", "2wZeexj6posiXETwFUbQ0LJFkT62wg63wnaS711L");
@@ -110,7 +93,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
 		
 		if ((_fam_auth) && _currentUser!= null) {
-			//checkParent();
+			checkParent();
 			
 			
            
@@ -165,10 +148,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
  
     drawerListView.setOnItemClickListener(new DrawerItemClickListener());
     _tempString = "1234567890";
-    //Intent intent = new Intent(this, SendParseService.class);
-    // add infos for the service which file to download and where to store
     
-    //startService(intent);
 	}
 	
 	private void getChildNames(){
@@ -183,7 +163,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 		_editor.commit();
 		
 		query.whereEqualTo("parent", false);
-		query.whereEqualTo("famName", "krazy");
+		query.whereEqualTo("famName", _famName);
 		query.findInBackground(new FindCallback<ParseUser>() {
 		  public void done(List<ParseUser> objects, ParseException e) {
 		    if (e == null) {
@@ -284,19 +264,20 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
                 frag = new ChildInfoMainFragment();
                 break;
             case 8:
-                frag = new SettingsFragment();
-                break;
+            	frag = new SettingsFragment();
+            	break;
 
             
             default:
                 frag = new MessageFragment();
                 break;
             }
-            _transaction = _manager.beginTransaction();
-            _transaction.replace(R.id.content_frame, frag, null);
-            _transaction.addToBackStack(null);
-            _transaction.commit();
- 
+            if(frag != null){
+            	_transaction = _manager.beginTransaction();
+            	_transaction.replace(R.id.content_frame, frag, null);
+            	_transaction.addToBackStack(null);
+            	_transaction.commit();
+            }
         }
     }
 	private void checkParent(){
@@ -315,6 +296,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 	 	    }
     	   
        }
+       _transaction.addToBackStack(null);
        _transaction.commit();
 	}
 	
@@ -336,6 +318,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 		
 	}
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d("code",""+requestCode);
 		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
 		final Handler handler = new Handler();
 		if(_fam_auth){
@@ -346,7 +329,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 			         //String msg = data.getStringExtra("msg"); 
 			         //Crouton.makeText(this, msg, Style.INFO).show();
 			        
-			    	 
+			    	 _currentUser = ParseUser.getCurrentUser();
 			         
 			    	 
 			    	 handler.postDelayed(new Runnable() {
@@ -377,46 +360,87 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 				    	 }, 1000);
 					}
 			    }
+			  else if(requestCode == 75){
+				  
+				  if(ParseUser.getCurrentUser() == null){
+					  finish();
+				  }
+				  
+			  }
 	    }
 	    super.onActivityResult(requestCode, resultCode, data);
 		}
 
-	@Override
-	public void onSettingsButtonPress(int opt) {
-		
-		switch (opt) {
-        case 0:
-        	_transaction = _manager.beginTransaction();
-            _transaction.replace(R.id.content_frame, new EditUserFragment());
-            _transaction.commit();
-            break;
-
-        case 1:
-        	_transaction = _manager.beginTransaction();
-            _transaction.replace(R.id.content_frame, new EditFamPassFragment());
-            _transaction.commit();
-            break;
-
-        case 2:
-           
-            break;
-
-        case 3:
-            
-            break;
-        case 4:
-            
-            break;
-
-        
-        }
-		// TODO Auto-generated method stub
-		
-	}
+	
 	
 	 @Override
 	  public void onBackPressed() {
 	    moveTaskToBack(true);
 	  }
-	
+		@Override
+		public void onSettingsButtonPress(int opt) {
+			
+			switch (opt) {
+	        case 0:
+	        	_transaction = _manager.beginTransaction();
+	            _transaction.replace(R.id.content_frame, new EditUserFragment());
+	            _transaction.addToBackStack(null);
+	            _transaction.commit();
+	            break;
+
+	        case 1:
+	        	_transaction = _manager.beginTransaction();
+	            _transaction.replace(R.id.content_frame, new EditFamPassFragment());
+	            _transaction.addToBackStack(null);
+	            _transaction.commit();
+	            break;
+
+	        case 2:
+	        	feedBack.show();
+	            break;
+
+	        
+	        case 3:
+	            _currentUser.put("famName", "");
+	            _currentUser.saveEventually();
+	            ParseUser.logOut();
+	            _editor.putBoolean("fam_auth", false);
+	            _editor.commit();
+	            finish();
+	            break;
+
+	        
+	        }
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		protected void onPause() {
+		    super.onPause();
+		    feedBack.dismiss();
+		}
+
+		@Override
+		public boolean dispatchTouchEvent(MotionEvent event) {
+
+		    View v = getCurrentFocus();
+		    boolean ret = super.dispatchTouchEvent(event);
+
+		    if (v instanceof EditText) {
+		        View w = getCurrentFocus();
+		        int scrcoords[] = new int[2];
+		        w.getLocationOnScreen(scrcoords);
+		        float x = event.getRawX() + w.getLeft() - scrcoords[0];
+		        float y = event.getRawY() + w.getTop() - scrcoords[1];
+
+		        Log.d("Activity", "Touch event "+event.getRawX()+","+event.getRawY()+" "+x+","+y+" rect "+w.getLeft()+","+w.getTop()+","+w.getRight()+","+w.getBottom()+" coords "+scrcoords[0]+","+scrcoords[1]);
+		        if (event.getAction() == MotionEvent.ACTION_UP && (x < w.getLeft() || x >= w.getRight() || y < w.getTop() || y > w.getBottom()) ) { 
+
+		            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		            imm.hideSoftInputFromWindow(getWindow().getCurrentFocus().getWindowToken(), 0);
+		        }
+		    }
+		return ret;
+		}
 }

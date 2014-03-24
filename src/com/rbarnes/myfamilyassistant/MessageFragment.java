@@ -24,27 +24,26 @@ import java.util.List;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -56,7 +55,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.rbarnes.myfamilyassistant.SuppliesFragment.MainCard;
 
 public class MessageFragment extends Fragment{
 	
@@ -80,7 +78,7 @@ public class MessageFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_messages, container, false);
+	final LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_messages, container, false);
 	
 	_context = getActivity();
 	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
@@ -89,13 +87,37 @@ public class MessageFragment extends Fragment{
 	cards = new ArrayList<Card>();
 	listView = (CardListView) view.findViewById(R.id.choir_list);
 	TextView titleText = (TextView)view.findViewById(R.id.title);
-	Button button = null; 
+	 
 
 	
 	new RemoteDataTask().execute();
 	changeTextViewFont(titleText);
 	
 	setHasOptionsMenu(true);
+	
+	view.setFocusableInTouchMode(true);
+	view.requestFocus();
+	final Handler handler = new Handler();
+	handler.postDelayed(new Runnable() {
+	    @Override
+	    public void run() {
+	    	view.setOnKeyListener(new View.OnKeyListener() {
+		        @Override
+		        public boolean onKey(View v, int keyCode, KeyEvent event) {
+		         
+		            if( keyCode == KeyEvent.KEYCODE_BACK ) {
+		                    
+		                    getActivity().getSupportFragmentManager().popBackStack();
+		                return true;
+		            } else {
+		            	
+		                return false;
+		            }
+		            
+		        }
+		    });
+	    }
+	}, 3000);
 	
 	return view;
 	}
@@ -275,7 +297,7 @@ public class MessageFragment extends Fragment{
            // Locate the class table named "Country" in Parse.com
            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
                    "Messages");
-           query.orderByDescending("_created_at");
+           query.addAscendingOrder("_created_at");
            try {
                ob = query.find();
            } catch (ParseException e) {
@@ -310,7 +332,8 @@ public class MessageFragment extends Fragment{
                //Add Header to card
                card.addCardHeader(header);
              //Create thumbnail
-		        CardThumbnail thumb = new CardThumbnail(getActivity());
+		        @SuppressWarnings("unused")
+				CardThumbnail thumb = new CardThumbnail(getActivity());
 	              
 		        card.setBackgroundResourceId(R.drawable.card_background);
 		        card.setObj(item);  

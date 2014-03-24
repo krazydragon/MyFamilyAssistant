@@ -25,18 +25,18 @@ import org.json.JSONObject;
 
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -50,8 +50,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -65,6 +63,7 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+@SuppressLint("SimpleDateFormat")
 public class ChoreFragment extends Fragment{
 	
 	private ProgressDialog mProgressDialog;
@@ -78,10 +77,11 @@ public class ChoreFragment extends Fragment{
 	static CardArrayAdapter completedAdapter;
 	private int page; 
 	private String _famName;
-	private String _user;
+	private static String _user;
 	private String _tempString;
 	private int _userColor;
-	
+	private Boolean _parent = false;
+	private static String _tempHeader; 
 	
 	 // newInstance constructor for creating fragment with arguments
     public static ChoreFragment newInstance(int page) {
@@ -107,10 +107,11 @@ public class ChoreFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
+	final LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_main_list, container, false);
 	
 	
 	_context = getActivity();
+	_parent = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("parent", _parent);
 	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
 	_user = PreferenceManager.getDefaultSharedPreferences(_context).getString("user", _user);
 	cards = new ArrayList<Card>();
@@ -127,21 +128,29 @@ public class ChoreFragment extends Fragment{
 
 	view.setFocusableInTouchMode(true);
 	view.requestFocus();
-	view.setOnKeyListener(new View.OnKeyListener() {
-	        @Override
-	        public boolean onKey(View v, int keyCode, KeyEvent event) {
-	            Log.i("does this work", "keyCode: " + keyCode);
-	            if( keyCode == KeyEvent.KEYCODE_BACK ) {
-	                    Log.i("does this work", "onKey Back listener is working!!!");
-	                getFragmentManager().popBackStack();
-	                return true;
-	            } else {
-	            	getFragmentManager().popBackStack();
-	                return false;
-	            }
-	            
-	        }
-	    });
+	
+	final Handler handler = new Handler();
+	handler.postDelayed(new Runnable() {
+	    @Override
+	    public void run() {
+	    	view.setOnKeyListener(new View.OnKeyListener() {
+		        @Override
+		        public boolean onKey(View v, int keyCode, KeyEvent event) {
+		         
+		            if( keyCode == KeyEvent.KEYCODE_BACK ) {
+		                    
+		                    getActivity().getSupportFragmentManager().popBackStack();
+		                return true;
+		            } else {
+		            	
+		                return false;
+		            }
+		            
+		        }
+		    });
+	    }
+	}, 3000);
+	
 	
 	return view;
 	}
@@ -268,7 +277,7 @@ public class ChoreFragment extends Fragment{
         		        card.setChecked(false);
         		        card.setObj(obj);   
         		       card.setTitle(_user);
-        		       
+        		       card.setCardColor(_userColor);
         		        card.setBackgroundResourceId(R.drawable.card_background);
         		           
         		        
@@ -363,7 +372,7 @@ public class ChoreFragment extends Fragment{
         	
         	
         	
-            
+        	int tn = 0;
         	
         	
         	for (ParseObject item : ob) {
@@ -373,8 +382,8 @@ public class ChoreFragment extends Fragment{
         		MainCard card = new MainCard(getActivity());
                 //Create a CardHeader
                 CardHeader header = new CardHeader(getActivity());
-               
-                header.setTitle((String) item.get("item"));
+               _tempHeader = (String) item.get("item");
+                header.setTitle(_tempHeader);
                 //Add Header to card
                 card.addCardHeader(header);
               //Create thumbnail
@@ -405,8 +414,11 @@ public class ChoreFragment extends Fragment{
 		        	card.setSecondaryTitle(dateString);
 		               card.setBackgroundResourceId(R.drawable.card_background2);
 		               card.setClickable(false);
-		               card.setTitle(item.getString("by"));
+		               card.setTitle(item.getString("from"));
+		               if(tn==0){
 		               completedCards.add(card);
+		               tn++;
+		               }
 		           }else {
 		        	   date = item.getCreatedAt();
 		        	   dateString = simpleDate.format(date);
@@ -512,39 +524,42 @@ public class ChoreFragment extends Fragment{
                 	        			ParseACL postACL = new ParseACL();
                 	        			postACL.setRoleWriteAccess(s, true);
                 	        			postACL.setRoleReadAccess(s, true);
-                	        			//obj.setACL(postACL);
+                	        			newObj.setACL(postACL);
                 	        			
-                	        			newObj.put("item", getTitle());
+                	        			
+                	        			newObj.put("item", _tempHeader);
                 	        			newObj.put("completed", false);
-                	        			newObj.put("by", _user);
+                	        			newObj.put("from", _user);
+                	        			newObj.put("color", _userColor);
                 	        			newObj.saveEventually();
                 	        			
                 	        			MainCard newCard = new MainCard(getActivity());
-                	                       //Create a CardHeader
-                	                       CardHeader header = new CardHeader(getActivity());
-                	                       newCard.setTitle(_user);
-                	                       
-                	                       
-                	           		    
-                	           		    newCard.setSecondaryTitle(dateString);
-                	                       //Add Header to card
-                	                       newCard.addCardHeader(header);
-                	                     //Create thumbnail
-                	        		        
-                	        	              
-                	                       newCard.setChecked(false);
-                	                       newCard.setObj(newObj);   
-                	        		       
-                	        		       
-                	                       newCard.setBackgroundResourceId(R.drawable.card_background);
-                	        		           
-                	        		        
-                	                       newCard.setSwipeable(false);
-                	                       newCard.setClickable(true);
-                	        		        //Add thumbnail to a card
-                	        		        
-                	                       cards.add(newCard);
-                	        			adapter.notifyDataSetChanged();
+             	                       //Create a CardHeader
+             	                       CardHeader header = new CardHeader(getActivity());
+             	                       newCard.setTitle(_user);
+             	                       
+             	                       
+             	           		    
+             	           		    newCard.setSecondaryTitle(dateString);
+             	                       //Add Header to card
+             	                       newCard.addCardHeader(header);
+             	                     //Create thumbnail
+             	        		        
+             	        	              
+             	                       newCard.setChecked(false);
+             	                       newCard.setObj(newObj);   
+             	        		       
+             	                      newCard.setCardColor(_userColor);
+             	                       newCard.setBackgroundResourceId(R.drawable.card_background);
+             	        		           
+             	        		        
+             	                       newCard.setSwipeable(false);
+             	                       newCard.setClickable(true);
+             	        		        //Add thumbnail to a card
+             	        		        
+             	                       cards.add(newCard);
+             	        			adapter.notifyDataSetChanged();
+
                 	        			
                 					}
                 				  })
@@ -553,6 +568,8 @@ public class ChoreFragment extends Fragment{
                 						// if this button is clicked, just close
                 						// the dialog box and do nothing
                 						dialog.cancel();
+                						
+                						
                 					}
                 				});
                 				
@@ -561,39 +578,49 @@ public class ChoreFragment extends Fragment{
                  
                 				// show it
                 				alertDialog.show();
-                        
+                				
+                				
+        						
+        						
                         	
                         
-                       
-                        	
+                				
+                    			
+                                
+                                MainCard newCard = new MainCard(getActivity());
+        	                       //Create a CardHeader
+        	                       CardHeader header = new CardHeader(getActivity());
+        	                       newCard.setTitle(getTitle());
+        	                       header.setTitle(card.getCardHeader().getTitle());
+        	                       
+        	           		    
+        	           		    newCard.setSecondaryTitle(dateString);
+        	                       //Add Header to card
+        	                       newCard.addCardHeader(header);
+        	                     //Create thumbnail
+        	        		        
+        	                       ParseObject newObj = new ParseObject("Chores");   
+        	                       newCard.setChecked(true);
+        	                       newCard.setObj(newObj);   
+        	                       newCard.setCardColor(_userColor);
+        	                       newCard.setBackgroundResourceId(R.drawable.card_background2);
+        	                       newCard.setSwipeable(false);
+        	                       newCard.setClickable(true);
+                                
+        	                       cards.remove(card);
+                                adapter.notifyDataSetChanged();
+                                completedCards.add(newCard);
+                                completedAdapter.notifyDataSetChanged();
+	
+                    	
+                    	
+            			
+            			
+                    	
                         obj.put("completed", true);	
-                        obj.saveEventually();
-                        cards.remove(card);
-                        
-                        
-                        MainCard newCard = new MainCard(getActivity());
-	                       //Create a CardHeader
-	                       CardHeader header = new CardHeader(getActivity());
-	                       newCard.setTitle(getTitle());
-	                       header.setTitle(card.getCardHeader().getTitle());
-	                       
-	           		    
-	           		    newCard.setSecondaryTitle(dateString);
-	                       //Add Header to card
-	                       newCard.addCardHeader(header);
-	                     //Create thumbnail
-	        		        
-	                       ParseObject newObj = new ParseObject("Chores");   
-	                       newCard.setChecked(true);
-	                       newCard.setObj(newObj);   
-	                       newCard.setBackgroundResourceId(R.drawable.card_background2);
-	                       newCard.setSwipeable(false);
-	                       newCard.setClickable(true);
-                        
-                        
-                        adapter.notifyDataSetChanged();
-                        completedCards.add(newCard);
-                        completedAdapter.notifyDataSetChanged();
+                        obj.put("from", _user);
+                        obj.put("color", _userColor);
+                        obj.saveInBackground();
                         
                         JSONObject data = new JSONObject();
                 		try {
@@ -614,7 +641,10 @@ public class ChoreFragment extends Fragment{
                 		push.setData(data);
                 		push.sendInBackground();
                         
+                		
                     }
+                    
+                    
                 });
 
 

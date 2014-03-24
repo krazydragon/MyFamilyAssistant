@@ -14,7 +14,6 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
-import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.view.CardListView;
 
 import java.text.SimpleDateFormat;
@@ -22,66 +21,54 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.parse.FindCallback;
-import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 
-import android.R.integer;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 
+@SuppressLint("SimpleDateFormat")
 public class ChildDeviceInfoFragment extends Fragment{
 	
 	private ProgressDialog mProgressDialog;
 	private Context _context;
-	static List<ParseObject> ob;
-	static ArrayList<Card> appCards = new ArrayList<Card>();
-	static ArrayList<Card> contactCards = new ArrayList<Card>();
-	static ArrayList<Card> recentCards = new ArrayList<Card>();
+	List<ParseObject> ob;
+	ArrayList<Card> appCards = new ArrayList<Card>();
+	ArrayList<Card> contactCards = new ArrayList<Card>();
+	ArrayList<Card> recentCards = new ArrayList<Card>();
 	CardListView listView;
 	PopupWindow pw; 
 	Date today;
 	Calendar c;
 	private int page;
-	private static JSONObject infoObj;
-	private PopupMenu popupMenu;
+	public static JSONObject infoObj;
 	static String _kid;
 	CardArrayAdapter adapter; 
 	
@@ -114,16 +101,17 @@ public class ChildDeviceInfoFragment extends Fragment{
 	_context = getActivity();
 	
 
-	_kid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("child_list_0", "");
+	
 	listView = (CardListView) view.findViewById(R.id.listView);
 	
 	
 	
 	
 	setHasOptionsMenu(true);
-	if(ob != null){
+	if(infoObj != null){
 		setupList();
 	}else{
+		_kid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("child_list_0", "");
 		new RemoteDataTask().execute();
 	}
 	
@@ -155,6 +143,7 @@ public class ChildDeviceInfoFragment extends Fragment{
                public boolean onMenuItemClick(MenuItem item) {
                    _kid = item.getTitle().toString();
                    Log.d("KIDNAME",_kid);
+                   new RemoteDataTask().execute();
                    return true;
                }
            });
@@ -498,6 +487,7 @@ try {
             // Locate the class table named "Country" in Parse.com
             ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
                     "kidContent");
+            query.whereEqualTo("name", _kid);
             query.orderByDescending("_created_at");
             try {
                 ob = query.find();

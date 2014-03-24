@@ -16,21 +16,20 @@ import net.margaritov.preference.colorpicker.ColorPickerDialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -39,7 +38,6 @@ import android.widget.TextView;
 import com.parse.FindCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseACL;
-import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -48,11 +46,13 @@ import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.rbarnes.other.EmailRetriever;
-import com.rbarnes.other.FamDeviceAdminReceiver;
 import com.throrinstudio.android.common.libs.validator.Form;
 import com.throrinstudio.android.common.libs.validator.Validate;
 import com.throrinstudio.android.common.libs.validator.validate.ConfirmValidate;
 import com.throrinstudio.android.common.libs.validator.validator.NotEmptyValidator;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class LoginActivity extends Activity implements OnClickListener,ColorPickerDialog.OnColorChangedListener{
 	
@@ -136,28 +136,29 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
         dlg.setMessage("Logging in.  Please wait.");
         dlg.show();
 				if(v == _loginButton){
-					
+					dlg.dismiss();
 					if(_loginForm.validate()){
 						//Toast.makeText(getApplicationContext(), "Valid Form", Toast.LENGTH_LONG).show();
 						ParseUser.logInInBackground(_usernameInput.getText().toString(), _passwordInput.getText().toString(), new LogInCallback() {
 							  @Override
 							public void done(ParseUser user, ParseException e) {
-								  dlg.dismiss();
+								  
 							    if (user != null) {
-							    	Log.i("login","worked");
+							    	
 							    	_msg = "Welcome back " + _usernameInput.getText().toString() + "!";
-							    	if(user.getString("famName")!=null){
+							    	if((user.getString("famName")==null)||((user.getString("famName").equals("")))){
+							    		famCheck();
+							    	}else{
 							    		_famName = user.getString("famName");
 							    		_parent = user.getBoolean("parent");
+							    		_userColor = user.getNumber("userColor").intValue();
 							    		_user = user;
 							    		loginUser();
-							    	}else{
-							    		famCheck();
 							    	}
 							    } else {
 							    	//show error msg
-							    	Log.i("login",e.toString());
 							    	
+							    	Crouton.makeText(LoginActivity.this,  "Username or password is invald. Please try again.", Style.ALERT).show();
 							    }
 							  }
 							});
@@ -222,7 +223,7 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 					    } else {
 					      // Sign up didn't succeed. Look at the ParseException
 					      // to figure out what went wrong
-					    	//Crouton.makeText(LoginActivity.this,  e.toString(), Style.ALERT).show();
+					    	Crouton.makeText(LoginActivity.this, _regEmailInput.getText().toString() + " is in use. Please pick a different one.", Style.ALERT).show();
 					    }
 					  }
 					});
@@ -252,8 +253,8 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 			    public void done(List<ParseRole> allRoles, ParseException e) {
 			    	if(allRoles.isEmpty()){
 			    		_isFamThere = false;
-			    		
 			    		_view.setVisibility(View.VISIBLE);
+			    		
 			    	}else{
 			    		
 			    		for(ParseRole role : allRoles) {
@@ -281,6 +282,8 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 		}else{
 			
 			ParseACL roleACL = new ParseACL();
+			roleACL.setRoleReadAccess(_famName, true);
+			roleACL.setRoleWriteAccess(_famName, true);
 			roleACL.setPublicReadAccess(true);
 			roleACL.setPublicWriteAccess(true);
 			ParseRole role = new ParseRole(_famName, roleACL);
@@ -292,6 +295,7 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 			roleACL = new ParseACL();
 			roleACL.setRoleReadAccess(_famName, true);
 			roleACL.setRoleWriteAccess(_famName, true);
+			
 			famPass.put("password", _ParPasswordInput.getText().toString());
 			famPass.put("kidPass", _kidPassInput.getText().toString());
 			famPass.setACL(roleACL);
@@ -301,6 +305,7 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
             _user.saveInBackground();
 			
 			_parent = true;
+			
 			loginUser();
 		}
 	}
@@ -362,6 +367,7 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 		    	
 				
 		    	if(famPass.isEmpty()){
+		    		Crouton.makeText(LoginActivity.this, "Wrong password please try again.", Style.ALERT).show();
 		    		checkFamPass();
 		    	}else{
 		    		loginUser();
@@ -382,8 +388,16 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 		}
 	//go back to main page
 	private void loginUser(){
+		
+		
+		ParseACL roleACL = new ParseACL();
+		roleACL.setRoleReadAccess(_famName, true);
+		roleACL.setRoleWriteAccess(_famName, true);
+		roleACL.setPublicReadAccess(false);
+		roleACL.setPublicWriteAccess(false);
+		ParseACL.setDefaultACL(roleACL, true);
+		
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-       
         editor.putBoolean("fam_auth", true);
         editor.putBoolean("parent", _parent);
         editor.putString("fam_name", _famName);
@@ -424,5 +438,28 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 		// TODO Auto-generated method stub
 		_colorButton.setBackgroundColor(color);
 		_userColor = color;
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+
+	    View v = getCurrentFocus();
+	    boolean ret = super.dispatchTouchEvent(event);
+
+	    if (v instanceof EditText) {
+	        View w = getCurrentFocus();
+	        int scrcoords[] = new int[2];
+	        w.getLocationOnScreen(scrcoords);
+	        float x = event.getRawX() + w.getLeft() - scrcoords[0];
+	        float y = event.getRawY() + w.getTop() - scrcoords[1];
+
+	        Log.d("Activity", "Touch event "+event.getRawX()+","+event.getRawY()+" "+x+","+y+" rect "+w.getLeft()+","+w.getTop()+","+w.getRight()+","+w.getBottom()+" coords "+scrcoords[0]+","+scrcoords[1]);
+	        if (event.getAction() == MotionEvent.ACTION_UP && (x < w.getLeft() || x >= w.getRight() || y < w.getTop() || y > w.getBottom()) ) { 
+
+	            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+	            imm.hideSoftInputFromWindow(getWindow().getCurrentFocus().getWindowToken(), 0);
+	        }
+	    }
+	return ret;
 	}
 }
