@@ -93,7 +93,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
 		
 		if ((_fam_auth) && _currentUser!= null) {
-			checkParent();
+			//checkParent();
 			
 			
            
@@ -326,18 +326,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 
 			     if(resultCode == RESULT_OK){      
 			           
-			         //String msg = data.getStringExtra("msg"); 
-			         //Crouton.makeText(this, msg, Style.INFO).show();
-			        
-			    	 _currentUser = ParseUser.getCurrentUser();
-			         
-			    	 
-			    	 handler.postDelayed(new Runnable() {
-			    	     @Override
-			    	     public void run() {
-			    	    	 checkParent();
-			    	     }
-			    	 }, 1000);
+			    	 recreate();
 			          
 			         
 			 		

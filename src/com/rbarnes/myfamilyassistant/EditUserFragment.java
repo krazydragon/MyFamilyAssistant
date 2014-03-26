@@ -11,7 +11,9 @@ import com.throrinstudio.android.common.libs.validator.validate.ConfirmValidate;
 import com.throrinstudio.android.common.libs.validator.validator.NotEmptyValidator;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -162,85 +164,52 @@ public class EditUserFragment extends Fragment implements ColorPickerDialog.OnCo
 public void addPopUp(){
 		
 		
-		
-		
-		//We need to get the instance of the LayoutInflater, use the context of this activity
-        LayoutInflater inflater = (LayoutInflater) EditUserFragment.this
-                .getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //Inflate the view from a predefined XML layout
-        View layout = inflater.inflate(R.layout.fragment_main_add,
-                (ViewGroup) getActivity().findViewById(R.id.PopUpAddLayout));
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x/2;
-        int height = size.y/4;
-        pw = new PopupWindow(layout, width, height, true);
-        // display the popup in the center
-       
-        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);//Intent loginIntent = new Intent(this, LoginActivity.class);
-        TextView addTitleText = (TextView)layout.findViewById(R.id.addTitle);
-        Button submit = (Button)layout.findViewById(R.id.addButton);
-        Button cancel =(Button)layout.findViewById(R.id.cancelButton);
-        final EditText popupInput = (EditText) layout.findViewById(R.id.addInput);
+	final EditText popUpTxt = new EditText(_context);
 
-        
-        
-        changeEditTextFont(popupInput);
-		changeButtonFont(submit);
-		changeButtonFont(cancel);
-		changeTextViewFont(addTitleText);
-        
-		addTitleText.setText("Enter current password");
-		popupInput.setHint("Current Pasword");
-		
-        submit.setOnClickListener(new Button.OnClickListener(){
+	// Set the default text to a link of the Queen
+	popUpTxt.setHint("Enter current password");
 
-        	@Override
-        	public void onClick(View v) {
-        		
-        		if(popupInput.getText().toString().trim().length() > 0){
+	new AlertDialog.Builder(_context)
+	  .setTitle("Please verify your old password")
+	  .setMessage("Enter current password")
+	  .setView(popUpTxt)
+	  .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+	    public void onClick(DialogInterface dialog, int whichButton) {
+	    	if(popUpTxt.getText().toString().trim().length() > 0){
 
-        			
-        			ParseUser.logInInBackground(_regUserInput.getText().toString(), popupInput.getText().toString(), new LogInCallback() {
-  					  public void done(ParseUser user, ParseException e) {
-  					    if (e == null) {
-  					    	_currentUser.saveEventually();
-  					    	getActivity().getSupportFragmentManager().popBackStack();
-  					    } else {
-  					      // Sign up didn't succeed. Look at the ParseException
-  					      // to figure out what went wrong
-  					    	
-  					    }
-  					  }
-  					});
-            		pw.dismiss();
-            		//listener.onButtonPress();
-
-   				}
-
-   				else {
-
-   					Toast.makeText(getActivity(),"Input can not be blank!", Toast.LENGTH_SHORT).show();
-   					
-   				}
-        		
-        		
-        		
-        	}
-        	}
-       );
-        cancel.setOnClickListener(new Button.OnClickListener(){
-
-        	@Override
-        	public void onClick(View v) {
-        		// TODO Auto-generated method stub
-
+    			
+    			ParseUser.logInInBackground(_regUserInput.getText().toString(), popUpTxt.getText().toString(), new LogInCallback() {
+					  public void done(ParseUser user, ParseException e) {
+					    if (e == null) {
+					    	_currentUser.saveEventually();
+					    	getActivity().getSupportFragmentManager().popBackStack();
+					    } else {
+					      // Sign up didn't succeed. Look at the ParseException
+					      // to figure out what went wrong
+					    	
+					    }
+					  }
+					});
         		pw.dismiss();
-        		getActivity().getSupportFragmentManager().popBackStack();
-        	}
-        	}
-        );
+        		//listener.onButtonPress();
+
+				}
+
+				else {
+
+					Toast.makeText(getActivity(),"Input can not be blank!", Toast.LENGTH_SHORT).show();
+					
+				}
+	    }
+	  })
+	  .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	    public void onClick(DialogInterface dialog, int whichButton) {
+	    	getActivity().getSupportFragmentManager().popBackStack();
+	    }
+	  })
+	  .show();
+		
+		
         
         
 	}

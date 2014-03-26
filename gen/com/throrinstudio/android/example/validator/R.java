@@ -24,8 +24,8 @@ public final class R {
 		public static final int password2 = 0x7f0b0061;
 		public static final int required = 0x7f0b005d;
 		public static final int url = 0x7f0b0062;
-		public static final int widget_okcancelbar_cancel = 0x7f0b006c;
-		public static final int widget_okcancelbar_ok = 0x7f0b006d;
+		public static final int widget_okcancelbar_cancel = 0x7f0b006d;
+		public static final int widget_okcancelbar_ok = 0x7f0b006e;
 	}
 	public static final class layout {
 		public static final int main = 0x7f030028;

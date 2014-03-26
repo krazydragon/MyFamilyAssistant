@@ -13,10 +13,19 @@ package com.rbarnes.myfamilyassistant;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.parse.LogInCallback;
+import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,8 +40,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -70,15 +81,13 @@ public class LockFragment extends Fragment{
     	@Override
     	public void onClick(View v) {
     		// TODO Auto-generated method stub
-    		
-    		ImageView lockImage = (ImageView)view.findViewById(R.id.lockImage);
+    		final ParsePush push = new ParsePush();
+    		ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+    		final ImageView lockImage = (ImageView)view.findViewById(R.id.lockImage);
     		JSONObject data = new JSONObject();
-    		
+    		final Handler handler = new Handler();
     		if(isUnlocked){
-    			lockImage.setBackgroundResource(R.drawable.lock);
     			
-    			lockButton.setText("Unlock");
-    			isUnlocked = false;
     			
     			
         		
@@ -91,12 +100,44 @@ public class LockFragment extends Fragment{
         			// TODO Auto-generated catch block
         			e.printStackTrace();
         		}
-        		
+        		final EditText popUpTxt = new EditText(_context);
+
+        		// Set the default text to a link of the Queen
+        		popUpTxt.setHint("Enter temporary password");
+
+        		new AlertDialog.Builder(_context)
+        		  .setTitle("Lock Phone")
+        		  .setMessage("Are you sure you want to do this?")
+        		  .setView(popUpTxt)
+        		  .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        		    public void onClick(DialogInterface dialog, int whichButton) {
+        		    	if(popUpTxt.getText().toString().trim().length() > 0){
+        		    		push.sendInBackground();
+        		    		lockImage.setBackgroundResource(R.drawable.lock);
+        	    			lockButton.setText("Unlock");
+        	    			isUnlocked = false;
+        		    		handler.postDelayed(new Runnable() {
+        		    		    @Override
+        		    		    public void run() {
+        		    		    	Crouton.makeText(getActivity(), "Child devie is offline and will be updated as soon as it's back online.", Style.ALERT).show();
+        		    		    }
+        		    		}, 3000);
+        		    	}
+        					else {
+
+        						Toast.makeText(getActivity(),"Input can not be blank!", Toast.LENGTH_SHORT).show();
+        						
+        					}
+        		    }
+        		  })
+        		  .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        		    public void onClick(DialogInterface dialog, int whichButton) {
+        		    }
+        		  })
+        		  .show();
         		
     		}else{
-    			lockImage.setBackgroundResource(R.drawable.unlock);
-    			lockButton.setText("Lock");
-    			isUnlocked = true;
+    			
     			
     			try {
         			data.put("action", "com.rbarnes.UPDATE_STATUS");
@@ -107,19 +148,44 @@ public class LockFragment extends Fragment{
         			// TODO Auto-generated catch block
         			e.printStackTrace();
         		}
+    			new AlertDialog.Builder(_context)
+      		  .setTitle("Unlock phone")
+      		  .setMessage("Are you sure you want to do this?")
+      		  .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+      		    public void onClick(DialogInterface dialog, int whichButton) {
+      		    	push.sendInBackground();
+      		    	lockImage.setBackgroundResource(R.drawable.unlock);
+        			lockButton.setText("Lock");
+        			isUnlocked = true;
+        			handler.postDelayed(new Runnable() {
+            		    @Override
+            		    public void run() {
+            		    	Crouton.makeText(getActivity(), "Child devie is offline and will be updated as soon as it's back online.", Style.ALERT).show();
+            		    }
+            		}, 3000);
+      		    }
+      		  })
+      		  .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+      		    public void onClick(DialogInterface dialog, int whichButton) {	
+      		    }
+      		  })
+      		  .show();
     		}
 
 
-    		ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+    		
     		query.whereEqualTo("parent", false);
     		query.whereEqualTo("family", _famName);
     		query.whereEqualTo("name", _kid);
     		
     		
-    		ParsePush push = new ParsePush();
+    		
     		push.setQuery(query);
     		push.setData(data);
     		push.sendInBackground();
+    		
+    		
+    		
     	}
     	}
     );

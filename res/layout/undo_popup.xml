@@ -1,24 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/menuEditItemLayout"
+    android:id="@+id/popupLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:background="#000000">
 
     <LinearLayout
-        android:layout_width="250dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" >
+        android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/durationTitle"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="center"
-            android:text="Task"
-            android:textColor="@android:color/holo_blue_dark"
-            android:textSize="25sp" />
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/popTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center"
+                android:text="Task"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="4dip"
+            android:background="?android:attr/dividerVertical" />
+
+        <EditText
+            android:id="@+id/popText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10" />
+
     </LinearLayout>
 
     <RelativeLayout
@@ -62,6 +84,7 @@
             android:text="@android:string/ok" 
             android:layout_alignParentBottom="true" 
             android:layout_toRightOf="@id/ViewColorPickerHelper"/>
+
     </RelativeLayout>
 
 </LinearLayout>

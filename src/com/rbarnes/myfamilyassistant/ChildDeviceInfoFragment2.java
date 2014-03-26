@@ -58,7 +58,7 @@ import android.widget.Toast;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 
 @SuppressLint("SimpleDateFormat")
-public class ChildDeviceInfoFragment extends Fragment{
+public class ChildDeviceInfoFragment2 extends Fragment{
 	
 	private ProgressDialog mProgressDialog;
 	private Context _context;
@@ -69,16 +69,14 @@ public class ChildDeviceInfoFragment extends Fragment{
 	Calendar c;
 	private int page;
 	public static JSONObject infoObj;
-	static String _kid;
-	static CardArrayAdapter adapter; 
+	private static String _kid;
+	private static CardArrayAdapter adapter; 
 	private static ArrayList<Card> cards;
-	ChildDeviceInfoFragment3 cdi3;
-    ChildDeviceInfoFragment2 cdi2;
 	
 	
 	 // newInstance constructor for creating fragment with arguments
-    public static ChildDeviceInfoFragment newInstance(int page) {
-    	ChildDeviceInfoFragment childDeviceFrag = new ChildDeviceInfoFragment();
+    public static ChildDeviceInfoFragment2 newInstance(int page) {
+    	ChildDeviceInfoFragment2 childDeviceFrag = new ChildDeviceInfoFragment2();
         Bundle args = new Bundle();
         args.putInt("pageNum", page);
         childDeviceFrag.setArguments(args);
@@ -89,7 +87,7 @@ public class ChildDeviceInfoFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = 0;
+        page = 1;
     }
 	
 	@SuppressWarnings({ })
@@ -100,15 +98,20 @@ public class ChildDeviceInfoFragment extends Fragment{
 	
 	final LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_child_device_info, container, false);
 	
-	cdi3 = new ChildDeviceInfoFragment3();
-    cdi2 = new ChildDeviceInfoFragment2();
+	
 	
 	_context = getActivity();
-	
+	listView = (CardListView) view.findViewById(R.id.listView);
 
 	
-	listView = (CardListView) view.findViewById(R.id.listView);
-	
+	if(infoObj != null){
+		setupList();
+	}else{
+		_kid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("child_list_0", "");
+		cards = new ArrayList<Card>();
+		adapter = new CardArrayAdapter(_context, cards);
+		
+	}
 	
 	
 	
@@ -117,18 +120,27 @@ public class ChildDeviceInfoFragment extends Fragment{
 		setupList();
 	}else{
 		_kid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("child_list_0", "");
-		new RemoteDataTask().execute();cards = new ArrayList<Card>();
-		adapter = new CardArrayAdapter(_context, cards);
+		
 	}
 	
-	
 	listView.setAdapter(adapter);
-	
-   
 	
 	return view;
 	}
 	
+	public void updateKidName(JSONObject obj, String kid, Context context){
+		infoObj = obj;
+		_kid = kid;
+		if(_context == null)
+			_context = context;
+		if(cards == null)
+			cards = new ArrayList<Card>();
+		if(adapter == null)
+			adapter = new CardArrayAdapter(_context, cards);
+			
+		setupList();
+		
+	}
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -151,30 +163,30 @@ public class ChildDeviceInfoFragment extends Fragment{
       		 
                @Override
                public boolean onMenuItemClick(MenuItem item) {
-            	   _kid = item.getTitle().toString();
-            	   	
-           			ParseQuery<ParseObject> query = ParseQuery.getQuery("kidContent");
-           			query.whereEqualTo("name", _kid);
-           			query.findInBackground(new FindCallback<ParseObject>() {
-           		    public void done(List<ParseObject> list, ParseException e) {
-           		    	JSONObject obj = new JSONObject(); 
-           	        	
-           	        	
-           	        	for (ParseObject item : list) {
-           	            	obj = item.getJSONObject("content");
-           	        		infoObj = obj;
-           	        		
-                            cdi3.updateKidName(infoObj, _kid,_context);
-                            cdi2.updateKidName(infoObj, _kid,_context);
-                            
-                            setupList();
-           	        	
-           	        }
-           	        	
-           	        	
-           		    }
-           		});
-                   
+                   _kid = item.getTitle().toString();
+                  
+          			ParseQuery<ParseObject> query = ParseQuery.getQuery("kidContent");
+          			query.whereEqualTo("name", _kid);
+          			query.findInBackground(new FindCallback<ParseObject>() {
+          		    public void done(List<ParseObject> list, ParseException e) {
+          		    	JSONObject obj = new JSONObject(); 
+          	        	
+          	        	
+          	        	for (ParseObject item : list) {
+          	            	obj = item.getJSONObject("content");
+          	        		infoObj = obj;
+          	        		ChildDeviceInfoFragment cdi = new ChildDeviceInfoFragment();
+                           ChildDeviceInfoFragment3 cdi3 = new ChildDeviceInfoFragment3();
+                           cdi.updateKidName(infoObj, _kid,_context);
+                           cdi3.updateKidName(infoObj, _kid,_context);
+                           
+                           setupList();
+          	        	
+          	        }
+          	        	
+          	        	
+          		    }
+          		});
                    
                    return true;
                }
@@ -193,20 +205,6 @@ public class ChildDeviceInfoFragment extends Fragment{
 	   }
 	}
 	
-	public void updateKidName(JSONObject obj, String kid, Context context){
-		infoObj = obj;
-		_kid = kid;
-		if(_context == null)
-			_context = context;
-		if(cards == null)
-			cards = new ArrayList<Card>();
-		if(adapter == null)
-			adapter = new CardArrayAdapter(_context, cards);
-			
-		setupList();
-		
-	}
-	
 	void setupList(){
 		if (adapter!=null){
 			adapter.clear();
@@ -215,25 +213,22 @@ public class ChildDeviceInfoFragment extends Fragment{
 		
 		
 		
-        	try {
+		
+        	
+try {
         		
-				JSONArray appArray= infoObj.getJSONArray("appList");
+				JSONArray appArray= infoObj.getJSONArray("contacts");
 				cards.clear();
 				for(int n = 0; n < appArray.length(); n++)
 				{
 				    JSONObject object = appArray.getJSONObject(n);
-				    
-				    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-
-	    		    String dateString = simpleDate.format(Double.parseDouble((object.getString("date_installed"))));
 				    MainCard card = new MainCard(_context);
+				    
 			        //Create a CardHeader
 			        CardHeader header = new CardHeader(getActivity());
-			        header.setTitle(_kid + "'s apps");
+			        header.setTitle(_kid + "'s contacts");
 			        card.setTitle(object.getString("name"));
-			        
-			        
-			        card.setSecondaryTitle("installed on " + dateString);
+			        card.setSecondaryTitle(object.getString("number"));
 			        //Add Header to card
 			        card.addCardHeader(header);
 			      //Create thumbnail
@@ -241,10 +236,8 @@ public class ChildDeviceInfoFragment extends Fragment{
 			           
 			        card.setBackgroundResourceId(R.drawable.card_background);
 			        
-
-				   
 			        //Set resource
-			        thumb.setDrawableResource(R.drawable.android_icon);
+			        thumb.setDrawableResource(R.drawable.person);
 			        card.addCardThumbnail(thumb);
 			        card.setSwipeable(false);
 			        card.setClickable(true);
@@ -256,9 +249,10 @@ public class ChildDeviceInfoFragment extends Fragment{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-        	
-        	
-        	
+
+			
+		
+		
 	}
 
 	void changeButtonFont(TextView v){
@@ -340,8 +334,8 @@ public class ChildDeviceInfoFragment extends Fragment{
         public void setupInnerViewElements(ViewGroup parent, View view) {
             //Retrieve elements
             mTitle = (TextView) view.findViewById(R.id.inner_title);
-            mSecondaryTitle = (TextView) parent.findViewById(R.id.inner_title2);
-            mCheckbox = (CheckBox)parent.findViewById(R.id.checkBox1);
+            mSecondaryTitle = (TextView) view.findViewById(R.id.inner_title2);
+            mCheckbox = (CheckBox)view.findViewById(R.id.checkBox1);
             
             
             
@@ -396,65 +390,8 @@ public class ChildDeviceInfoFragment extends Fragment{
         }
     }
 	
-	// RemoteDataTask AsyncTask
-    public class RemoteDataTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Create a progressdialog
-            mProgressDialog = new ProgressDialog(getActivity());
-            // Set progressdialog title
-            mProgressDialog.setTitle("");
-            // Set progressdialog message
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
-            // Show progressdialog
-            mProgressDialog.show();
-        }
-        
-        
-        @Override
-        protected Void doInBackground(Void... params) {
-            // Locate the class table named "Country" in Parse.com
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
-                    "kidContent");
-            query.whereEqualTo("name", _kid);
-            query.orderByDescending("_created_at");
-            try {
-                ob = query.find();
-            } catch (ParseException e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return null;
-        }
- 
-        @SuppressWarnings({ })
-		@Override
-        protected void onPostExecute(Void result) {
-        	
-        	
-        	
-            JSONObject obj = new JSONObject(); 
-        	
-        	
-        	for (ParseObject item : ob) {
-            	obj = item.getJSONObject("content");
-        		infoObj = obj;
-        		mProgressDialog.dismiss();
-        		
-                
-        		cdi3.updateKidName(infoObj,_kid,_context);
-        		cdi2.updateKidName(infoObj,_kid,_context);
-                setupList();
-        }
-        	
-        	
-    }
-    
-    
-    }
-    }
+
+}
 
 
 

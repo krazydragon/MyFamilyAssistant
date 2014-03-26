@@ -11,6 +11,8 @@ package com.rbarnes.other;
 
 import com.rbarnes.myfamilyassistant.CalendarFragment;
 import com.rbarnes.myfamilyassistant.ChildDeviceInfoFragment;
+import com.rbarnes.myfamilyassistant.ChildDeviceInfoFragment2;
+import com.rbarnes.myfamilyassistant.ChildDeviceInfoFragment3;
 import com.rbarnes.myfamilyassistant.ChoreFragment;
 
 import android.content.Context;
@@ -35,11 +37,11 @@ public class ChildDevicePagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new ChildDeviceInfoFragment().newInstance(position);
+                return new ChildDeviceInfoFragment();
             case 1:
-                return new ChildDeviceInfoFragment().newInstance(position);
+                return new ChildDeviceInfoFragment2();
             case 2:
-                return new ChildDeviceInfoFragment().newInstance(position);
+                return new ChildDeviceInfoFragment3();
             default:
                 throw new IllegalArgumentException("The item position should be less or equal to:" + PAGES);
         }

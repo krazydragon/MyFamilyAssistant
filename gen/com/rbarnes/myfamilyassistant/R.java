@@ -659,8 +659,8 @@ containing a value of this type.
         public static final int PopUpAddLayout=0x7f0b002d;
         public static final int RegisterScreenButton=0x7f0b000b;
         public static final int SignupButton=0x7f0b003e;
-        public static final int ViewColorPickerHelper=0x7f0b0069;
-        public static final int action_settings=0x7f0b0070;
+        public static final int ViewColorPickerHelper=0x7f0b006a;
+        public static final int action_settings=0x7f0b0071;
         public static final int addButton=0x7f0b0032;
         public static final int addInput=0x7f0b002f;
         public static final int addTitle=0x7f0b002e;
@@ -692,7 +692,6 @@ containing a value of this type.
         public static final int content_frame=0x7f0b000d;
         public static final int descriptionInput=0x7f0b0039;
         public static final int drawer_layout=0x7f0b000c;
-        public static final int durationTitle=0x7f0b0068;
         public static final int editUserButton=0x7f0b004f;
         public static final int email=0x7f0b005f;
         public static final int famLogoutButton=0x7f0b0052;
@@ -725,9 +724,8 @@ containing a value of this type.
         public static final int loginUsername=0x7f0b0008;
         public static final int makePass=0x7f0b0040;
         public static final int map=0x7f0b0048;
-        public static final int menuEditItemLayout=0x7f0b0067;
-        public static final int menu_add=0x7f0b006e;
-        public static final int menu_child=0x7f0b006f;
+        public static final int menu_add=0x7f0b006f;
+        public static final int menu_child=0x7f0b0070;
         public static final int myGrid=0x7f0b0066;
         public static final int new_color_panel=0x7f0b002c;
         public static final int none=0x7f0b0000;
@@ -739,8 +737,11 @@ containing a value of this type.
         public static final int parPass=0x7f0b0041;
         public static final int password1=0x7f0b0060;
         public static final int password2=0x7f0b0061;
-        public static final int popCancelB=0x7f0b006b;
-        public static final int popOkB=0x7f0b006a;
+        public static final int popCancelB=0x7f0b006c;
+        public static final int popOkB=0x7f0b006b;
+        public static final int popText=0x7f0b0069;
+        public static final int popTitle=0x7f0b0068;
+        public static final int popupLayout=0x7f0b0067;
         public static final int ratingBar=0x7f0b0057;
         public static final int reKidPass=0x7f0b0044;
         public static final int reParPass=0x7f0b0042;
@@ -762,8 +763,8 @@ containing a value of this type.
         public static final int undobar_button=0x7f0b0021;
         public static final int undobar_message=0x7f0b0020;
         public static final int url=0x7f0b0062;
-        public static final int widget_okcancelbar_cancel=0x7f0b006c;
-        public static final int widget_okcancelbar_ok=0x7f0b006d;
+        public static final int widget_okcancelbar_cancel=0x7f0b006d;
+        public static final int widget_okcancelbar_ok=0x7f0b006e;
     }
     public static final class integer {
         public static final int COLOR_BLACK=0x7f050000;

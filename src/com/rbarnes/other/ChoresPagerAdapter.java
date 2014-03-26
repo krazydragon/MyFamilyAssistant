@@ -9,7 +9,6 @@
  */
 package com.rbarnes.other;
 
-import com.rbarnes.myfamilyassistant.CalendarFragment;
 import com.rbarnes.myfamilyassistant.ChoreFragment;
 
 import android.content.Context;

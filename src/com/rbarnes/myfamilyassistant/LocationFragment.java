@@ -26,6 +26,9 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -129,8 +132,15 @@ public class LocationFragment extends Fragment {
         		push.setQuery(query);
         		push.setData(data);
         		push.sendInBackground();
+        		final Handler handler = new Handler();
+        		handler.postDelayed(new Runnable() {
+        		    @Override
+        		    public void run() {
+        		    	Crouton.makeText(getActivity(), "Child devie is offline and will be updated as soon as it's back online.", Style.ALERT).show();
+        		    	findLocation();
+        		    }
+        		}, 3000);
         		
-        		findLocation();
         		
         	}
         	}

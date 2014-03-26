@@ -35,8 +35,10 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -530,8 +532,35 @@ public class CalendarFragment extends Fragment{
 
         	setOnSwipeListener(new Card.OnSwipeListener() {
                 @Override
-                public void onSwipe(Card card) {
-                    obj.deleteInBackground();
+                public void onSwipe(final Card card) {
+                	 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(_context);
+             		// set title
+        			alertDialogBuilder.setTitle("Delete "+ getTitle() + "?");
+         
+        			// set dialog message
+        			alertDialogBuilder
+        				.setMessage("Are you sure you want to delete "+ getTitle() + "?")
+        				.setCancelable(false)
+        				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+        					public void onClick(DialogInterface dialog,int id) {
+        						obj.deleteInBackground();
+        					}
+        				  })
+        				.setNegativeButton("No",new DialogInterface.OnClickListener() {
+        					public void onClick(DialogInterface dialog,int id) {
+        						//cards.add(card);
+        						//adapter.notifyDataSetChanged();
+        						dialog.cancel();
+        						
+        						
+        					}
+        				});
+        				
+        				// create alert dialog
+        				AlertDialog alertDialog = alertDialogBuilder.create();
+         
+        				// show it
+        				alertDialog.show();
                 }
             });
 
