@@ -9,9 +9,7 @@
         android:id="@+id/lockView"
         style="@style/myheader"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Lock"
         android:textAppearance="?android:attr/textAppearanceLarge" />

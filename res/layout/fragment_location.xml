@@ -8,10 +8,9 @@
     <TextView
         android:id="@+id/locationTitle"
         style="@style/myheader"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:gravity="center"
         android:text="Location"
@@ -23,16 +22,15 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView1"
+        android:layout_below="@+id/locationTitle"
         android:layout_marginTop="66dp" />
 
     <Button
         android:id="@+id/locationButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
+        android:layout_below="@+id/map"
         android:layout_marginBottom="29dp"
         android:text="Update" />
 

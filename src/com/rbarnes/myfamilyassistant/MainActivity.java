@@ -43,8 +43,21 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.PushService;
-import com.rbarnes.myfamilyassistant.SettingsFragment.SettingsListener;
-import com.rbarnes.other.FamDeviceAdminReceiver;
+import com.rbarnes.myfamilyassistant.fragments.CalendarMainFragment;
+import com.rbarnes.myfamilyassistant.fragments.ChildInfoMainFragment;
+import com.rbarnes.myfamilyassistant.fragments.ChildMainFragment;
+import com.rbarnes.myfamilyassistant.fragments.ChoresMainFragment;
+import com.rbarnes.myfamilyassistant.fragments.GroceryFragment;
+import com.rbarnes.myfamilyassistant.fragments.MessageFragment;
+import com.rbarnes.myfamilyassistant.fragments.SuppliesFragment;
+import com.rbarnes.myfamilyassistant.other.FamDeviceAdminReceiver;
+import com.rbarnes.myfamilyassistant.parent.EditFamPassFragment;
+import com.rbarnes.myfamilyassistant.parent.EditUserFragment;
+import com.rbarnes.myfamilyassistant.parent.LocationFragment;
+import com.rbarnes.myfamilyassistant.parent.LockFragment;
+import com.rbarnes.myfamilyassistant.parent.ParentMainFragment;
+import com.rbarnes.myfamilyassistant.parent.SettingsFragment;
+import com.rbarnes.myfamilyassistant.parent.SettingsFragment.SettingsListener;
 import com.suredigit.inappfeedback.FeedbackDialog;
 
 

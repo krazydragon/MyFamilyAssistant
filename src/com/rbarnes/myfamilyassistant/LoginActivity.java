@@ -1,3 +1,4 @@
+package com.rbarnes.myfamilyassistant;
 /*
  * project	MyFamilyAssistant
  * 
@@ -7,7 +8,7 @@
  * 
  * date		Mar 1, 2014
  */
-package com.rbarnes.myfamilyassistant;
+
 
 import java.util.List;
 
@@ -45,7 +46,10 @@ import com.parse.ParseQuery;
 import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
-import com.rbarnes.other.EmailRetriever;
+import com.rbarnes.myfamilyassistant.R;
+import com.rbarnes.myfamilyassistant.R.id;
+import com.rbarnes.myfamilyassistant.R.layout;
+import com.rbarnes.myfamilyassistant.other.EmailRetriever;
 import com.throrinstudio.android.common.libs.validator.Form;
 import com.throrinstudio.android.common.libs.validator.Validate;
 import com.throrinstudio.android.common.libs.validator.validate.ConfirmValidate;
@@ -302,6 +306,7 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 			famPass.saveInBackground();
 			_user.add("famName", _famName);
             _user.add("parent", true);
+            _user.add("userColor", _userColor);
             _user.saveInBackground();
 			
 			_parent = true;
@@ -429,7 +434,7 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 	}
 	void changeTextViewFont(TextView v){
 		Typeface t=Typeface.createFromAsset(getAssets(),
-	            "primer.ttf");
+	            "primer_bold.ttf");
 		v.setTypeface(t);
 	}
 	
