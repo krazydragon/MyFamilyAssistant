@@ -15,27 +15,24 @@ import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardListView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 import com.parse.ParseACL;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.drawable;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-import com.rbarnes.myfamilyassistant.fragments.ChoreFragment.MainCard;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -43,8 +40,6 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -52,12 +47,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,11 +59,10 @@ public class GroceryFragment extends Fragment{
 
 	private ProgressDialog mProgressDialog;
 	private Context _context;
-	List<ParseObject> ob;
-	ArrayList<Card> cards;
-	CardListView listView;
-	PopupWindow pw; 
-	CardArrayAdapter adapter; 
+	private List<ParseObject> ob;
+	private ArrayList<Card> cards;
+	private CardListView listView;
+	private CardArrayAdapter adapter; 
 	private String _famName;
 	private String _user;
 	
@@ -143,46 +135,19 @@ public class GroceryFragment extends Fragment{
 	public void addPopUp(){
 		
 		
-		
-		
-		//We need to get the instance of the LayoutInflater, use the context of this activity
-        LayoutInflater inflater = (LayoutInflater) GroceryFragment.this
-                .getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //Inflate the view from a predefined XML layout
-        View layout = inflater.inflate(R.layout.fragment_main_add,
-                (ViewGroup) getActivity().findViewById(R.id.PopUpAddLayout));
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x/2;
-        int height = size.y/4;
-        pw = new PopupWindow(layout, width, height, true);
-        // display the popup in the center
-       
-        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);//Intent loginIntent = new Intent(this, LoginActivity.class);
-        TextView addTitleText = (TextView)layout.findViewById(R.id.addTitle);
-        Button submit = (Button)layout.findViewById(R.id.addButton);
-        Button cancel =(Button)layout.findViewById(R.id.cancelButton);
-        final EditText popupInput = (EditText) layout.findViewById(R.id.addInput);
+		final EditText popUpTxt = new EditText(_context);
 
-        
-        
-        changeEditTextFont(popupInput);
-		changeButtonFont(submit);
-		changeButtonFont(cancel);
-		changeTextViewFont(addTitleText);
-        
-		addTitleText.setText("Add Groceries");
-		popupInput.setHint("Enter groceries needed");
 		
-        submit.setOnClickListener(new Button.OnClickListener(){
+		popUpTxt.setHint("Enter groceries needed");
 
-        	@Override
-        	public void onClick(View v) {
-        		
-        		if(popupInput.getText().toString().trim().length() > 0){
+		new AlertDialog.Builder(_context)
+		  .setTitle("Add Groceries")
+		  .setView(popUpTxt)
+		  .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int whichButton) {
+		    	if(popUpTxt.getText().toString().trim().length() > 0){
 
-        			// TODO Auto-generated method stub
+		    		// TODO Auto-generated method stub
             		
         			ParseObject obj = new ParseObject("Groceries");
         			ParseACL postACL = new ParseACL();
@@ -190,7 +155,7 @@ public class GroceryFragment extends Fragment{
         			postACL.setRoleReadAccess(_famName, true);
         			obj.setACL(postACL);
         			
-        			obj.put("item", popupInput.getText().toString());
+        			obj.put("item", popUpTxt.getText().toString());
         			obj.put("completed", false);
         			
         			obj.saveEventually();
@@ -202,7 +167,7 @@ public class GroceryFragment extends Fragment{
                        //Create a CardHeader
                        CardHeader header = new CardHeader(getActivity());
                        header.setTitle("Groceries");
-                       card.setTitle(popupInput.getText().toString());
+                       card.setTitle(popUpTxt.getText().toString());
                        //Add Header to card
                        card.addCardHeader(header);
                      //Create thumbnail
@@ -221,33 +186,49 @@ public class GroceryFragment extends Fragment{
         		        
                        cards.add(card);
         			adapter.notifyDataSetChanged();
-            		pw.dismiss();
+        			
+        			JSONObject data = new JSONObject();
+        			
+        			
+        			
+        			try {
+        				data.put("alert", popUpTxt.getText().toString()+" has been added to the grocery list.");
+        			} catch (JSONException e) {
+        				// TODO Auto-generated catch block
+        				e.printStackTrace();
+        			}
+        			
+        			
+        			ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+        			query.whereEqualTo("parent", true);
+        			query.whereEqualTo("family", _famName);
 
-   				}
+        			
+        			
+        			ParsePush push = new ParsePush();
+        			push.setQuery(query);
+        			push.setData(data);
+        			push.sendInBackground();
+	        		
 
-   				else {
+					}
 
-   					Toast.makeText(getActivity(),"Input can not be blank!", Toast.LENGTH_SHORT).show();
-   					
-   				}
-        		
-        		
-        		
-        	}
-        	}
-       );
+					else {
 
-        cancel.setOnClickListener(new Button.OnClickListener(){
-
-        	@Override
-        	public void onClick(View v) {
-        		// TODO Auto-generated method stub
-
-        		pw.dismiss();
- 
-        	}
-        	}
-        );
+						Toast.makeText(getActivity(),"Input can not be blank!", Toast.LENGTH_SHORT).show();
+						
+					}
+		    }
+		  })
+		  .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int whichButton) {
+		    	
+		    }
+		  })
+		  .show();
+		
+		
+        
         
         
 	}

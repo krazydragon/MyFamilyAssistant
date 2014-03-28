@@ -13,11 +13,10 @@ package com.rbarnes.myfamilyassistant.fragments;
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-import com.rbarnes.myfamilyassistant.other.ChoresPagerAdapter;
+import com.rbarnes.myfamilyassistant.adapters.ChoresPagerAdapter;
 
 import android.support.v4.app.Fragment;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
@@ -28,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+@SuppressLint("CutPasteId")
 public class ChoresMainFragment extends Fragment{
 	/** Called when the activity is first created. */ 
 	LinearLayout view;

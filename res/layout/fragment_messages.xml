@@ -23,7 +23,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:gravity="center"
-                android:text="Messages"
+                android:text="Bulletin Board"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             

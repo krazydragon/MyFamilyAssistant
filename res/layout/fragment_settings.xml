@@ -9,25 +9,25 @@
         android:id="@+id/editUserButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit User" />
+        android:text="@string/edit_user" />
     
     <Button
         android:id="@+id/famPassButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Change Family Password" />
+        android:text="@string/change_family_password" />
 
 
     <Button
         android:id="@+id/feedbackButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Send Feedback" />
+        android:text="@string/send_feedback" />
     
     <Button
         android:id="@+id/famLogoutButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Logout Of Family" />
+        android:text="@string/logout_of_family" />
 
 </LinearLayout>

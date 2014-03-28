@@ -13,11 +13,10 @@ package com.rbarnes.myfamilyassistant.fragments;
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-import com.rbarnes.myfamilyassistant.other.CalendarPagerAdapter;
+import com.rbarnes.myfamilyassistant.adapters.CalendarPagerAdapter;
 
 import android.support.v4.app.Fragment;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
@@ -31,6 +30,7 @@ import android.widget.LinearLayout;
 public class CalendarMainFragment extends Fragment{
 	/** Called when the activity is first created. */ 
 	LinearLayout view;
+	@SuppressLint("CutPasteId")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);

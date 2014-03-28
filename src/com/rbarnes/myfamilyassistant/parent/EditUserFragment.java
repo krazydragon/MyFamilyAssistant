@@ -5,26 +5,20 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
 import com.rbarnes.myfamilyassistant.other.EmailRetriever;
 import com.throrinstudio.android.common.libs.validator.Form;
 import com.throrinstudio.android.common.libs.validator.Validate;
 import com.throrinstudio.android.common.libs.validator.validate.ConfirmValidate;
 import com.throrinstudio.android.common.libs.validator.validator.NotEmptyValidator;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +26,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,7 +49,7 @@ public class EditUserFragment extends Fragment implements ColorPickerDialog.OnCo
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	final RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_edituser, container, false);
+	final ScrollView view = (ScrollView) inflater.inflate(R.layout.fragment_edituser, container, false);
 	_context = getActivity();
 	
 	_currentUser = ParseUser.getCurrentUser();
@@ -66,6 +60,10 @@ public class EditUserFragment extends Fragment implements ColorPickerDialog.OnCo
 	colorButton = (Button)view.findViewById(R.id.ColorButton);
 	signupButton.setText("Update User");
 	
+	TextView tv = (TextView) view.findViewById(R.id.regform);
+	Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "primer_bold.ttf");
+	tv.setTypeface(custom_font);
+	tv.setText("Edit User Information");
 	
 	_regForm = new Form();
 	
@@ -80,6 +78,8 @@ public class EditUserFragment extends Fragment implements ColorPickerDialog.OnCo
 	_regUserInput.setEnabled(false);
 	_regUserInput.setText(_currentUser.getUsername());
 	_regEmailInput.setText(_currentUser.getEmail());
+	_regPassInput.setHint("New Or Old Password");
+	regRePassInput.setHint("Retype New or Old Password");
 	_regFNameInput.setText(_currentUser.getString("firstName"));
 	_regEmailInput.setText(EmailRetriever.getEmail(_context));
 	

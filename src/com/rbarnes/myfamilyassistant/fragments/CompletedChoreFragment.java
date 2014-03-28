@@ -14,12 +14,9 @@ import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardListView;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,19 +24,13 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Point;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,46 +38,33 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseACL;
-import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.drawable;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-import com.rbarnes.myfamilyassistant.fragments.ChoreFragment.MainCard;
 
 @SuppressLint("SimpleDateFormat")
 public class CompletedChoreFragment extends Fragment{
 	
-	private ProgressDialog mProgressDialog;
 	private Context _context;
-	private List<ParseObject> ob;
 	private static ArrayList<Card> completedCards;
 	private CardListView listView;
-	private PopupWindow pw; 
 	private static  CardArrayAdapter completedAdapter;
-	private int page; 
 	private String _famName;
 	private static String _user;
 	private String _tempString;
 	private int _userColor;
 	private Boolean _parent = false;
-	private static String _tempHeader; 
-	
-	 // newInstance constructor for creating fragment with arguments
+	// newInstance constructor for creating fragment with arguments
     public static CompletedChoreFragment newInstance(int page) {
     	CompletedChoreFragment choreFrag = new CompletedChoreFragment();
         Bundle args = new Bundle();
@@ -99,7 +77,6 @@ public class CompletedChoreFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = 1;
     }
     
     
@@ -339,8 +316,33 @@ public class CompletedChoreFragment extends Fragment{
 
         	setOnSwipeListener(new Card.OnSwipeListener() {
                 @Override
-                public void onSwipe(Card card) {
-                    obj.deleteInBackground();
+                public void onSwipe(final Card card) {
+                	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(_context);
+            		// set title
+       			alertDialogBuilder.setTitle("Delete "+ getTitle() + "?");
+        
+       			// set dialog message
+       			alertDialogBuilder
+       				.setMessage("Are you sure you want to delete "+ card.getCardHeader().getTitle() + "?")
+       				.setCancelable(false)
+       				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+       					public void onClick(DialogInterface dialog,int id) {
+       						obj.deleteInBackground();
+       					}
+       				  })
+       				.setNegativeButton("No",new DialogInterface.OnClickListener() {
+       					public void onClick(DialogInterface dialog,int id) {
+       						completedCards.add(card);
+       						completedAdapter.notifyDataSetChanged();
+
+       					}
+       				});
+       				
+       				// create alert dialog
+       				AlertDialog alertDialog = alertDialogBuilder.create();
+        
+       				// show it
+       				alertDialog.show();
                 }
             });
 

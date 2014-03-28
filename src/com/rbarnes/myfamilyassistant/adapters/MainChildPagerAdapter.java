@@ -7,11 +7,10 @@
  * 
  * date		Mar 1, 2014
  */
-package com.rbarnes.myfamilyassistant.other;
+package com.rbarnes.myfamilyassistant.adapters;
 
-import com.rbarnes.myfamilyassistant.fragments.CalendarFragment;
-import com.rbarnes.myfamilyassistant.fragments.CalendarFragment2;
-import com.rbarnes.myfamilyassistant.fragments.CalendarFragment3;
+import com.rbarnes.myfamilyassistant.parent.AlertsFragment;
+import com.rbarnes.myfamilyassistant.parent.UpcomingFragment;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -19,14 +18,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 
-public class CalendarPagerAdapter extends FragmentStatePagerAdapter {
+public class MainChildPagerAdapter extends FragmentStatePagerAdapter {
 	 
-    private final int PAGES = 3;
-    private String[] titles={"Today", "Future", "Past"};
+    private final int PAGES = 2;
+    private String[] titles={"Upcoming", "Alerts",};
     @SuppressWarnings("unused")
 	private Context context = null;
     
-    public CalendarPagerAdapter(Context ctxt, FragmentManager fm) {
+    public MainChildPagerAdapter(Context ctxt, FragmentManager fm) {
         super(fm);
         this.context = ctxt;
     }
@@ -35,11 +34,10 @@ public class CalendarPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new CalendarFragment();
+                return new UpcomingFragment();
             case 1:
-                return new CalendarFragment2();
-            case 2:
-                return new CalendarFragment3();
+                return new AlertsFragment();
+            
             default:
                 throw new IllegalArgumentException("The item position should be less or equal to:" + PAGES);
         }

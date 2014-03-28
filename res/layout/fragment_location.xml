@@ -13,7 +13,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:gravity="center"
-        android:text="Location"
+        android:text="@string/location"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <fragment
@@ -32,6 +32,6 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/map"
         android:layout_marginBottom="29dp"
-        android:text="Update" />
+        android:text="@string/update" />
 
 </RelativeLayout>

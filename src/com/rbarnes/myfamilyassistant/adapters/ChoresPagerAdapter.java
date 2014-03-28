@@ -7,10 +7,10 @@
  * 
  * date		Mar 1, 2014
  */
-package com.rbarnes.myfamilyassistant.other;
+package com.rbarnes.myfamilyassistant.adapters;
 
-import com.rbarnes.myfamilyassistant.parent.AlertsFragment;
-import com.rbarnes.myfamilyassistant.parent.UpcomingFragment;
+import com.rbarnes.myfamilyassistant.fragments.ChoreFragment;
+import com.rbarnes.myfamilyassistant.fragments.CompletedChoreFragment;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -18,14 +18,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 
-public class MainChildPagerAdapter extends FragmentStatePagerAdapter {
+public class ChoresPagerAdapter extends FragmentStatePagerAdapter {
 	 
     private final int PAGES = 2;
-    private String[] titles={"Upcoming", "Alerts",};
+    private String[] titles={"To Do", "Completed"};
     @SuppressWarnings("unused")
 	private Context context = null;
     
-    public MainChildPagerAdapter(Context ctxt, FragmentManager fm) {
+    public ChoresPagerAdapter(Context ctxt, FragmentManager fm) {
         super(fm);
         this.context = ctxt;
     }
@@ -34,10 +34,9 @@ public class MainChildPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new UpcomingFragment();
+                return new ChoreFragment();
             case 1:
-                return new AlertsFragment();
-            
+                return new CompletedChoreFragment();
             default:
                 throw new IllegalArgumentException("The item position should be less or equal to:" + PAGES);
         }

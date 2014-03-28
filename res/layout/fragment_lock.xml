@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Lock"
+        android:text="@string/lock"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
@@ -22,7 +22,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/lockImage"
         android:layout_marginTop="70dp"
-        android:text="Lock" />
+        android:text="@string/lock" />
 
     <ImageView
         android:id="@+id/lockImage"

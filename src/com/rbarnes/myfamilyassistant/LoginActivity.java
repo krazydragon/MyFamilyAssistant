@@ -47,8 +47,6 @@ import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
 import com.rbarnes.myfamilyassistant.other.EmailRetriever;
 import com.throrinstudio.android.common.libs.validator.Form;
 import com.throrinstudio.android.common.libs.validator.Validate;
@@ -62,6 +60,7 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 	
 	private Button _loginButton;
 	private Button _regButton;
+	@SuppressWarnings("unused")
 	private Button _checkButton;
 	private Button _signupButton;
 	private Button _colorButton;
@@ -73,14 +72,14 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 	private EditText _regFNameInput;
 	private EditText _ParPasswordInput;
 	private EditText _famNameInput;
+	@SuppressWarnings("unused")
 	private EditText _regParPassInput;
 	private EditText _kidPassInput;
+	@SuppressWarnings("unused")
 	private EditText _reKidPassInput;
 	private Form _loginForm;
 	private Form _regForm;
 	private String _famName;
-	private String _famPass;
-	private String _kidPass;
 	private Boolean _isFamThere=true;
 	private Boolean _parent=false;
 	List<ParseObject> ob;
@@ -186,9 +185,9 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 			EditText regRePassInput = (EditText)findViewById(R.id.regRePassword);
 			_regEmailInput = (EditText)findViewById(R.id.regEmail);
 			_regFNameInput = (EditText)findViewById(R.id.regFirstName);
-			//_regLNameInput = (EditText)findViewById(R.id.regLastName);
+			TextView tv = (TextView) findViewById(R.id.regform);
 			
-			
+			changeTextViewFont(tv);
 			_regEmailInput.setText(EmailRetriever.getEmail(this));
 			
 			Validate regUser = new Validate(_regUserInput);
@@ -390,6 +389,9 @@ public class LoginActivity extends Activity implements OnClickListener,ColorPick
 	    	_kidPassInput = (EditText)findViewById(R.id.kidPass);
 	    	_reKidPassInput = (EditText)findViewById(R.id.reKidPass);
 	    	_view = (LinearLayout)findViewById(R.id.makePass);
+	    	TextView tv = (TextView) findViewById(R.id.regform);
+			
+			changeTextViewFont(tv);
 		}
 	//go back to main page
 	private void loginUser(){

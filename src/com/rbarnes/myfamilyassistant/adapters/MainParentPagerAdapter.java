@@ -7,7 +7,7 @@
  * 
  * date		Mar 1, 2014
  */
-package com.rbarnes.myfamilyassistant.other;
+package com.rbarnes.myfamilyassistant.adapters;
 
 import com.rbarnes.myfamilyassistant.parent.AlertsFragment;
 import com.rbarnes.myfamilyassistant.parent.UpcomingFragment;

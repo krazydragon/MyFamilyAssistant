@@ -13,22 +13,17 @@ package com.rbarnes.myfamilyassistant.parent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.parse.LogInCallback;
-import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.drawable;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
 import com.rbarnes.myfamilyassistant.other.SendParseService;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
@@ -62,6 +57,7 @@ public class LockFragment extends Fragment{
 	private String _user;
 	private String _kid;
 	private Context _context;
+	private ProgressDialog mProgressDialog;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);
@@ -78,10 +74,18 @@ public class LockFragment extends Fragment{
 	
 	
 	
-	Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "primer.ttf");
+	Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "primer_bold.ttf");
+	mProgressDialog = new ProgressDialog(getActivity());
+    // Set progressdialog title
+    mProgressDialog.setTitle("");
+    // Set progressdialog message
+    
+    mProgressDialog.setIndeterminate(false);
+   
 	tv.setTypeface(custom_font);
 	lockButton.setTypeface(custom_font);
 	lockButton.setOnClickListener(new Button.OnClickListener(){
+	
 
     	@Override
     	public void onClick(View v) {
@@ -91,6 +95,7 @@ public class LockFragment extends Fragment{
     		final ImageView lockImage = (ImageView)view.findViewById(R.id.lockImage);
     		JSONObject data = new JSONObject();
     		final Handler handler = new Handler();
+    		
     		if(isUnlocked){
     			
     			
@@ -109,7 +114,9 @@ public class LockFragment extends Fragment{
 
         		// Set the default text to a link of the Queen
         		popUpTxt.setHint("Enter temporary password");
-
+        		 
+                 // Show progressdialog
+        		  
         		new AlertDialog.Builder(_context)
         		  .setTitle("Lock Phone")
         		  .setMessage("Are you sure you want to do this?")
@@ -118,7 +125,8 @@ public class LockFragment extends Fragment{
         		    public void onClick(DialogInterface dialog, int whichButton) {
         		    	if(popUpTxt.getText().toString().trim().length() > 0){
         		    		push.sendInBackground();
-        		    		
+        		    		mProgressDialog.setMessage("Communicating with "+_kid+"'s device...");
+        		    		 mProgressDialog.show();
         		    		handler.postDelayed(new Runnable() {
         		    		    @Override
         		    		    public void run() {
@@ -129,14 +137,16 @@ public class LockFragment extends Fragment{
         	        		    		lockImage.setBackgroundResource(R.drawable.lock);
         	        	    			lockButton.setText("Unlock");
         	        	    			isUnlocked = false;
-        	        		    	}}
+        	        		    	}
+        	        		    	mProgressDialog.dismiss();
+        		    		    }
         		    		}, 5000);
-        		    	}
-        					else {
+        		    		
+        		    	}else {
 
-        						Toast.makeText(getActivity(),"Input can not be blank!", Toast.LENGTH_SHORT).show();
-        						
-        					}
+           					Toast.makeText(getActivity(),"Input can not be blank!", Toast.LENGTH_SHORT).show();
+           					
+           				}
         		    }
         		  })
         		  .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -163,7 +173,8 @@ public class LockFragment extends Fragment{
       		  .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
       		    public void onClick(DialogInterface dialog, int whichButton) {
       		    	push.sendInBackground();
-      		    	
+      		    	mProgressDialog.setMessage("Communicating with "+_kid+"'s device...");
+      		    	mProgressDialog.show();
         			handler.postDelayed(new Runnable() {
             		    @Override
             		    public void run() {
@@ -174,8 +185,12 @@ public class LockFragment extends Fragment{
 	        		    		lockImage.setBackgroundResource(R.drawable.unlock);
 	                			lockButton.setText("Lock");
 	                			isUnlocked = true;
-	        		    	}}
+	        		    	}
+	        		    	mProgressDialog.dismiss();	
+            		    }
+            		    
             		}, 5000);
+        			
       		    }
       		  })
       		  .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -195,7 +210,7 @@ public class LockFragment extends Fragment{
     		
     		push.setQuery(query);
     		push.setData(data);
-    		push.sendInBackground();
+    		
     		
     		
     		

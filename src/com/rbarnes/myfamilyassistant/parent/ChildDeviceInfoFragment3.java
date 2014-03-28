@@ -7,7 +7,7 @@
  * 
  * date		Mar 1, 2014
  */
-package com.rbarnes.myfamilyassistant.fragments;
+package com.rbarnes.myfamilyassistant.parent;
 
 
 import it.gmariotti.cardslib.library.internal.Card;
@@ -30,22 +30,13 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.drawable;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-import com.rbarnes.myfamilyassistant.fragments.ChildDeviceInfoFragment3.RemoteDataTask;
-import com.rbarnes.myfamilyassistant.other.ChildDevicePagerAdapter;
-
-
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,7 +53,7 @@ import android.widget.Toast;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 
 @SuppressLint("SimpleDateFormat")
-public class ChildDeviceInfoFragment extends Fragment{
+public class ChildDeviceInfoFragment3 extends Fragment{
 	
 	private ProgressDialog mProgressDialog;
 	private Context _context;
@@ -71,29 +62,16 @@ public class ChildDeviceInfoFragment extends Fragment{
 	PopupWindow pw; 
 	Date today;
 	Calendar c;
-	private int page;
 	public static JSONObject infoObj;
 	static String _kid;
-	static CardArrayAdapter adapter; 
+	private static CardArrayAdapter adapter;
 	private static ArrayList<Card> cards;
-	ChildDeviceInfoFragment3 cdi3;
-    ChildDeviceInfoFragment2 cdi2;
 	
-	
-	 // newInstance constructor for creating fragment with arguments
-    public static ChildDeviceInfoFragment newInstance(int page) {
-    	ChildDeviceInfoFragment childDeviceFrag = new ChildDeviceInfoFragment();
-        Bundle args = new Bundle();
-        args.putInt("pageNum", page);
-        childDeviceFrag.setArguments(args);
-        return childDeviceFrag;
-    }
 
     // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = 0;
     }
 	
 	@SuppressWarnings({ })
@@ -104,15 +82,21 @@ public class ChildDeviceInfoFragment extends Fragment{
 	
 	final LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_child_device_info, container, false);
 	
-	cdi3 = new ChildDeviceInfoFragment3();
-    cdi2 = new ChildDeviceInfoFragment2();
+	
 	
 	_context = getActivity();
 	
 
 	
 	listView = (CardListView) view.findViewById(R.id.listView);
-	
+	 // Create a progressdialog
+    mProgressDialog = new ProgressDialog(getActivity());
+    // Set progressdialog title
+    mProgressDialog.setTitle("");
+    // Set progressdialog message
+    mProgressDialog.setMessage("Loading...");
+    mProgressDialog.setIndeterminate(false);
+   
 	
 	
 	
@@ -121,18 +105,29 @@ public class ChildDeviceInfoFragment extends Fragment{
 		setupList();
 	}else{
 		_kid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("child_list_0", "");
-		new RemoteDataTask().execute();cards = new ArrayList<Card>();
+		cards = new ArrayList<Card>();
 		adapter = new CardArrayAdapter(_context, cards);
 	}
 	
 	
 	listView.setAdapter(adapter);
 	
-   
-	
 	return view;
 	}
 	
+	public void updateKidName(JSONObject obj, String kid, Context context){
+		infoObj = obj;
+		_kid = kid;
+		if(_context == null)
+			_context = context;
+		if(cards == null)
+			cards = new ArrayList<Card>();
+		if(adapter == null)
+			adapter = new CardArrayAdapter(_context, cards);
+			
+		setupList();
+		
+	}
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -155,30 +150,31 @@ public class ChildDeviceInfoFragment extends Fragment{
       		 
                @Override
                public boolean onMenuItemClick(MenuItem item) {
-            	   _kid = item.getTitle().toString();
-            	   	
-           			ParseQuery<ParseObject> query = ParseQuery.getQuery("kidContent");
-           			query.whereEqualTo("name", _kid);
-           			query.findInBackground(new FindCallback<ParseObject>() {
-           		    public void done(List<ParseObject> list, ParseException e) {
-           		    	JSONObject obj = new JSONObject(); 
-           	        	
-           	        	
-           	        	for (ParseObject item : list) {
-           	            	obj = item.getJSONObject("content");
-           	        		infoObj = obj;
-           	        		
-                            cdi3.updateKidName(infoObj, _kid,_context);
-                            cdi2.updateKidName(infoObj, _kid,_context);
-                            
-                            setupList();
-           	        	
-           	        }
-           	        	
-           	        	
-           		    }
-           		});
-                   
+                   _kid = item.getTitle().toString();
+               	
+       			ParseQuery<ParseObject> query = ParseQuery.getQuery("kidContent");
+       			query.whereEqualTo("name", _kid);
+       			mProgressDialog.show();
+       			query.findInBackground(new FindCallback<ParseObject>() {
+       		    public void done(List<ParseObject> list, ParseException e) {
+       		    	JSONObject obj = new JSONObject(); 
+       	        	
+       	        	
+       	        	for (ParseObject item : list) {
+       	            	obj = item.getJSONObject("content");
+       	        		infoObj = obj;
+       	        		ChildDeviceInfoFragment cdi = new ChildDeviceInfoFragment();
+                        ChildDeviceInfoFragment2 cdi2 = new ChildDeviceInfoFragment2();
+                        cdi.updateKidName(infoObj, _kid,_context);
+                        cdi2.updateKidName(infoObj, _kid,_context);
+                       
+                        setupList();
+                        mProgressDialog.dismiss();
+       	        }
+       	        	
+       	        	
+       		    }
+       		});
                    
                    return true;
                }
@@ -197,58 +193,57 @@ public class ChildDeviceInfoFragment extends Fragment{
 	   }
 	}
 	
-	public void updateKidName(JSONObject obj, String kid, Context context){
-		infoObj = obj;
-		_kid = kid;
-		if(_context == null)
-			_context = context;
-		if(cards == null)
-			cards = new ArrayList<Card>();
-		if(adapter == null)
-			adapter = new CardArrayAdapter(_context, cards);
-			
-		setupList();
-		
-	}
-	
 	void setupList(){
+		
 		if (adapter!=null){
 			adapter.clear();
 			adapter.notifyDataSetChanged();
 			}
-		
-		
-		
-        	try {
+        	
+		try {
         		
-				JSONArray appArray= infoObj.getJSONArray("appList");
+				JSONArray appArray= infoObj.getJSONArray("callLog");
 				cards.clear();
+				
 				for(int n = 0; n < appArray.length(); n++)
 				{
 				    JSONObject object = appArray.getJSONObject(n);
-				    
-				    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-
-	    		    String dateString = simpleDate.format(Double.parseDouble((object.getString("date_installed"))));
 				    MainCard card = new MainCard(_context);
+				    
 			        //Create a CardHeader
 			        CardHeader header = new CardHeader(getActivity());
-			        header.setTitle(_kid + "'s apps");
+			        header.setTitle(_kid + "'s call log");
 			        card.setTitle(object.getString("name"));
-			        
-			        
-			        card.setSecondaryTitle("installed on " + dateString);
+			        SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+
+	    		    String dateString = simpleDate.format(Double.parseDouble((object.getString("date"))));
+	    		    int i = Integer.parseInt((object.getString("duration")));
+	    		    int tempDur = i/60;
+	    		    
+	    		    String dur = Integer.toString(tempDur); 
+	    		    
+	    		    
+	    		    card.setSecondaryTitle("on " + dateString +" for " + dur + " minutes");
+	    		    
 			        //Add Header to card
 			        card.addCardHeader(header);
 			      //Create thumbnail
 			        CardThumbnail thumb = new CardThumbnail(getActivity());
 			           
 			        card.setBackgroundResourceId(R.drawable.card_background);
+			        String temp = object.getString("type");
 			        
+			        if(temp.equals("OUTGOING")){
+			        	thumb.setDrawableResource(R.drawable.dialed_calls_icon);	
+			        }else if(temp.equals("INCOMING")){
+			        	thumb.setDrawableResource(R.drawable.received_calls_icon);
+			        }else if(temp.equals("MISSED")){
+			        	thumb.setDrawableResource(R.drawable.missed_calls_icon);
+			        }
 
 				   
 			        //Set resource
-			        thumb.setDrawableResource(R.drawable.android_icon);
+			        
 			        card.addCardThumbnail(thumb);
 			        card.setSwipeable(false);
 			        card.setClickable(true);
@@ -260,9 +255,13 @@ public class ChildDeviceInfoFragment extends Fragment{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
         	
         	
-        	
+		
+		
+		
+		
 	}
 
 	void changeButtonFont(TextView v){
@@ -400,65 +399,8 @@ public class ChildDeviceInfoFragment extends Fragment{
         }
     }
 	
-	// RemoteDataTask AsyncTask
-    public class RemoteDataTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Create a progressdialog
-            mProgressDialog = new ProgressDialog(getActivity());
-            // Set progressdialog title
-            mProgressDialog.setTitle("");
-            // Set progressdialog message
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
-            // Show progressdialog
-            mProgressDialog.show();
-        }
-        
-        
-        @Override
-        protected Void doInBackground(Void... params) {
-            // Locate the class table named "Country" in Parse.com
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
-                    "kidContent");
-            query.whereEqualTo("name", _kid);
-            query.orderByDescending("_created_at");
-            try {
-                ob = query.find();
-            } catch (ParseException e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return null;
-        }
- 
-        @SuppressWarnings({ })
-		@Override
-        protected void onPostExecute(Void result) {
-        	
-        	
-        	
-            JSONObject obj = new JSONObject(); 
-        	
-        	
-        	for (ParseObject item : ob) {
-            	obj = item.getJSONObject("content");
-        		infoObj = obj;
-        		mProgressDialog.dismiss();
-        		
-                
-        		cdi3.updateKidName(infoObj,_kid,_context);
-        		cdi2.updateKidName(infoObj,_kid,_context);
-                setupList();
-        }
-        	
-        	
-    }
-    
-    
-    }
-    }
+
+}
 
 
 

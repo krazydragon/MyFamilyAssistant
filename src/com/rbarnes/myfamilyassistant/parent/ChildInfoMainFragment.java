@@ -7,17 +7,16 @@
  * 
  * date		Mar 1, 2014
  */
-package com.rbarnes.myfamilyassistant.fragments;
+package com.rbarnes.myfamilyassistant.parent;
 
 
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-import com.rbarnes.myfamilyassistant.other.ChildDevicePagerAdapter;
+import com.rbarnes.myfamilyassistant.adapters.ChildDevicePagerAdapter;
 
 import android.support.v4.app.Fragment;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
@@ -31,6 +30,7 @@ import android.widget.LinearLayout;
 public class ChildInfoMainFragment extends Fragment{
 	/** Called when the activity is first created. */ 
 	LinearLayout view;
+	@SuppressLint("CutPasteId")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);

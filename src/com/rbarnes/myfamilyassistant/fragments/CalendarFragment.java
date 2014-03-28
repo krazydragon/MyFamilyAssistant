@@ -74,7 +74,7 @@ public class CalendarFragment extends Fragment{
 	private ProgressDialog mProgressDialog;
 	private Context _context;
 	List<ParseObject> ob;
-	static ArrayList<Card> todayCards;
+	public static ArrayList<Card> todayCards;
 	CardListView listView;
 	PopupWindow pw; 
 	static CardArrayAdapter todayAdapter; 
@@ -83,25 +83,17 @@ public class CalendarFragment extends Fragment{
 	private String _famName;
 	private String _user;
 	private String _tempString;
-	private int page;
 	private int _userColor;
 	
 	
 	
-	 // newInstance constructor for creating fragment with arguments
-    public static CalendarFragment newInstance(int page) {
-    	CalendarFragment calendarFrag = new CalendarFragment();
-        Bundle args = new Bundle();
-        args.putInt("pageNum", page);
-        calendarFrag.setArguments(args);
-        return calendarFrag;
-    }
+	 
 
     // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = 0;
+        
     }
 	
 	@SuppressWarnings({ })
@@ -327,7 +319,7 @@ public class CalendarFragment extends Fragment{
                   //Create thumbnail
                       SimpleDateFormat simpleDate =  new SimpleDateFormat("hh:mm a");
                       String dateString = "at "+ simpleDate.format(d);
-          		    card.setSecondaryTitle(dateString);  
+          		    card.setSecondaryTitle(dateString+" created by " + _user);  
      		        
      		        card.setObj(obj);   
      		       
@@ -354,10 +346,6 @@ public class CalendarFragment extends Fragment{
        		        
        		    }
      		        
-     		        todayCards.add(card);
-     			todayAdapter.notifyDataSetChanged();
-
-        			
             		pw.dismiss();
 
    				}
@@ -457,7 +445,7 @@ public class CalendarFragment extends Fragment{
     		  //Add Header to card
                 card.addCardHeader(header);
     		    String dateString = "at "+ simpleDate.format(date);
-    		    card.setSecondaryTitle(dateString);
+    		    card.setSecondaryTitle(dateString+" created by " + item.getString("name"));
 		        //Set resource
     		    card.setCardColor(item.getNumber("color").intValue());
 		        card.setSwipeable(true);
@@ -480,6 +468,7 @@ public class CalendarFragment extends Fragment{
     		       
     		    } else if (dateSpecified.equals(today)) {
     		    	 todayCards.add(card);
+    		    	 
     		        
     		    } 
     		             else if (dateSpecified.after(today)) {
@@ -543,8 +532,8 @@ public class CalendarFragment extends Fragment{
         				  })
         				.setNegativeButton("No",new DialogInterface.OnClickListener() {
         					public void onClick(DialogInterface dialog,int id) {
-        						//cards.add(card);
-        						//adapter.notifyDataSetChanged();
+        						todayCards.add(card);
+        						todayAdapter.notifyDataSetChanged();
         						dialog.cancel();
         						
         						

@@ -14,8 +14,6 @@ public class MyParseReceiver extends BroadcastReceiver {
 	  public void onReceive(Context context, Intent intent) {
 	    String TAG = "Fam";
 	    
-	    Log.d("INTENT",intent.toString());
-	    Log.d("INTENT",intent.getAction());
 	    if(intent.getAction().equals("com.rbarnes.UPDATE_STATUS")){
 	    
 		try {

@@ -9,7 +9,6 @@
  */
 package com.rbarnes.myfamilyassistant.parent;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -29,8 +28,6 @@ import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
 import com.rbarnes.myfamilyassistant.other.SendParseService;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -38,12 +35,10 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -61,13 +56,11 @@ public class LocationFragment extends Fragment {
 	
 	View view;
 	GoogleMap map;
-	private PopupMenu popupMenu;
 	private String _kid;
-	private ProgressDialog mProgressDialog;
 	private Context _context;
-	private List<ParseObject> ob;
 	private String _famName;
 	private String _user;
+	private ProgressDialog mProgressDialog;
 	
 	
 	@Override
@@ -110,6 +103,10 @@ public class LocationFragment extends Fragment {
     	tv.setTypeface(custom_font);
     	button.setTypeface(custom_font);
     	
+    	mProgressDialog = new ProgressDialog(getActivity());
+    	mProgressDialog.setTitle("");
+        // Set progressdialog message
+        mProgressDialog.setIndeterminate(false);
     	button.setOnClickListener(new Button.OnClickListener(){
 
         	@Override
@@ -138,6 +135,8 @@ public class LocationFragment extends Fragment {
         		push.setQuery(query);
         		push.setData(data);
         		push.sendInBackground();
+        		mProgressDialog.setMessage("Communicating with "+_kid+"'s device...");
+        		 mProgressDialog.show();
         		final Handler handler = new Handler();
         		handler.postDelayed(new Runnable() {
         		    @Override
@@ -149,6 +148,7 @@ public class LocationFragment extends Fragment {
         		    		map.clear();
         		    		findLocation();
         		    	}
+        		    	mProgressDialog.dismiss();
         		    }
         		}, 5000);
         		
@@ -257,7 +257,7 @@ public class LocationFragment extends Fragment {
 			            map.addMarker(new MarkerOptions()
 			                    .position(ll)
 			                    .title(item.getString("name")))
-			                    .setSnippet((String) android.text.format.DateFormat.format("EEEE MMMM d yyyy hh:mm a", date));
+			                    .setSnippet("Last updated on "+(String) android.text.format.DateFormat.format("EEEE MMMM d yyyy hh:mm a", date));
 			            map.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, 16));
 			    	
 			            

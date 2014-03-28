@@ -27,7 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.parse.ParseACL;
-import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
@@ -36,12 +35,10 @@ import com.parse.ParseUser;
 import com.rbarnes.myfamilyassistant.R;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -71,10 +68,9 @@ import android.widget.Toast;
 public class CalendarFragment3 extends Fragment{
 	 
 	
-	private ProgressDialog mProgressDialog;
 	private Context _context;
 	List<ParseObject> ob;
-	static ArrayList<Card> pastCards;
+	public static ArrayList<Card> pastCards;
 	CardListView listView;
 	PopupWindow pw; 
 	static CardArrayAdapter pastAdapter;
@@ -83,24 +79,14 @@ public class CalendarFragment3 extends Fragment{
 	private String _famName;
 	private String _user;
 	private String _tempString;
-	private int page;
 	private int _userColor;
-	
-	
-	 // newInstance constructor for creating fragment with arguments
-    public static CalendarFragment3 newInstance(int page) {
-    	CalendarFragment3 calendarFrag = new CalendarFragment3();
-        Bundle args = new Bundle();
-        args.putInt("pageNum", page);
-        calendarFrag.setArguments(args);
-        return calendarFrag;
-    }
+
 
     // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = 2;
+
     }
 	
 	@SuppressWarnings({ })
@@ -326,7 +312,7 @@ public class CalendarFragment3 extends Fragment{
                   //Create thumbnail
                       SimpleDateFormat simpleDate =  new SimpleDateFormat("hh:mm a");
                       String dateString = "at "+ simpleDate.format(d);
-          		    card.setSecondaryTitle(dateString);  
+          		    card.setSecondaryTitle(dateString+" created by " + _user);  
      		        
      		        card.setObj(obj);   
      		       

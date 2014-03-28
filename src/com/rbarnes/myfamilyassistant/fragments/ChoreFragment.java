@@ -30,7 +30,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,8 +37,6 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,15 +44,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.LogInCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
@@ -64,9 +58,6 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.drawable;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
 
 @SuppressLint("SimpleDateFormat")
 public class ChoreFragment extends Fragment{
@@ -76,9 +67,7 @@ public class ChoreFragment extends Fragment{
 	private List<ParseObject> ob;
 	private static ArrayList<Card> cards;
 	private CardListView listView;
-	private PopupWindow pw; 
 	private static CardArrayAdapter adapter;
-	private int page; 
 	private String _famName;
 	private static String _user;
 	private String _tempString;
@@ -87,20 +76,12 @@ public class ChoreFragment extends Fragment{
 	private static String _tempHeader; 
 	private CompletedChoreFragment ccf; 
 	
-	 // newInstance constructor for creating fragment with arguments
-    public static ChoreFragment newInstance(int page) {
-    	ChoreFragment choreFrag = new ChoreFragment();
-        Bundle args = new Bundle();
-        args.putInt("page", page);
-        choreFrag.setArguments(args);
-        return choreFrag;
-    }
+
 
     // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = 0;
     }
     
     
@@ -343,9 +324,6 @@ public class ChoreFragment extends Fragment{
         	
         	
         	
-        	int tn = 0;
-        	
-        	
         	for (ParseObject item : ob) {
             	
         		//Create a Card
@@ -451,15 +429,45 @@ public class ChoreFragment extends Fragment{
 
         	setOnSwipeListener(new Card.OnSwipeListener() {
                 @Override
-                public void onSwipe(Card card) {
-                    obj.deleteInBackground();
+                public void onSwipe(final Card card) {
+                	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(_context);
+            		// set title
+       			alertDialogBuilder.setTitle("Delete "+ getTitle() + "?");
+        
+       			// set dialog message
+       			alertDialogBuilder
+       				.setMessage("Are you sure you want to delete "+ card.getCardHeader().getTitle() + "?")
+       				.setCancelable(false)
+       				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+       					public void onClick(DialogInterface dialog,int id) {
+       						obj.deleteInBackground();
+       					}
+       				  })
+       				.setNegativeButton("No",new DialogInterface.OnClickListener() {
+       					public void onClick(DialogInterface dialog,int id) {
+       						if(getChecked()){
+       							ccf.addCard(card);
+       						}else{
+       							cards.add(card);
+       							adapter.notifyDataSetChanged();
+       							dialog.cancel();
+       						}
+       						
+       					}
+       				});
+       				
+       				// create alert dialog
+       				AlertDialog alertDialog = alertDialogBuilder.create();
+        
+       				// show it
+       				alertDialog.show();
                 }
             });
 
                 //Add ClickListener
                 setOnClickListener(new OnCardClickListener() {
                     @Override
-                    public void onClick(Card card, View view) {
+                    public void onClick(final Card card, View view) {
                     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 				_context);
                  
@@ -493,38 +501,17 @@ public class ChoreFragment extends Fragment{
                 	        			newObj.setACL(postACL);
                 	        			
                 	        			
-                	        			newObj.put("item", _tempHeader);
+                	        			newObj.put("item", card.getCardHeader().getTitle());
                 	        			newObj.put("completed", false);
                 	        			newObj.put("from", _user);
                 	        			newObj.put("color", _userColor);
                 	        			newObj.saveEventually();
                 	        			
-                	        			MainCard newCard = new MainCard(getActivity());
-             	                       //Create a CardHeader
-             	                       CardHeader header = new CardHeader(getActivity());
-             	                       newCard.setTitle(_user);
-             	                       
-             	                       
-             	           		    
-             	           		    newCard.setSecondaryTitle(dateString);
-             	                       //Add Header to card
-             	                       newCard.addCardHeader(header);
-             	                     //Create thumbnail
-             	        		        
-             	        	              
-             	                       newCard.setChecked(false);
-             	                       newCard.setObj(newObj);   
-             	        		       
-             	                      newCard.setCardColor(_userColor);
-             	                       newCard.setBackgroundResourceId(R.drawable.card_background);
-             	        		           
-             	        		        
-             	                       newCard.setSwipeable(false);
-             	                       newCard.setClickable(true);
+                	        			
              	        		        //Add thumbnail to a card
              	        		        
-             	                       cards.add(newCard);
-             	        			adapter.notifyDataSetChanged();
+             	                       cards.add(card);
+             	                       adapter.notifyDataSetChanged();
 
                 	        			
                 					}
@@ -556,7 +543,7 @@ public class ChoreFragment extends Fragment{
                                 MainCard newCard = new MainCard(getActivity());
         	                       //Create a CardHeader
         	                       CardHeader header = new CardHeader(getActivity());
-        	                       newCard.setTitle(getTitle());
+        	                       newCard.setTitle(_user);
         	                       header.setTitle(card.getCardHeader().getTitle());
         	                       
         	           		    
@@ -592,14 +579,14 @@ public class ChoreFragment extends Fragment{
                         JSONObject data = new JSONObject();
                 		try {
                 			data.put("action", "com.rbarnes.UPDATE_STATUS");
-                			data.put("alert", "Chore was completed");
+                			data.put("alert", card.getCardHeader().getTitle() +" was completed by "+ _user);
                 		} catch (JSONException e) {
                 			// TODO Auto-generated catch block
                 			e.printStackTrace();
                 		}
                         ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
                 		query.whereEqualTo("parent", true);
-                		query.whereEqualTo("family", "krazy");
+                		query.whereEqualTo("family", _famName);
 
                 		
                 		

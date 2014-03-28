@@ -13,7 +13,6 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
-import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.view.CardListView;
 
 import java.text.SimpleDateFormat;
@@ -22,40 +21,30 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.drawable;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-import com.rbarnes.myfamilyassistant.fragments.MessageFragment.MainCard;
-import com.rbarnes.myfamilyassistant.fragments.MessageFragment.RemoteDataTask;
-
-
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+@SuppressLint("SimpleDateFormat")
 public class AlertsFragment extends Fragment {
 	private ProgressDialog mProgressDialog;
+	@SuppressWarnings("unused")
 	private Context _context;
 	List<ParseObject> ob;
 	ArrayList<Card> cards;
@@ -132,7 +121,7 @@ public class AlertsFragment extends Fragment {
            return null;
        }
 
-       @SuppressWarnings({ })
+       @SuppressWarnings({"unused" })
 		@Override
        protected void onPostExecute(Void result) {
        	

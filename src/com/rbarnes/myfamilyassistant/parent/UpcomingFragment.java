@@ -13,7 +13,6 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
-import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.view.CardListView;
 
 import java.text.SimpleDateFormat;
@@ -26,12 +25,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.drawable;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-import com.rbarnes.myfamilyassistant.fragments.CalendarFragment.MainCard;
-import com.rbarnes.myfamilyassistant.fragments.CalendarFragment.RemoteDataTask;
-
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -43,17 +37,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+@SuppressLint("SimpleDateFormat")
 public class UpcomingFragment extends Fragment {
 	private ProgressDialog mProgressDialog;
+	@SuppressWarnings("unused")
 	private Context _context;
 	List<ParseObject> ob;
 	ArrayList<Card> futureCards;
@@ -62,8 +55,6 @@ public class UpcomingFragment extends Fragment {
 	CardArrayAdapter futureAdapter;
 	Date today;
 	Calendar c;
-	private int page;
-	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -179,7 +170,7 @@ public class UpcomingFragment extends Fragment {
     		    card.setCardColor(item.getNumber("color").intValue());
     		    String dateString = simpleDate.format(date);
     		    card.setTitle((String) item.get("title"));
-    		    card.setSecondaryTitle(dateString);
+    		    card.setSecondaryTitle("at "+dateString+" created by " + item.getString("name"));
 		        //Set resource
 		        thumb.setDrawableResource(R.drawable.calendar);
 		        card.setSwipeable(true);

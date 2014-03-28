@@ -8,7 +8,7 @@
 	<string-array name="items">
         <item>Calendar</item>
         <item>Chores</item>
-        <item>Messages</item>
+        <item>Bulletin Board</item>
         <item>Groceries</item>
         <item>Supplies</item>
         <item>Location</item>
@@ -36,4 +36,22 @@
     <string name="future">Future</string>
     <string name="past">Past</string>
     <string name="today">Today</string>
+    <string name="event_name">Event Name</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
+    <string name="location">Location</string>
+    <string name="update">Update</string>
+    <string name="lock">Lock</string>
+    <string name="edit_user">Edit User</string>
+    <string name="change_family_password">Change Family Password</string>
+    <string name="send_feedback">Send Feedback</string>
+    <string name="logout_of_family">Logout Of Family</string>
+    <string name="description">description</string>
+    <string name="pick_user_color">Pick user color</string>
+    <string name="check">Check</string>
+    <string name="retype_kid_password">Retype Kid Password</string>
+    <string name="kid_password">Kid Password</string>
+    <string name="retype_parent_password">Retype Parent Password</string>
+    <string name="parent_password">Parent Password</string>
+    <string name="exit">Exit</string>
 </resources>

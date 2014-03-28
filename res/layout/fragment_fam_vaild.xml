@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
-    <ScrollView
         android:id="@+id/AppointmentAddLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
@@ -46,7 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Parent Password"
+                    android:hint="@string/parent_password"
                     android:inputType="textPassword"/>
 
                 <EditText
@@ -54,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Retype Parent Password"
+                    android:hint="@string/retype_parent_password"
                     android:inputType="textPassword" />
 
                 <EditText
@@ -62,7 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Kid Password"
+                    android:hint="@string/kid_password"
                     android:inputType="textPassword" />
 
                 <EditText
@@ -70,7 +66,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Retype Kid Password"
+                    android:hint="@string/retype_kid_password"
                     android:inputType="textPassword" />
 
             </LinearLayout>
@@ -92,9 +88,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:onClick="checkPass"
-                android:text="Check" 
+                android:text="@string/check" 
                 />
         </LinearLayout>
     </ScrollView>
 
-</RelativeLayout>

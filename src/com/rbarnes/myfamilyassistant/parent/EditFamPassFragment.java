@@ -7,8 +7,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
 import com.throrinstudio.android.common.libs.validator.Form;
 import com.throrinstudio.android.common.libs.validator.validate.ConfirmValidate;
 import android.content.Context;
@@ -20,15 +18,14 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class EditFamPassFragment extends Fragment{
@@ -45,11 +42,14 @@ public class EditFamPassFragment extends Fragment{
 		super.onCreateView(inflater, container, savedInstanceState);
 	super.onCreate(savedInstanceState); 
 	
-	final RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_fam_vaild, container, false);
+	final ScrollView view = (ScrollView) inflater.inflate(R.layout.fragment_fam_vaild, container, false);
 	
 	LinearLayout passView = (LinearLayout)view.findViewById(R.id.makePass);
 	passView.setVisibility(View.VISIBLE);
-	
+	TextView tv = (TextView) view.findViewById(R.id.regform);
+	Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "primer_bold.ttf");
+	tv.setTypeface(custom_font);
+	tv.setText("Edit Family Password");
 	_context = getActivity();
 	
 	_famName = PreferenceManager.getDefaultSharedPreferences(_context).getString("fam_name", _famName);
@@ -71,7 +71,7 @@ public class EditFamPassFragment extends Fragment{
 	famNameInput.setEnabled(false);
 	famNameInput.setText(_famName);
 	_parPassInput.setHint("Enter new or old parent password");
-	regParPassInput.setHint("Reenter new or old parent password");
+	regParPassInput.setHint("Renter new or old parent password");
 	_kidPassInput.setHint("Enter new or old child password");
 	reKidPassInput.setHint("Renter new or old child password");
 	
@@ -138,13 +138,21 @@ public class EditFamPassFragment extends Fragment{
 		    });
 	    }
 	}, 3000);
+	
+	setHasOptionsMenu(true);
 	return view;
 	
 	
 	
 	
 	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	   // handle item selection
 
+	    return super.onOptionsItemSelected(item);
+	 
+	}
 
 
 void changeButtonFont(TextView v){
@@ -159,7 +167,7 @@ void changeEditTextFont(TextView v){
 }
 void changeTextViewFont(TextView v){
 	Typeface t=Typeface.createFromAsset(getActivity().getAssets(),
-        "primer.ttf");
+        "primer_bold.ttf");
 	v.setTypeface(t);
 }
 

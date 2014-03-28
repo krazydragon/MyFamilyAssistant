@@ -27,7 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.parse.ParseACL;
-import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
@@ -36,12 +35,10 @@ import com.parse.ParseUser;
 import com.rbarnes.myfamilyassistant.R;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -71,10 +68,9 @@ import android.widget.Toast;
 public class CalendarFragment2 extends Fragment{
 	 
 	
-	private ProgressDialog mProgressDialog;
 	private Context _context;
 	List<ParseObject> ob;
-	static ArrayList<Card> futureCards;
+	public static ArrayList<Card> futureCards;
 	CardListView listView;
 	PopupWindow pw; 
 	static CardArrayAdapter futureAdapter;
@@ -83,24 +79,14 @@ public class CalendarFragment2 extends Fragment{
 	private String _famName;
 	private String _user;
 	private String _tempString;
-	private int page;
 	private int _userColor;
 	
-	
-	 // newInstance constructor for creating fragment with arguments
-    public static CalendarFragment2 newInstance(int page) {
-    	CalendarFragment2 calendarFrag = new CalendarFragment2();
-        Bundle args = new Bundle();
-        args.putInt("pageNum", page);
-        calendarFrag.setArguments(args);
-        return calendarFrag;
-    }
 
     // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = 1;
+        
     }
 	
 	@SuppressWarnings({ })
@@ -324,7 +310,7 @@ public class CalendarFragment2 extends Fragment{
                   //Create thumbnail
                       SimpleDateFormat simpleDate =  new SimpleDateFormat("hh:mm a");
                       String dateString = "at "+ simpleDate.format(d);
-          		    card.setSecondaryTitle(dateString);  
+          		    card.setSecondaryTitle(dateString+" created by " + _user);  
      		        
      		        card.setObj(obj);   
      		       
@@ -448,8 +434,8 @@ public class CalendarFragment2 extends Fragment{
         				  })
         				.setNegativeButton("No",new DialogInterface.OnClickListener() {
         					public void onClick(DialogInterface dialog,int id) {
-        						//cards.add(card);
-        						//adapter.notifyDataSetChanged();
+        						futureCards.add(card);
+        						futureAdapter.notifyDataSetChanged();
         						dialog.cancel();
         						
         						

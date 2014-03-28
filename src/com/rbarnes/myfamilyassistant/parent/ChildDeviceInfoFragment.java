@@ -7,7 +7,7 @@
  * 
  * date		Mar 1, 2014
  */
-package com.rbarnes.myfamilyassistant.fragments;
+package com.rbarnes.myfamilyassistant.parent;
 
 
 import it.gmariotti.cardslib.library.internal.Card;
@@ -18,8 +18,6 @@ import it.gmariotti.cardslib.library.view.CardListView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,13 +28,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.drawable;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-import com.rbarnes.myfamilyassistant.fragments.ChildDeviceInfoFragment3.RemoteDataTask;
-import com.rbarnes.myfamilyassistant.other.ChildDevicePagerAdapter;
-
-
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -56,42 +47,31 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 
 @SuppressLint("SimpleDateFormat")
-public class ChildDeviceInfoFragment2 extends Fragment{
+public class ChildDeviceInfoFragment extends Fragment{
 	
-	private ProgressDialog mProgressDialog;
+	private static ProgressDialog mProgressDialog;
 	private Context _context;
-	List<ParseObject> ob;
-	CardListView listView;
-	PopupWindow pw; 
-	Date today;
-	Calendar c;
-	private int page;
+	private List<ParseObject> ob;
+	private CardListView listView;
 	public static JSONObject infoObj;
 	private static String _kid;
 	private static CardArrayAdapter adapter; 
 	private static ArrayList<Card> cards;
+	private ChildDeviceInfoFragment3 cdi3;
+    private ChildDeviceInfoFragment2 cdi2;
 	
 	
-	 // newInstance constructor for creating fragment with arguments
-    public static ChildDeviceInfoFragment2 newInstance(int page) {
-    	ChildDeviceInfoFragment2 childDeviceFrag = new ChildDeviceInfoFragment2();
-        Bundle args = new Bundle();
-        args.putInt("pageNum", page);
-        childDeviceFrag.setArguments(args);
-        return childDeviceFrag;
-    }
+	
 
     // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = 1;
     }
 	
 	@SuppressWarnings({ })
@@ -102,20 +82,15 @@ public class ChildDeviceInfoFragment2 extends Fragment{
 	
 	final LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_child_device_info, container, false);
 	
-	
+	cdi3 = new ChildDeviceInfoFragment3();
+    cdi2 = new ChildDeviceInfoFragment2();
 	
 	_context = getActivity();
-	listView = (CardListView) view.findViewById(R.id.listView);
+	
 
 	
-	if(infoObj != null){
-		setupList();
-	}else{
-		_kid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("child_list_0", "");
-		cards = new ArrayList<Card>();
-		adapter = new CardArrayAdapter(_context, cards);
-		
-	}
+	listView = (CardListView) view.findViewById(R.id.listView);
+	
 	
 	
 	
@@ -124,27 +99,18 @@ public class ChildDeviceInfoFragment2 extends Fragment{
 		setupList();
 	}else{
 		_kid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("child_list_0", "");
-		
+		new RemoteDataTask().execute();cards = new ArrayList<Card>();
+		adapter = new CardArrayAdapter(_context, cards);
 	}
 	
+	
 	listView.setAdapter(adapter);
+	
+   
 	
 	return view;
 	}
 	
-	public void updateKidName(JSONObject obj, String kid, Context context){
-		infoObj = obj;
-		_kid = kid;
-		if(_context == null)
-			_context = context;
-		if(cards == null)
-			cards = new ArrayList<Card>();
-		if(adapter == null)
-			adapter = new CardArrayAdapter(_context, cards);
-			
-		setupList();
-		
-	}
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -167,30 +133,31 @@ public class ChildDeviceInfoFragment2 extends Fragment{
       		 
                @Override
                public boolean onMenuItemClick(MenuItem item) {
-                   _kid = item.getTitle().toString();
-                  
-          			ParseQuery<ParseObject> query = ParseQuery.getQuery("kidContent");
-          			query.whereEqualTo("name", _kid);
-          			query.findInBackground(new FindCallback<ParseObject>() {
-          		    public void done(List<ParseObject> list, ParseException e) {
-          		    	JSONObject obj = new JSONObject(); 
-          	        	
-          	        	
-          	        	for (ParseObject item : list) {
-          	            	obj = item.getJSONObject("content");
-          	        		infoObj = obj;
-          	        		ChildDeviceInfoFragment cdi = new ChildDeviceInfoFragment();
-                           ChildDeviceInfoFragment3 cdi3 = new ChildDeviceInfoFragment3();
-                           cdi.updateKidName(infoObj, _kid,_context);
-                           cdi3.updateKidName(infoObj, _kid,_context);
-                           
-                           setupList();
-          	        	
-          	        }
-          	        	
-          	        	
-          		    }
-          		});
+            	   _kid = item.getTitle().toString();
+            	   	mProgressDialog.show();
+           			ParseQuery<ParseObject> query = ParseQuery.getQuery("kidContent");
+           			query.whereEqualTo("name", _kid);
+           			query.findInBackground(new FindCallback<ParseObject>() {
+           		    public void done(List<ParseObject> list, ParseException e) {
+           		    	JSONObject obj = new JSONObject(); 
+           	        	
+           	        	
+           	        	for (ParseObject item : list) {
+           	            	obj = item.getJSONObject("content");
+           	        		infoObj = obj;
+           	        		
+                            cdi3.updateKidName(infoObj, _kid,_context);
+                            cdi2.updateKidName(infoObj, _kid,_context);
+                            
+                            setupList();
+                            mProgressDialog.dismiss();
+           	        	
+           	        }
+           	        	
+           	        	
+           		    }
+           		});
+                   
                    
                    return true;
                }
@@ -209,6 +176,20 @@ public class ChildDeviceInfoFragment2 extends Fragment{
 	   }
 	}
 	
+	public void updateKidName(JSONObject obj, String kid, Context context){
+		infoObj = obj;
+		_kid = kid;
+		if(_context == null)
+			_context = context;
+		if(cards == null)
+			cards = new ArrayList<Card>();
+		if(adapter == null)
+			adapter = new CardArrayAdapter(_context, cards);
+			
+		setupList();
+		
+	}
+	
 	void setupList(){
 		if (adapter!=null){
 			adapter.clear();
@@ -217,22 +198,25 @@ public class ChildDeviceInfoFragment2 extends Fragment{
 		
 		
 		
-		
-        	
-try {
+        	try {
         		
-				JSONArray appArray= infoObj.getJSONArray("contacts");
+				JSONArray appArray= infoObj.getJSONArray("appList");
 				cards.clear();
 				for(int n = 0; n < appArray.length(); n++)
 				{
 				    JSONObject object = appArray.getJSONObject(n);
-				    MainCard card = new MainCard(_context);
 				    
+				    SimpleDateFormat simpleDate =  new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+
+	    		    String dateString = simpleDate.format(Double.parseDouble((object.getString("date_installed"))));
+				    MainCard card = new MainCard(_context);
 			        //Create a CardHeader
 			        CardHeader header = new CardHeader(getActivity());
-			        header.setTitle(_kid + "'s contacts");
+			        header.setTitle(_kid + "'s apps");
 			        card.setTitle(object.getString("name"));
-			        card.setSecondaryTitle(object.getString("number"));
+			        
+			        
+			        card.setSecondaryTitle("installed on " + dateString);
 			        //Add Header to card
 			        card.addCardHeader(header);
 			      //Create thumbnail
@@ -240,8 +224,10 @@ try {
 			           
 			        card.setBackgroundResourceId(R.drawable.card_background);
 			        
+
+				   
 			        //Set resource
-			        thumb.setDrawableResource(R.drawable.person);
+			        thumb.setDrawableResource(R.drawable.android_icon);
 			        card.addCardThumbnail(thumb);
 			        card.setSwipeable(false);
 			        card.setClickable(true);
@@ -253,10 +239,9 @@ try {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			
-		
-		
+        	
+        	
+        	
 	}
 
 	void changeButtonFont(TextView v){
@@ -271,7 +256,7 @@ try {
 	}
 	void changeTextViewFont(TextView v){
 		Typeface t=Typeface.createFromAsset(getActivity().getAssets(),
-            "primer.ttf");
+            "primer_bold.ttf");
 		v.setTypeface(t);
 	}
 	
@@ -338,8 +323,8 @@ try {
         public void setupInnerViewElements(ViewGroup parent, View view) {
             //Retrieve elements
             mTitle = (TextView) view.findViewById(R.id.inner_title);
-            mSecondaryTitle = (TextView) view.findViewById(R.id.inner_title2);
-            mCheckbox = (CheckBox)view.findViewById(R.id.checkBox1);
+            mSecondaryTitle = (TextView) parent.findViewById(R.id.inner_title2);
+            mCheckbox = (CheckBox)parent.findViewById(R.id.checkBox1);
             
             
             
@@ -394,8 +379,65 @@ try {
         }
     }
 	
-
-}
+	// RemoteDataTask AsyncTask
+    public class RemoteDataTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create a progressdialog
+            mProgressDialog = new ProgressDialog(getActivity());
+            // Set progressdialog title
+            mProgressDialog.setTitle("");
+            // Set progressdialog message
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.setIndeterminate(false);
+            // Show progressdialog
+            mProgressDialog.show();
+        }
+        
+        
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Locate the class table named "Country" in Parse.com
+            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
+                    "kidContent");
+            query.whereEqualTo("name", _kid);
+            query.orderByDescending("_created_at");
+            try {
+                ob = query.find();
+            } catch (ParseException e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return null;
+        }
+ 
+        @SuppressWarnings({ })
+		@Override
+        protected void onPostExecute(Void result) {
+        	
+        	
+        	
+            JSONObject obj = new JSONObject(); 
+        	
+        	
+        	for (ParseObject item : ob) {
+            	obj = item.getJSONObject("content");
+        		infoObj = obj;
+        		mProgressDialog.dismiss();
+        		
+                
+        		cdi3.updateKidName(infoObj,_kid,_context);
+        		cdi2.updateKidName(infoObj,_kid,_context);
+                setupList();
+        }
+        	
+        	
+    }
+    
+    
+    }
+    }
 
 
 

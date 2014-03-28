@@ -7,10 +7,11 @@
  * 
  * date		Mar 1, 2014
  */
-package com.rbarnes.myfamilyassistant.other;
+package com.rbarnes.myfamilyassistant.adapters;
 
-import com.rbarnes.myfamilyassistant.fragments.ChoreFragment;
-import com.rbarnes.myfamilyassistant.fragments.CompletedChoreFragment;
+import com.rbarnes.myfamilyassistant.parent.ChildDeviceInfoFragment;
+import com.rbarnes.myfamilyassistant.parent.ChildDeviceInfoFragment2;
+import com.rbarnes.myfamilyassistant.parent.ChildDeviceInfoFragment3;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -18,14 +19,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 
-public class ChoresPagerAdapter extends FragmentStatePagerAdapter {
+public class ChildDevicePagerAdapter extends FragmentStatePagerAdapter {
 	 
-    private final int PAGES = 2;
-    private String[] titles={"To Do", "Completed"};
+    private final int PAGES = 3;
+    private String[] titles={"Installed Applications", "Contacts", "Recent Calls"};
     @SuppressWarnings("unused")
 	private Context context = null;
     
-    public ChoresPagerAdapter(Context ctxt, FragmentManager fm) {
+    public ChildDevicePagerAdapter(Context ctxt, FragmentManager fm) {
         super(fm);
         this.context = ctxt;
     }
@@ -34,9 +35,11 @@ public class ChoresPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new ChoreFragment();
+                return new ChildDeviceInfoFragment();
             case 1:
-                return new CompletedChoreFragment();
+                return new ChildDeviceInfoFragment2();
+            case 2:
+                return new ChildDeviceInfoFragment3();
             default:
                 throw new IllegalArgumentException("The item position should be less or equal to:" + PAGES);
         }

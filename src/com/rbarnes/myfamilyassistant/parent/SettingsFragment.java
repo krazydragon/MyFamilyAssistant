@@ -13,9 +13,6 @@ package com.rbarnes.myfamilyassistant.parent;
 
 
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;

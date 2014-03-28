@@ -13,14 +13,11 @@ package com.rbarnes.myfamilyassistant.parent;
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.rbarnes.myfamilyassistant.R;
-import com.rbarnes.myfamilyassistant.R.id;
-import com.rbarnes.myfamilyassistant.R.layout;
-import com.rbarnes.myfamilyassistant.other.MainParentPagerAdapter;
+import com.rbarnes.myfamilyassistant.adapters.MainParentPagerAdapter;
 
 import android.support.v4.app.Fragment;
-import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -32,6 +29,7 @@ import android.widget.LinearLayout;
 public class ParentMainFragment extends Fragment{
 	/** Called when the activity is first created. */ 
 	LinearLayout view;
+	@SuppressLint("CutPasteId")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);

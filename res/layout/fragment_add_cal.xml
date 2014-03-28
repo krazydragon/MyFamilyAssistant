@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/PopUpAddLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffff"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/PopUpAddLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-		android:background="#ffffff"
-        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/addTitle"
@@ -24,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Event Name"
+            android:hint="@string/event_name"
             android:inputType="text" />
 
         <DatePicker
@@ -37,27 +33,48 @@
             android:id="@+id/calTimePicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-
-        <LinearLayout
+        <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="4dip"
+            android:background="?android:attr/dividerVertical"
+            android:layout_alignParentTop="true"/>
+        <View
+            android:id="@+id/ViewColorPickerHelper"
+            android:layout_width="1dip"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="4dip"
+            android:layout_marginTop="4dip"
+            android:background="?android:attr/dividerVertical" 
+            android:layout_centerHorizontal="true"/>
+        <Button
+            android:id="@+id/addButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/ViewColorPickerHelper"
+            android:text="@string/submit" 
+            android:layout_alignParentBottom="true"/>
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/cancel" 
+            android:layout_alignParentBottom="true" 
+            android:layout_toRightOf="@id/ViewColorPickerHelper"/>
 
-            <Button
-                android:id="@+id/addButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Submit" 
-            	android:layout_weight="1"/>
+    </RelativeLayout>
 
-            <Button
-                android:id="@+id/cancelButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Cancel" 
-                android:layout_weight="1"/>
+      
 
-        </LinearLayout>
-
-    </LinearLayout>
 
 </LinearLayout>

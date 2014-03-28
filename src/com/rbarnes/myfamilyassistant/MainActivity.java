@@ -30,12 +30,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -43,14 +40,19 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.PushService;
+import com.rbarnes.myfamilyassistant.fragments.BulletinBoardFragment;
+import com.rbarnes.myfamilyassistant.fragments.CalendarFragment;
+import com.rbarnes.myfamilyassistant.fragments.CalendarFragment2;
+import com.rbarnes.myfamilyassistant.fragments.CalendarFragment3;
 import com.rbarnes.myfamilyassistant.fragments.CalendarMainFragment;
-import com.rbarnes.myfamilyassistant.fragments.ChildInfoMainFragment;
 import com.rbarnes.myfamilyassistant.fragments.ChildMainFragment;
+import com.rbarnes.myfamilyassistant.fragments.ChoreFragment;
 import com.rbarnes.myfamilyassistant.fragments.ChoresMainFragment;
 import com.rbarnes.myfamilyassistant.fragments.GroceryFragment;
-import com.rbarnes.myfamilyassistant.fragments.MessageFragment;
 import com.rbarnes.myfamilyassistant.fragments.SuppliesFragment;
 import com.rbarnes.myfamilyassistant.other.FamDeviceAdminReceiver;
+import com.rbarnes.myfamilyassistant.other.SendParseService;
+import com.rbarnes.myfamilyassistant.parent.ChildInfoMainFragment;
 import com.rbarnes.myfamilyassistant.parent.EditFamPassFragment;
 import com.rbarnes.myfamilyassistant.parent.EditUserFragment;
 import com.rbarnes.myfamilyassistant.parent.LocationFragment;
@@ -106,7 +108,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 		_fam_auth = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("fam_auth", _fam_auth);
 		
 		if ((_fam_auth) && _currentUser!= null) {
-			//checkParent();
+			checkParent();
 			
 			
            
@@ -235,6 +237,8 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
         	_editor.putBoolean("fam_auth", false);
         	_editor.commit();
         	finish();
+        }else if(item.getItemId()== R.id.action_exit){
+        	finish();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -256,7 +260,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
                 break;
 
             case 2:
-                frag = new MessageFragment();
+                frag = new BulletinBoardFragment();
                 break;
 
             case 3:
@@ -282,7 +286,7 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 
             
             default:
-                frag = new MessageFragment();
+                frag = new BulletinBoardFragment();
                 break;
             }
             if(frag != null){
@@ -294,6 +298,9 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
         }
     }
 	private void checkParent(){
+		CalendarFragment.todayCards = null;
+		CalendarFragment2.futureCards = null;
+		CalendarFragment3.pastCards = null;
 		_parent = PreferenceManager.getDefaultSharedPreferences(_context).getBoolean("parent", _parent);
 		DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 		 _deviceAdmin = new ComponentName(_context, FamDeviceAdminReceiver.class);
@@ -303,6 +310,9 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
        if(_parent){ 
        _transaction.replace(R.id.content_frame, new ParentMainFragment());
        }else{
+    	   Intent i= new Intent(_context, SendParseService.class);
+    	   i.putExtra("goal", "getKidInfo");		
+	    	  _context.startService(i);
     	   _transaction.replace(R.id.content_frame, new ChildMainFragment());
     	   if(!devicePolicyManager.isAdminActive(_deviceAdmin)){
 	 	    	 installAdmin();
@@ -423,26 +433,4 @@ public class MainActivity extends FragmentActivity implements SettingsListener{
 		    feedBack.dismiss();
 		}
 
-		@Override
-		public boolean dispatchTouchEvent(MotionEvent event) {
-
-		    View v = getCurrentFocus();
-		    boolean ret = super.dispatchTouchEvent(event);
-
-		    if (v instanceof EditText) {
-		        View w = getCurrentFocus();
-		        int scrcoords[] = new int[2];
-		        w.getLocationOnScreen(scrcoords);
-		        float x = event.getRawX() + w.getLeft() - scrcoords[0];
-		        float y = event.getRawY() + w.getTop() - scrcoords[1];
-
-		        Log.d("Activity", "Touch event "+event.getRawX()+","+event.getRawY()+" "+x+","+y+" rect "+w.getLeft()+","+w.getTop()+","+w.getRight()+","+w.getBottom()+" coords "+scrcoords[0]+","+scrcoords[1]);
-		        if (event.getAction() == MotionEvent.ACTION_UP && (x < w.getLeft() || x >= w.getRight() || y < w.getTop() || y > w.getBottom()) ) { 
-
-		            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-		            imm.hideSoftInputFromWindow(getWindow().getCurrentFocus().getWindowToken(), 0);
-		        }
-		    }
-		return ret;
-		}
 }

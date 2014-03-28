@@ -39,6 +39,7 @@ public class SendParseService extends IntentService {
 	private ParseObject _kidInfo;
 	private ParseObject _location;
 	private static Boolean _updated;
+	private  Boolean _sendNoti = false;
 	
 	public SendParseService() {
 		super("SendParseService");
@@ -55,12 +56,14 @@ public class SendParseService extends IntentService {
 		
 		String goal = (String) intent.getExtras().get("goal");
 		_name = (String) intent.getExtras().get("name");
+		
 		if(_name==null)
 			_name="";
 		 
 		if(goal.equals("lock")){
 			lockDevice();
 		}else if(goal.equals("getLocation")){
+			_sendNoti = true;
 			sendLocation();
 		}else if(goal.equals("getKidInfo")){
 			sendKidInfo();
@@ -130,7 +133,8 @@ public class SendParseService extends IntentService {
 	}
 	
 	
-	private void sendKidInfo(){
+	public void sendKidInfo(){
+		sendLocation();
 		final JSONObject kidInfoObj = new JSONObject();
 		
 		// TODO Auto-generated method stub
@@ -165,6 +169,7 @@ public class SendParseService extends IntentService {
 		    	_kidInfo.put("content", kidInfoObj);
 				_kidInfo.put("name", _user);
 				_kidInfo.saveInBackground();
+				
 		    }
 		});
 		
@@ -198,7 +203,8 @@ public class SendParseService extends IntentService {
 	    		_location.put("name", _user);
 	    		_location.saveInBackground();
 	    		_tempString = _user + "'s location was updated";
-	    		sendNotiBack();
+	    		if(_sendNoti)
+	    			sendNotiBack();
 		    }
 		});
 		

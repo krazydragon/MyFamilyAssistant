@@ -7,25 +7,26 @@
  * 
  * date		Mar 1, 2014
  */
-package com.rbarnes.myfamilyassistant.other;
+package com.rbarnes.myfamilyassistant.adapters;
 
-import com.rbarnes.myfamilyassistant.fragments.ChildDeviceInfoFragment;
-import com.rbarnes.myfamilyassistant.fragments.ChildDeviceInfoFragment2;
-import com.rbarnes.myfamilyassistant.fragments.ChildDeviceInfoFragment3;
+import com.rbarnes.myfamilyassistant.fragments.CalendarFragment;
+import com.rbarnes.myfamilyassistant.fragments.CalendarFragment2;
+import com.rbarnes.myfamilyassistant.fragments.CalendarFragment3;
+
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 
-public class ChildDevicePagerAdapter extends FragmentStatePagerAdapter {
+public class CalendarPagerAdapter extends FragmentStatePagerAdapter {
 	 
     private final int PAGES = 3;
-    private String[] titles={"Installed Applications", "Contacts", "Recent Calls"};
+    private String[] titles={"Today", "Future", "Past"};
     @SuppressWarnings("unused")
 	private Context context = null;
     
-    public ChildDevicePagerAdapter(Context ctxt, FragmentManager fm) {
+    public CalendarPagerAdapter(Context ctxt, FragmentManager fm) {
         super(fm);
         this.context = ctxt;
     }
@@ -34,11 +35,11 @@ public class ChildDevicePagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new ChildDeviceInfoFragment();
+                return new CalendarFragment();
             case 1:
-                return new ChildDeviceInfoFragment2();
+                return new CalendarFragment2();
             case 2:
-                return new ChildDeviceInfoFragment3();
+                return new CalendarFragment3();
             default:
                 throw new IllegalArgumentException("The item position should be less or equal to:" + PAGES);
         }
